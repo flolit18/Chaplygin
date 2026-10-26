@@ -468,3 +468,85 @@ l'orientation représentée par un quaternion unitaire.
 
 Par rapport aux angles d'Euler, le contrôle $|\cos\theta| > \varepsilon$
 disparaît, et l'étape de renormalisation s'ajoute.
+
+\subsection{Validation de la simulation}
+\subsubsection{Écart avec le modèle en angles d'Euler}
+
+On relance la boule anisotrope de la partie précédente
+(figure~\ref{fig-traj-anisotrope}), avec les mêmes paramètres et le même
+pas $h$, une fois avec le modèle en angles d'Euler et une fois avec le
+modèle en quaternions. Sur ce lancer, $|\cos\theta| \geq 0{,}74$ et les deux modèles décrivent la même
+dynamique. Les deux simulations doivent donc donner le même résultat, à l'erreur du schéma près.
+\paragraph{Écarts mesurés : } on note avec un indice $E$ (resp. $Q$) les
+grandeurs calculées en angles d'Euler (resp. en quaternions), et on
+mesure à chaque pas
+\[
+    \|r_k^E - r_k^Q\|,
+    \qquad
+    \|\mat{R}_k^E - \mat{R}_k^Q\|_F,
+    \qquad
+    \|(N_x, N_y)_k^E - (N_x, N_y)_k^Q\|
+\]
+où $\|\cdot\|_F$ est la norme de Frobenius. Sur les $5$ s de simulation,
+ces écarts restent inférieurs à $1{,}1\cdot 10^{-11}$ m,
+$2{,}2\cdot 10^{-11}$ et $6{,}7\cdot 10^{-12}$ N respectivement
+(figure~\ref{fig-ecart-euler-quat}). La dérive relative de l'énergie
+reste de l'ordre de $10^{-12}$ pour les deux modèles.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{chapitre4/figures/validation_case_a_errors.png}
+    \caption{Boule anisotrope : écart entre les simulations en angles
+    d'Euler et en quaternions, et dérive relative de l'énergie}
+    \label{fig-ecart-euler-quat}
+\end{figure}
+
+Loin de la singularité, la simulation en quaternions redonne donc les
+résultats de la simulation en angles d'Euler.
+
+\paragraph{Près du gimbal lock}
+
+On lance maintenant la même boule avec un tangage proche de $90^\circ$ :
+\[
+    \alpha_0 = (0;\ 90^\circ - 0{,}4^\circ;\ 0),
+    \qquad
+    \vect{\Omega}_0 = (5;\ 1;\ 2) \text{ rad.s}^{-1}
+\]
+avec le même pas $h$ et la même durée. On peut par partir de gimbal lock car la simulation en angles d'Euler ne pourrait pas se lancer, mais on peut partir de son voisinage et lui donne de la vitesse pour atteindre gimbal lock.
+
+\textbf{Trajectoire et angles : } les deux simulations coïncident jusqu'à
+$t \approx 1{,}84$ s (figure~\ref{fig-gimbal-traj}). Les angles calculés en angles d'Euler s'écartent alors de ceux calculés en quaternions, et la trajectoire de $G$ avec eux :
+l'écart atteint $50$ cm à $t = 5$ s.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{chapitre4/figures/case_b_euler_vs_quat.png}
+    \caption{Près du gimbal lock : trajectoire de $G$ et angles d'Euler,
+    calculés en quaternions (trait plein) et en angles d'Euler (tirets)}
+    \label{fig-gimbal-traj}
+\end{figure}
+
+\textbf{Contrôles : } en quaternions, les dérives relatives de $T$ et de
+$\vect{L}_P$ restent de l'ordre de $10^{-12}$
+(figure~\ref{fig-gimbal-controles}). En angles d'Euler, les dérives de
+$T$ et de $\vect{L}_P$ valent déjà quelques $10^{-3}$ dès le premier pas,
+puisqu'on part près de la singularité, puis sautent à $43\ \%$ et
+$33\ \%$ au passage de $t \approx 1{,}84$ s. L'erreur du schéma utilisant les angles d'Euler s'accumule dès les premiers pas près de la singularité, donc, pour la trajectoire, ce n'est pas forcément fiable pour la simulation en angles d'Euler.
+
+En revanche, les deux autres contrôles passent : on a toujours
+$|\cos\theta| > \varepsilon = 10^{-3}$, et
+$\|(N_x, N_y)\| \leq 0{,}47$ N reste loin de $\mu_s\,m\,g \approx 4{,}9$ N.
+La simulation en angles d'Euler est donc déclarée valide alors qu'elle
+est fausse : seule la conservation de $T$ et de $\vect{L}_P$ révèle
+l'erreur.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{chapitre4/figures/case_b_controls.png}
+    \caption{Près du gimbal lock : réactions tangentielles et dérive
+    relative des invariants, en quaternions (trait plein) et en angles
+    d'Euler (tirets)}
+    \label{fig-gimbal-controles}
+\end{figure}
+
+Près de la singularité, seule la simulation en quaternions reste fiable.
