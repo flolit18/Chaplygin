@@ -12,7 +12,6 @@ import numpy as np
 from matplotlib.animation import FuncAnimation
 from matplotlib.ticker import MaxNLocator
 
-from .physics import rotation_matrix
 from .controls import kinetic_energy, angular_momentum_P, relative_drift
 
 AXIS_COLORS = ("tab:red", "tab:green", "tab:blue")
@@ -62,14 +61,14 @@ def plot_angles(result, ax=None):
 
 def plot_reactions(sphere, result, ax=None):
     """
-        lambda_1, lambda_2, |lambda| et la borne mu_s m g
+        N_x, N_y, |(N_x, N_y)| et la borne mu_s m g
     """
     ax = _ax(ax)
-    lam = result.lam
-    ax.plot(result.t, lam[:, 0], label=r"$\lambda_1$")
-    ax.plot(result.t, lam[:, 1], label=r"$\lambda_2$")
-    ax.plot(result.t, np.linalg.norm(lam, axis=1), "k", lw=1,
-            label=r"$\|\lambda\|$")
+    fr = result.friction
+    ax.plot(result.t, fr[:, 0], label=r"$N_x$")
+    ax.plot(result.t, fr[:, 1], label=r"$N_y$")
+    ax.plot(result.t, np.linalg.norm(fr, axis=1), "k", lw=1,
+            label=r"$\|(N_x, N_y)\|$")
     bound = sphere.mu_s * sphere.m * sphere.g
     ax.axhline(bound, color="tab:red", ls="--", label=r"$\mu_s m g$")
     ax.set(title="Reactions tangentielles", xlabel="t (s)", ylabel="N")
@@ -83,9 +82,8 @@ def plot_invariants(sphere, result, ax=None):
         Derive relative de T et de L_P (echelle log)
     """
     ax = _ax(ax)
-    states = list(zip(result.alpha, result.alpha_dot))
-    T = [kinetic_energy(sphere, a, ad) for a, ad in states]
-    L = [angular_momentum_P(sphere, a, ad) for a, ad in states]
+    T = kinetic_energy(sphere, result)
+    L = angular_momentum_P(sphere, result)
     # on enleve k = 0 ou la derive vaut 0 (log)
     ax.semilogy(result.t[1:], relative_drift(T)[1:], label="$T$")
     ax.semilogy(result.t[1:], relative_drift(L)[1:], label="$L_P$")
@@ -118,9 +116,8 @@ def _sphere_mesh(a, n=20):
     return a * np.stack([np.cos(u)*np.sin(v), np.sin(u)*np.sin(v), np.cos(v)])
 
 
-def _draw_ball(ax, sphere, alpha, center, mesh, length=1.6):
-    """Dessine la boule et ses trois axes du corps ; renvoie les artistes."""
-    R = rotation_matrix(alpha)
+def _draw_ball(ax, sphere, R, center, mesh, length=1.6):
+    """Dessine la boule d'orientation R et ses trois axes du corps ; renvoie les artistes."""
     S = np.einsum("ij,jkl->ikl", R, mesh) + center[:, None, None]
     arts = [ax.plot_surface(*S, color="lightgray", alpha=0.3, linewidth=0)]
     for i, col in enumerate(AXIS_COLORS):
@@ -160,7 +157,7 @@ def plot_trajectory_3d(sphere, result, n_snap=6, ax=None):
     mesh = _sphere_mesh(a)
     for k in _snapshot_indices(result, a, n_snap):
         center = np.array([x[k], y[k], a])
-        _draw_ball(ax, sphere, result.alpha[k], center, mesh)
+        _draw_ball(ax, sphere, result.R[k], center, mesh)
         ax.text(x[k], y[k], 2.8*a, f"{result.t[k]:.1f} s", fontsize=8)
 
     # meme echelle sur les trois axes pour que la boule reste ronde
@@ -192,7 +189,7 @@ def plot_orientation(sphere, result, n=6):
         ax = fig.add_subplot(1, n, j + 1, projection="3d")
         for e in np.eye(3):
             ax.plot(*np.stack([-1.6*a*e, 1.6*a*e]).T, color="lightgray", lw=0.8)
-        _draw_ball(ax, sphere, result.alpha[k], np.zeros(3), mesh, length=1.5)
+        _draw_ball(ax, sphere, result.R[k], np.zeros(3), mesh, length=1.5)
         lim = 1.5 * a
         ax.set(xlim=(-lim, lim), ylim=(-lim, lim), zlim=(-lim, lim))
         ax.set_box_aspect((1, 1, 1))
@@ -235,7 +232,7 @@ def animate_3d(sphere, result, every=20, view=0.35, interval=40):
         center = np.array([result.r[k, 0], result.r[k, 1], a])
         for art in ball:
             art.remove()
-        ball[:] = _draw_ball(ax, sphere, result.alpha[k], center, mesh)
+        ball[:] = _draw_ball(ax, sphere, result.R[k], center, mesh)
 
         # trace limitee a la vue (matplotlib 3D ne coupe pas les courbes)
         tr = result.r[:k+1].copy()

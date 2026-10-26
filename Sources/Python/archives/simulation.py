@@ -12,7 +12,7 @@ import numpy as np
 import numpy as np
 
 from .physics import E_space
-from .controls import no_slip_ok, euler_ok
+from ..chaplygin.controls import no_slip_ok, euler_ok
 
 
 @dataclass
