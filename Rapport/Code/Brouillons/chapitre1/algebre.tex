@@ -1,0 +1,129 @@
+% ============================================================================
+%  Chapitre 1, partie I : Vecteurs et matrices
+% ============================================================================
+
+% ----------------------------------------------------------------------------
+\section{Vecteurs et matrices}
+% ----------------------------------------------------------------------------
+
+\subsection{Notations}
+
+Le \emph{produit scalaire} de deux vecteurs s'écrit
+\[
+    \langle \vect{u},\vect{v}\rangle = \vect{u}^T\vect{v}
+\]
+Par exemple, la puissance d'une force $\vect{F}$ appliquée en un point
+de vitesse $\vect{v}$ est
+$\mathcal{P}_F = \langle\vect{F},\vect{v}\rangle = \vect{F}^T\vect{v}$
+
+Le \emph{produit vectoriel} se calcule par un déterminant. Dans une base
+orthonormée directe $\mathcal{B} = \{\vect{e}_1,\vect{e}_2,\vect{e}_3\}$,
+avec $\vect{u} = (u_1,u_2,u_3)$ et $\vect{v} = (v_1,v_2,v_3)$ :
+\[
+    \vect{u}\wedge\vect{v}
+    = \det\begin{pmatrix}
+        \vect{e}_1 & \vect{e}_2 & \vect{e}_3\\
+        u_1 & u_2 & u_3\\
+        v_1 & v_2 & v_3
+    \end{pmatrix}
+    = \begin{pmatrix}
+        u_2v_3 - u_3v_2\\
+        u_3v_1 - u_1v_3\\
+        u_1v_2 - u_2v_1
+    \end{pmatrix}_{\mathcal{B}},
+\]
+le déterminant étant développé selon la première ligne. On en
+déduit, pour tout $\vect{w}$, le produit mixte
+\[
+    (\vect{u}\wedge\vect{v})^T\vect{w}
+    = \det(\vect{u},\vect{v},\vect{w})
+\]
+
+Une matrice de rotation $\mat{R}$ est orthogonale :
+\[
+    \mat{R}^T\mat{R} = \Id,
+    \qquad
+    \mat{R}^{-1} = \mat{R}^T,
+\]
+et conserve donc le produit scalaire. L'orientation d'un solide est
+décrite par une matrice de
+\[
+    \SO = \left\{\mat{R}\in\mathcal{M}_3(\R) :
+    \mat{R}^T\mat{R} = \Id,\ \det\mat{R} = 1\right\}
+\]
+
+\subsection{Les théorèmes importants}
+
+\subsubsection{Théorème spectral}
+
+\paragraph{Énoncé}
+
+\begin{theoreme}[Théorème spectral]
+    Si $\mat{S}$ est une matrice symétrique réelle, il existe une base
+    orthonormée $(\vect{e}_i)$ telle que
+    $\mat{S}\vect{e}_i = \lambda_i\vect{e}_i$. Autrement dit,
+    \[
+        \mat{S} = \mat{Q}\mat{D}\mat{Q}^T,
+        \qquad \mat{Q}\in\mathrm{O}(n),
+        \quad \text{avec} \quad \mat{D} \text{ diagonale}
+    \]
+\end{theoreme}
+
+\paragraph{Exemple avec la matrice d'inertie}
+
+La matrice d'inertie $\mat{J}$ est toujours symétrique par définition, elle se diagonalise donc
+automatiquement sur ses axes propres.
+Avec $\vect{L} = \mat{J}\vect{\omega}$, l'énergie cinétique de
+rotation s'écrit
+\[
+    T_{\mathrm{rot}}
+    = \tfrac12\langle\vect{\omega},\vect{L}\rangle
+    = \tfrac12\,\vect{\omega}^T\mat{J}\vect{\omega}
+\]
+Dans la base propre $\mathcal{B}_J = \{\vect{e}_1,\vect{e}_2,\vect{e}_3\}$,
+$\mat{J} = \mathrm{diag}(J_1,J_2,J_3)$ et, pour
+$\vect{\omega} = \sum_i \omega_i\vect{e}_i$,
+\[
+    T_{\mathrm{rot}}
+    = \tfrac12\left(J_1\omega_1^2 + J_2\omega_2^2 + J_3\omega_3^2\right)
+\]
+
+\subsubsection{Orthogonalité noyau-image}
+
+\paragraph{Énoncé}
+
+\begin{theoreme}[Orthogonalité noyau-image]
+    Pour $\mat{A}\in\mathcal{M}_{m,n}(\R)$,
+    $(\Ker\mat{A})^\perp = \Ima(\mat{A}^T)$. Autrement dit, pour $\vect{r} \in \R^n$
+    \[
+        \bigl(\forall\vect{v},\ \mat{A}\vect{v} = 0
+        \Rightarrow \vect{r}^T\vect{v} = 0\bigr)
+        \longleftrightarrow
+        \exists\,\vect{\lambda}\in\R^m,\
+        \vect{r} = \mat{A}^T\vect{\lambda}
+    \]
+\end{theoreme}
+
+\paragraph{Intuition mécanique}
+
+Par exemple, si les vitesses admissibles vérifient $\mat{A}\vect{v} = 0$, alors
+$\Ker\mat{A}$ est l'ensemble des directions autorisées, et
+$(\Ker\mat{A})^\perp$, qui rassemble tous les vecteurs orthogonaux 
+à ces direction, est formé des combinaisons linéaires des colonnes
+de $\mat{A}^T$. Une réaction qui ne travaille dans aucune direction
+autorisée est donc de la forme $\mat{A}^T\vect{\lambda}$. Une interprétation plus proche 
+de la mécanique classique sera donnée dans les parties suivantes.
+
+\begin{exemple}[Point attaché au plan $z = 0$]
+    La contrainte est $v_z = 0$, soit
+    $\mat{A} = \begin{pmatrix} 0 & 0 & 1 \end{pmatrix}$ Alors
+    \[
+        \Ker\mat{A} = \{(v_x,v_y,0)\},
+        \qquad
+        \Ima\mat{A}^T = \{(0,0,\lambda)\}
+    \]
+    Une liaison idéale (sans frottement) ne fournit aucune puissance
+    pour tout $\vect{v}\in\Ker\mat{A}$ : $\vect{R}^T\vect{v} = 0$,
+    donc $\vect{R} = \mat{A}^T\lambda$ La réaction est normale au
+    plan.
+\end{exemple}

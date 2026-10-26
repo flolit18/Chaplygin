@@ -1,0 +1,301 @@
+% ============================================================================
+%  IV.5 Équations de Gibbs-Appell
+% ============================================================================
+\subsection{Équations de Gibbs-Appell}
+
+La formulation de Gibbs-Appell écrit la dynamique à partir des
+accélérations des points matériels, en utilisant directement les
+vitesses indépendantes autorisées par les contraintes. On se place
+dans un référentiel galiléen, avec des masses constantes et des
+liaisons idéales, et des contraintes de la forme
+\[
+    \mat{A}(q)\,\dot q = 0
+\]
+
+% ----------------------------------------------------------------------------
+\subsubsection{Paramétrer les vitesses admissibles}
+
+Soit $q\in\R^n$ un système de coordonnées locales, après prise en
+compte des contraintes holonomes. On suppose
+\[
+    \operatorname{rang}\mat{A}(q) = k, \qquad d = n - k
+\]
+
+\begin{definition}[Matrice des vitesses admissibles]
+    On choisit une matrice $\mat{N}(q)\in\mathcal{M}_{n,d}(\R)$ dont
+    les colonnes $\vect{N}_1,\dots,\vect{N}_d$ forment une base de
+    $\ker\mat{A}(q)$ telle que : 
+    \[
+        \mat{A}(q)\,\mat{N}(q) = 0, \qquad
+        \operatorname{rang}\mat{N}(q) = d
+    \]
+\end{definition}
+
+\begin{proposition}[Pseudo-vitesses]
+    Toute vitesse admissible s'écrit de manière unique
+    \[
+        \dot q = \mat{N}(q)\,u = \sum_{j=1}^{d} u_j\,\vect{N}_j(q),
+        \qquad u\in\R^d
+    \]
+    où $u$ est le vecteur des \textbf{pseudo-vitesses}. De même, les
+    déplacements virtuels admissibles s'écrivent
+    \[
+        \delta q = \mat{N}(q)\,\xi, \qquad \xi\in\R^d
+    \]
+\end{proposition}
+Les pseudo-vitesses sont les vitesses libres du système sous
+contraintes. En fait, au lieu de $n$ vitesses généralisées liées par $k$
+équations, on ne manipule que $d = n - k$ vitesses indépendantes, et
+la contrainte $\mat{A}(q)\,\dot q = 0$ se vérifie automatiquement.
+La dynamique se réduit alors à $d$ équations, sans multiplicateurs de
+Lagrange.
+
+% ----------------------------------------------------------------------------
+\subsubsection{Accélérations et fonction de Gibbs-Appell}
+
+On considère des points matériels de masses $m_a$ et de positions
+$\vect{r}_a = \vect{r}_a(q)$. Leurs vitesses sont
+\[
+    \vect{v}_a = \frac{\partial\vect{r}_a}{\partial q}\,\dot q
+    = \frac{\partial\vect{r}_a}{\partial q}\,\mat{N}(q)\,u
+\]
+On pose
+\[
+    \mat{B}_a(q) = \frac{\partial\vect{r}_a}{\partial q}\,\mat{N}(q)
+    \in\mathcal{M}_{3,d}(\R),
+    \qquad\text{d'où}\qquad
+    \vect{v}_a = \mat{B}_a(q)\,u
+\]
+On dérive le long de la trajectoire (on se rappelle que $\vect{v}_a$ ne dépend pas explicitement de $t$) :
+\[
+    \vect{a}_a = \frac{\mathrm{d}\vect{v}_a}{\mathrm{d}t}
+    = \mat{B}_a(q)\,\dot u + \dot{\mat{B}}_a\,u,
+    \qquad
+    \dot{\mat{B}}_a = \frac{\partial\mat{B}_a}{\partial q}\,\dot q
+\]
+où $\dot{\mat{B}}_a\,u$ ne dépend que de $q$ et $u$.
+
+\begin{proposition}[Accélérations]
+    L'accélération $\vect{a}_a$ dépend de $\dot u$ de façon affine, et
+    \[
+        \frac{\partial\vect{a}_a}{\partial\dot u_j}
+        = \vect{B}_{a,j}
+        = \frac{\partial\vect{v}_a}{\partial u_j},
+        \qquad j = 1,\dots,d
+    \]
+    où $\vect{B}_{a,j}$ est la $j$-ième colonne de $\mat{B}_a$.
+\end{proposition}
+
+\begin{definition}[Fonction de Gibbs-Appell]
+    La \textbf{fonction de Gibbs-Appell}, ou énergie des
+    accélérations, est
+    \[
+        \mathcal{G}(q, u, \dot u)
+        = \frac{1}{2}\sum_a m_a\,\|\vect{a}_a\|^2
+    \]
+\end{definition}
+
+% ----------------------------------------------------------------------------
+\subsubsection{Forces associées aux pseudo-vitesses}
+
+Soient $\vect{F}_a$ les forces appliquées. Pour un déplacement virtuel
+admissible $\delta q = \mat{N}(q)\,\xi$,
+\[
+    \delta\vect{r}_a = \pd{\vect{r}_a}{q}\,\delta q
+    = \mat{B}_a(q)\,\xi
+\]
+et leur travail virtuel vaut
+\[
+    \delta W = \sum_a\vect{F}_a\cdot\bigl(\mat{B}_a(q)\,\xi\bigr)
+    = \sum_{j=1}^{d}\mathcal{Q}_j\,\xi_j
+\]
+
+\begin{definition}[Forces associées aux pseudo-vitesses]
+    La force associée à la pseudo-vitesse $u_j$ est le coefficient
+    $\mathcal{Q}_j$ de $\xi_j$ dans le travail virtuel :
+    \[
+        \mathcal{Q}_j = \sum_a\vect{F}_a\cdot\vect{B}_{a,j}
+        = \sum_a\vect{F}_a\cdot\pd{\vect{v}_a}{u_j}
+    \]
+\end{definition}
+
+\begin{proposition}[Lien avec les forces généralisées]
+    Si $\vect{Q}$ désigne les forces généralisées associées aux
+    coordonnées $q$, alors
+    \[
+        \mathcal{Q} = \mat{N}(q)^T\vect{Q}
+        = \mat{N}(q)^T\left(-\pd{V}{q} + \vect{Q}^{\mathrm{nc}}\right)
+    \]
+\end{proposition}
+
+\begin{demonstration}
+    Comme $\mat{B}_a (q)= \mat{J}_a(q)\mat{N}(q)$,
+    $\delta W = \sum_a\vect{F}_a^T\mat{J}_a\mat{N}\,\xi
+    = \vect{Q}^T\mat{N}\,\xi$, et on identifie les coefficients de
+    $\xi$.
+\end{demonstration}
+
+% ----------------------------------------------------------------------------
+\subsubsection{Théorème de Gibbs-Appell}
+
+\begin{theoreme}[Gibbs-Appell]
+    Sous les hypothèses précédentes, les équations du mouvement sont
+    \[
+        \pd{\mathcal{G}}{\dot u_j} = \mathcal{Q}_j,
+        \qquad j = 1,\dots,d
+    \]
+    complétées par la relation cinématique
+    \[
+        \dot q = \mat{N}(q)\,u
+    \]
+\end{theoreme}
+
+\begin{demonstration}
+    Les liaisons sont idéales : d'après le principe de d'Alembert, pour
+    tout déplacement virtuel admissible $\delta\vect{r}_a =
+    \mat{B}_a\,\xi$,
+    \[
+        \sum_a(\vect{F}_a - m_a\vect{a}_a)\cdot\mat{B}_a\,\xi = 0
+        \quad\longleftrightarrow\quad
+        \sum_{j=1}^{d}\Bigl(\mathcal{Q}_j
+        - \sum_a m_a\,\vect{a}_a\cdot\vect{B}_{a,j}\Bigr)\,\xi_j = 0
+    \]
+    Comme $\xi\in\R^d$ est arbitraire, chaque coefficient est nul :
+    \[
+        \mathcal{Q}_j = \sum_a m_a\,\vect{a}_a\cdot\vect{B}_{a,j}
+    \]
+    Or, d'après la proposition sur les accélérations,
+    \[
+        \pd{\mathcal{G}}{\dot u_j}
+        = \sum_a m_a\,\vect{a}_a\cdot\pd{\vect{a}_a}{\dot u_j}
+        = \sum_a m_a\,\vect{a}_a\cdot\vect{B}_{a,j}
+    \]
+    d'où le résultat.
+\end{demonstration}
+
+% ----------------------------------------------------------------------------
+\subsubsection{Fonction de Gibbs-Appell d'un solide}
+
+Pour un solide $\mathcal{B}$ de masse $m$ et de centre de masse $C$,
+la somme sur les points devient une intégrale :
+\[
+    \mathcal{G} = \frac{1}{2}\int_{\mathcal{B}}\|\vect{a}_P\|^2\,\dd m
+\]
+avec, d'après le champ des accélérations et en notant
+$\vect{r} = \overrightarrow{CP}$,
+\[
+    \vect{a}_P = \vect{a}_C + \dot{\vect{\Omega}}\wedge\vect{r}
+    + \vect{\Omega}\wedge(\vect{\Omega}\wedge\vect{r})
+\]
+
+\begin{proposition}[Fonction de Gibbs-Appell d'un solide]
+    À des termes indépendants de $\dot{\vect{\Omega}}$ et de
+    $\vect{a}_C$ près,
+    \[
+        \mathcal{G} = \frac{1}{2}\,m\,\|\vect{a}_C\|^2
+        + \frac{1}{2}\,\dot{\vect{\Omega}}^T\mat{I}_C\,\dot{\vect{\Omega}}
+        + \dot{\vect{\Omega}}\cdot\bigl(\vect{\Omega}\wedge
+        \mat{I}_C\vect{\Omega}\bigr)
+    \]
+    soit, dans le repère du corps,
+    \[
+        \mathcal{G} = \frac{1}{2}\,m\,\|\vect{a}_C\|^2
+        + \frac{1}{2}\,\dot{\vect{\omega}}^T\mat{I}_b\,\dot{\vect{\omega}}
+        + \dot{\vect{\omega}}\cdot\bigl(\vect{\omega}\wedge
+        \mat{I}_b\vect{\omega}\bigr)
+    \]
+\end{proposition}
+
+\begin{demonstration}
+    On développe le carré de l'accélération :
+    \[
+        \|\vect{a}_P\|^2
+        = \|\vect{a}_C\|^2
+        + 2\,\vect{a}_C\cdot\bigl(\dot{\vect{\Omega}}\wedge\vect{r}
+        + \vect{\Omega}\wedge(\vect{\Omega}\wedge\vect{r})\bigr)
+        + \|\dot{\vect{\Omega}}\wedge\vect{r}\|^2
+        + 2\,(\dot{\vect{\Omega}}\wedge\vect{r})\cdot
+        \bigl(\vect{\Omega}\wedge(\vect{\Omega}\wedge\vect{r})\bigr)
+        + \|\vect{\Omega}\wedge(\vect{\Omega}\wedge\vect{r})\|^2
+    \]
+    On intègre chaque terme sur $\mathcal{B}$.
+
+    Comme $C$ est le centre de masse,
+    $\int_{\mathcal{B}}\vect{r}\,\dd m = 0$, et le terme croisé avec
+    $\vect{a}_C$, linéaire en $\vect{r}$, s'annule :
+    \[
+        \frac12\int_{\mathcal{B}}\|\vect{a}_C\|^2\,\dd m
+        + \int_{\mathcal{B}}\vect{a}_C\cdot\bigl(\dot{\vect{\Omega}}
+        \wedge\vect{r} + \vect{\Omega}\wedge(\vect{\Omega}\wedge
+        \vect{r})\bigr)\,\dd m
+        = \frac12\,m\,\|\vect{a}_C\|^2
+    \]
+
+    Concernant le terme quadratique en $\dot{\vect{\Omega}}$, on a :
+    \[
+        \|\dot{\vect{\Omega}}\wedge\vect{r}\|^2
+        = \dot{\vect{\Omega}}^T\bigl(\|\vect{r}\|^2\Id
+        - \vect{r}\vect{r}^T\bigr)\dot{\vect{\Omega}}
+        \quad\longrightarrow\quad
+        \frac12\int_{\mathcal{B}}\|\dot{\vect{\Omega}}\wedge\vect{r}\|^2
+        \,\dd m
+        = \frac12\,\dot{\vect{\Omega}}^T\mat{I}_C\,\dot{\vect{\Omega}}
+    \]
+
+    On a
+    \[
+        \vect{\Omega}\wedge(\vect{\Omega}\wedge\vect{r})
+        = (\vect{\Omega}\cdot\vect{r})\,\vect{\Omega}
+        - \|\vect{\Omega}\|^2\,\vect{r}
+    \]
+    Comme $\dot{\vect{\Omega}}\wedge\vect{r}$ est orthogonal à
+    $\vect{r}$, seul le premier reste :
+    \[
+        (\dot{\vect{\Omega}}\wedge\vect{r})\cdot
+        \bigl(\vect{\Omega}\wedge(\vect{\Omega}\wedge\vect{r})\bigr)
+        = (\vect{\Omega}\cdot\vect{r})\,
+        (\dot{\vect{\Omega}}\wedge\vect{r})\cdot\vect{\Omega}
+        = (\vect{\Omega}\cdot\vect{r})\,
+        \dot{\vect{\Omega}}\cdot(\vect{r}\wedge\vect{\Omega})
+    \]
+    Or 
+    \[
+        \mat{I}_C\vect{\Omega}
+        = \int_{\mathcal{B}}\bigl(\|\vect{r}\|^2\vect{\Omega}
+        - (\vect{r}\cdot\vect{\Omega})\,\vect{r}\bigr)\,\dd m
+        \quad\longrightarrow\quad
+        \vect{\Omega}\wedge\mat{I}_C\vect{\Omega}
+        = \int_{\mathcal{B}}(\vect{\Omega}\cdot\vect{r})\,
+        (\vect{r}\wedge\vect{\Omega})\,\dd m
+    \]
+    d'où
+    \[
+        \int_{\mathcal{B}}(\dot{\vect{\Omega}}\wedge\vect{r})\cdot
+        \bigl(\vect{\Omega}\wedge(\vect{\Omega}\wedge\vect{r})\bigr)
+        \,\dd m
+        = \dot{\vect{\Omega}}\cdot\bigl(\vect{\Omega}\wedge
+        \mat{I}_C\vect{\Omega}\bigr)
+    \]
+
+    Finalement, pour le terme
+    $\|\vect{\Omega}\wedge(\vect{\Omega}\wedge\vect{r})\|^2$, il ne dépend
+    ni de $\dot{\vect{\Omega}}$ ni de $\vect{a}_C$, donc on n'a aucun intérêt de le considérer, on le fait donc disparaître de notre équation.
+
+    \textbf{Forme dans le corps : } Avec $\vect{\Omega} =
+    \mat{R}\vect{\omega}$ et $\dot{\mat{R}}\vect{\omega} =
+    \mat{R}\,(\vect{\omega}\wedge\vect{\omega}) = 0$,
+    \[
+        \dot{\vect{\Omega}} = \mat{R}\,\dot{\vect{\omega}},
+        \qquad
+        \mat{I}_C = \mat{R}\,\mat{I}_b\,\mat{R}^T
+    \]
+    donc
+    \[
+        \dot{\vect{\Omega}}^T\mat{I}_C\,\dot{\vect{\Omega}}
+        = \dot{\vect{\omega}}^T\mat{I}_b\,\dot{\vect{\omega}},
+        \qquad
+        \dot{\vect{\Omega}}\cdot(\vect{\Omega}\wedge\mat{I}_C\vect{\Omega})
+        = \dot{\vect{\omega}}\cdot(\vect{\omega}\wedge\mat{I}_b\vect{\omega})
+    \]
+    car $\mat{R}$ conserve le produit scalaire et le produit vectoriel.
+\end{demonstration}

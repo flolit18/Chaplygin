@@ -1,0 +1,286 @@
+% ============================================================================
+%  Chapitre 3, partie III : Équations du mouvement
+%  Approche Gibbs-Appell
+% ============================================================================
+
+% ----------------------------------------------------------------------------
+\section{Équations du mouvement - Approche Gibbs-Appell}
+% ----------------------------------------------------------------------------
+
+On reprend la sphère de Chaplygin avec la formulation de Gibbs-Appell
+du chapitre 2. Au lieu de garder les $5$ coordonnées liées par la
+contrainte de roulement, on écrit directement la dynamique avec les
+vitesses libres. Il faut noter que cette partie n'est rédigée qu'après la dérivation
+du schéma de simulation donc il sert plutôt comme une validation du modèle.
+
+% ----------------------------------------------------------------------------
+\subsection{Pseudo-vitesses de la sphère}
+
+\subsubsection{Dimensions}
+
+Après la contrainte holonome $z_G = a$, l'espace de configuration est
+de dimension $5$ :
+\[
+    q = (x, y, \varphi, \theta, \psi)\in\R^5,
+    \qquad n = 5
+\]
+La contrainte de roulement $\mat{A}(q)\,\dot q = 0$ obtenue en II.2.2
+compte deux équations, une selon $x$ et une selon $y$. On sépare la
+position $r = (x,y)$ et l'orientation $\alpha = (\varphi,\theta,\psi)$ :
+\[
+    \mat{A}(q) = \begin{pmatrix} \Id_2 & \mat{A}_\alpha(\alpha)
+    \end{pmatrix},
+    \qquad
+    \mat{A}_\alpha(\alpha) = a\begin{pmatrix}
+        -s_\psi c_\theta & -c_\psi & 0\\
+        c_\psi c_\theta & -s_\psi & 0
+    \end{pmatrix}
+\]
+Le bloc $\Id_2$ montre que $\rang\mat{A}(q) = 2$ pour tout $q$, donc
+\[
+    k = 2,
+    \qquad
+    d = n - k = 5 - 2 = 3
+\]
+Il y a donc $3$ vitesses libres, ce sont celles liées à l'orientation.
+
+\subsubsection{Matrice des vitesses admissibles}
+
+La contrainte s'écrit (on reutilise $r$, et $alpha$ de la partie précédente) :
+\[
+    \mat{A}(q)\,\dot q = \dot r + \mat{A}_\alpha\,\dot\alpha = 0
+    \longleftrightarrow
+    \dot r = -\,\mat{A}_\alpha\,\dot\alpha
+\]
+Une fois $\dot\alpha$ choisi, $\dot r$ est imposé. On prend donc
+\[
+    \mat{N}(q) = \begin{pmatrix} -\mat{A}_\alpha(\alpha)\\ \Id_3
+    \end{pmatrix}\in\mathcal{M}_{5,3}(\R)
+\]
+
+\begin{proposition}[Pseudo-vitesses de la sphère]
+    Les colonnes de $\mat{N}(q)$ forment une base de
+    $\ker\mat{A}(q)$, et les pseudo-vitesses sont les vitesses de
+    l'orientation :
+    \[
+        u = \dot\alpha\in\R^3,
+        \qquad
+        \dot q = \begin{pmatrix} \dot r\\ \dot\alpha \end{pmatrix}
+        = \begin{pmatrix} -\mat{A}_\alpha\,\dot\alpha\\ \dot\alpha
+        \end{pmatrix}
+    \]
+    De même, les déplacements virtuels admissibles s'écrivent
+    \[
+        \delta q = \mat{N}(q)\,\xi
+        \longleftrightarrow
+        \delta r = -\,\mat{A}_\alpha\,\xi,
+        \qquad
+        \delta\alpha = \xi,
+        \quad \text{avec} \quad \xi\in\R^3
+    \]
+\end{proposition}
+
+\begin{remarque}[Vitesses indépendantes]
+    Les trois composantes de $u = (\dot\varphi,\dot\theta,\dot\psi)$
+    sont indépendantes : on peut les choisir librement, et toute
+    valeur de $u$ donne une vitesse admissible. Ce n'est pas le cas de
+    $\dot x$ et $\dot y$, qui ne sont pas libres puisqu'elles se
+    déduisent de $u$ par le roulement :
+    \[
+        \begin{pmatrix} \dot x\\ \dot y \end{pmatrix}
+        = -\,\mat{A}_\alpha(\alpha)\,u
+    \]
+    On y retrouve donc les mêmes configurations que l'approche d'EL.
+\end{remarque}
+
+% ----------------------------------------------------------------------------
+\subsection{Fonction de Gibbs-Appell de la sphère}
+
+On applique la fonction de Gibbs-Appell à la sphère :
+\[
+    \mathcal{G} = \frac{1}{2}\,m\,\|\vect{a}_G\|^2
+    + \frac{1}{2}\,\dot{\vect{\omega}}^T\mat{I}_b\,\dot{\vect{\omega}}
+    + \dot{\vect{\omega}}\cdot\bigl(\vect{\omega}\wedge
+    \mat{I}_b\vect{\omega}\bigr)
+\]
+à des termes indépendants de $\dot u$ près. Il reste à exprimer
+$\vect{a}_G$ et $\dot{\vect{\omega}}$ en fonction de
+$(\alpha,\dot\alpha,\ddot\alpha)$.
+
+\subsubsection{Accélération du centre}
+
+Comme $z_G = a$, $\vect{a}_G = (\ddot x,\ddot y,0)$. En dérivant la
+contrainte $\dot r = -\,\mat{A}_\alpha\,\dot\alpha$,
+\[
+    \ddot r = -\,\bigl(\mat{A}_\alpha\,\ddot\alpha
+    + \dot{\mat{A}}_\alpha\,\dot\alpha\bigr)
+    \longrightarrow
+    \|\vect{a}_G\|^2 = \bigl\|\mat{A}_\alpha\,\ddot\alpha
+    + \dot{\mat{A}}_\alpha\,\dot\alpha\bigr\|^2
+\]
+
+\subsubsection{Accélération angulaire}
+
+On note $\mat{E}(\alpha)$ la matrice de I.4.3 telle que
+\[
+    \vect{\omega} = \mat{E}(\alpha)\,\dot\alpha,
+    \qquad
+    \mat{E}(\alpha) = \begin{pmatrix}
+        1 & 0 & -s_\theta\\
+        0 & c_\varphi & s_\varphi c_\theta\\
+        0 & -s_\varphi & c_\varphi c_\theta
+    \end{pmatrix}
+\]
+En dérivant,
+\[
+    \dot{\vect{\omega}} = \mat{E}\,\ddot\alpha + \dot{\mat{E}}\,\dot\alpha
+\]
+on  a :
+\begin{proposition}[Fonction de Gibbs-Appell de la sphère]
+    À des termes indépendants de $\ddot\alpha$ près,
+    \[
+        \mathcal{G}(\alpha,\dot\alpha,\ddot\alpha)
+        = \frac{1}{2}\,m\,\bigl\|\mat{A}_\alpha\,\ddot\alpha
+        + \dot{\mat{A}}_\alpha\,\dot\alpha\bigr\|^2
+        + \frac{1}{2}\,\bigl(\mat{E}\,\ddot\alpha
+        + \dot{\mat{E}}\,\dot\alpha\bigr)^T\mat{I}_b\,
+        \bigl(\mat{E}\,\ddot\alpha + \dot{\mat{E}}\,\dot\alpha\bigr)
+        + \bigl(\mat{E}\,\ddot\alpha + \dot{\mat{E}}\,\dot\alpha\bigr)
+        \cdot\bigl(\vect{\omega}\wedge\mat{I}_b\vect{\omega}\bigr)
+    \]
+    avec $\vect{\omega} = \mat{E}\,\dot\alpha$.
+\end{proposition}
+
+% ----------------------------------------------------------------------------
+\subsection{Équations de Gibbs-Appell}
+
+Le potentiel de pesanteur $V = m g a$ est constant et aucune force non
+conservative n'est appliquée, donc
+\[
+    \mathcal{Q} = \mat{N}(q)^T\left(-\pd{V}{q}\right) = 0
+\]
+Les équations de Gibbs-Appell s'écrivent donc
+\[
+    \pd{\mathcal{G}}{\ddot\alpha_j} = 0,
+    \qquad \alpha_j\in\{\varphi,\theta,\psi\}
+\]
+En dérivant $\mathcal{G}$, on a : 
+\[
+    \pd{\mathcal{G}}{\ddot\alpha_j}
+    = m\,\pd{\ddot r}{\ddot\alpha_j}\cdot\ddot r
+    + \pd{\dot{\vect{\omega}}}{\ddot\alpha_j}\cdot
+    \bigl(\mat{I}_b\,\dot{\vect{\omega}}
+    + \vect{\omega}\wedge\mat{I}_b\vect{\omega}\bigr)
+\]
+avec, d'après $\ddot r = -\,\bigl(\mat{A}_\alpha\,\ddot\alpha,
+    + \dot{\mat{A}}_\alpha\,\dot\alpha\bigr)$ et $\dot{\vect{\omega}} = \mat{E}\,\ddot\alpha + \dot{\mat{E}}\,\dot\alpha$, on a : 
+
+\[
+    \pd{\ddot r}{\ddot\alpha_j} = -\,(\text{$j$-ième colonne de }
+    \mat{A}_\alpha),
+    \qquad
+    \pd{\dot{\vect{\omega}}}{\ddot\alpha_j} = \text{$j$-ième colonne
+    de } \mat{E}
+\]
+On note $\vect{\Gamma} = \mat{I}_b\,\dot{\vect{\omega}}
++ \vect{\omega}\wedge\mat{I}_b\vect{\omega}$. Avec
+$\mat{I}_b = \mathrm{diag}(I_1,I_2,I_3)$,
+\[
+    \vect{\Gamma} = \begin{pmatrix}
+        I_1\,\dot\omega_1 + (I_3 - I_2)\,\omega_2\,\omega_3\\
+        I_2\,\dot\omega_2 + (I_1 - I_3)\,\omega_3\,\omega_1\\
+        I_3\,\dot\omega_3 + (I_2 - I_1)\,\omega_1\,\omega_2
+    \end{pmatrix}
+\]
+
+\subsubsection{Roulis : \texorpdfstring{$\varphi$}{phi}}
+
+La première colonne de $\mat{E}$ est $(1,0,0)$ et celle de
+$\mat{A}_\alpha$ est $a\,(-s_\psi c_\theta,\, c_\psi c_\theta)$, donc
+\[
+    \pd{\dot{\vect{\omega}}}{\ddot\varphi} = \begin{pmatrix}
+        1\\ 0\\ 0
+    \end{pmatrix},
+    \qquad
+    \pd{\ddot r}{\ddot\varphi} = a\,c_\theta\begin{pmatrix}
+        s_\psi\\ -c_\psi
+    \end{pmatrix}
+\]
+L'équation en $\varphi$ est donc
+\[
+    I_1\,\dot\omega_1 + (I_3 - I_2)\,\omega_2\,\omega_3
+    + m\,a\,c_\theta\,(s_\psi\,\ddot x - c_\psi\,\ddot y) = 0
+\]
+
+\subsubsection{Tangage : \texorpdfstring{$\theta$}{theta}}
+
+La deuxième colonne de $\mat{E}$ est $(0, c_\varphi, -s_\varphi)$ et
+celle de $\mat{A}_\alpha$ est $a\,(-c_\psi, -s_\psi)$, donc
+\[
+    \pd{\dot{\vect{\omega}}}{\ddot\theta} = \begin{pmatrix}
+        0\\ c_\varphi\\ -s_\varphi
+    \end{pmatrix},
+    \qquad
+    \pd{\ddot r}{\ddot\theta} = a\begin{pmatrix}
+        c_\psi\\ s_\psi
+    \end{pmatrix}
+\]
+L'équation en $\theta$ est donc
+\[
+    c_\varphi\bigl(I_2\,\dot\omega_2 + (I_1 - I_3)\,\omega_3\,\omega_1
+    \bigr)
+    - s_\varphi\bigl(I_3\,\dot\omega_3 + (I_2 - I_1)\,\omega_1\,
+    \omega_2\bigr)
+    + m\,a\,(c_\psi\,\ddot x + s_\psi\,\ddot y) = 0
+\]
+
+\subsubsection{Azimut : \texorpdfstring{$\psi$}{psi}}
+
+La troisième colonne de $\mat{E}$ est $(-s_\theta, s_\varphi c_\theta,
+c_\varphi c_\theta)$ et celle de $\mat{A}_\alpha$ est nulle, donc
+\[
+    \pd{\dot{\vect{\omega}}}{\ddot\psi} = \begin{pmatrix}
+        -s_\theta\\ s_\varphi c_\theta\\ c_\varphi c_\theta
+    \end{pmatrix},
+    \qquad
+    \pd{\ddot r}{\ddot\psi} = 0
+\]
+L'équation en $\psi$ est donc
+\[
+    -\,s_\theta\bigl(I_1\,\dot\omega_1 + (I_3 - I_2)\,\omega_2\,
+    \omega_3\bigr)
+    + s_\varphi c_\theta\bigl(I_2\,\dot\omega_2 + (I_1 - I_3)\,
+    \omega_3\,\omega_1\bigr)
+    + c_\varphi c_\theta\bigl(I_3\,\dot\omega_3 + (I_2 - I_1)\,
+    \omega_1\,\omega_2\bigr) = 0
+\]
+
+% ----------------------------------------------------------------------------
+\subsection{Résumé}
+
+Les inconnues sont $\alpha = (\varphi,\theta,\psi)$ seulement, soit
+$3$ fonctions du temps pour $3$ équations.
+
+\begin{theoreme}[Équations de Gibbs-Appell de la sphère de Chaplygin]
+    Avec $\vect{\omega} = \mat{E}(\alpha)\,\dot\alpha$ et
+    \[
+        \ddot r = -\,\bigl(\mat{A}_\alpha\,\ddot\alpha
+        + \dot{\mat{A}}_\alpha\,\dot\alpha\bigr)
+    \]
+    le mouvement de la sphère de Chaplygin vérifie
+    \begin{align*}
+        &I_1\,\dot\omega_1 + (I_3 - I_2)\,\omega_2\,\omega_3
+            + m\,a\,c_\theta\,(s_\psi\,\ddot x - c_\psi\,\ddot y) = 0\\
+        &c_\varphi\bigl(I_2\,\dot\omega_2 + (I_1 - I_3)\,\omega_3\,
+            \omega_1\bigr)
+            - s_\varphi\bigl(I_3\,\dot\omega_3 + (I_2 - I_1)\,
+            \omega_1\,\omega_2\bigr)
+            + m\,a\,(c_\psi\,\ddot x + s_\psi\,\ddot y) = 0\\
+        &-\,s_\theta\bigl(I_1\,\dot\omega_1 + (I_3 - I_2)\,\omega_2\,
+            \omega_3\bigr)
+            + s_\varphi c_\theta\bigl(I_2\,\dot\omega_2
+            + (I_1 - I_3)\,\omega_3\,\omega_1\bigr)
+            + c_\varphi c_\theta\bigl(I_3\,\dot\omega_3
+            + (I_2 - I_1)\,\omega_1\,\omega_2\bigr) = 0
+    \end{align*}
+\end{theoreme}

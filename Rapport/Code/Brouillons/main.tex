@@ -1,0 +1,142 @@
+\documentclass[11pt,a4paper]{report}
+
+\input{preambule}
+
+% ============================================================================
+\begin{document}
+% ============================================================================
+
+\begin{titlepage}
+    \centering
+
+    \vspace*{\stretch{1}}
+
+    \kicker{École Polytechnique}\par
+    \vspace{0.35cm}
+    {\color{accent}\rule{0.35\textwidth}{0.6pt}}\par
+
+    \vspace{1.6cm}
+    % Logos : placer les fichiers dans le dossier puis décommenter.
+    % \includegraphics[height=3cm]{Pantone.png}\par
+    \vspace{3cm}
+
+    \vspace{\stretch{1.4}}
+
+    % --- titre ---------------------------------------------------------------
+    {\color{accent}\rule{\textwidth}{1.1pt}}\par
+    \vspace{0.85cm}
+
+    {\Huge\bfseries
+        La sphère de Chaplygin\par}
+
+    \vspace{0.85cm}
+    {\color{accent}\rule{\textwidth}{1.1pt}}\par
+
+    \vspace{1.1cm}
+    {\Large\itshape Modélisation, Simulation, Analyse de stabilité
+    \par}
+    \vspace{0.3cm}
+    {\Large\itshape et Estimations des paramètres\par}
+    \vspace{0.3cm}
+
+    \vspace{\stretch{2}}
+
+    % --- auteur ----------------------------------------------------------------
+    {\large\scshape Duc Bui\par}
+    \vspace{0.25cm}
+    {\small\color{black!60} duc.bui@polytechnique.edu - duc.bui.2024@polytechnique.org\par}
+
+    \vspace{0.9cm}
+    % --- tuteur ----------------------------------------------------------------
+    {\normalsize Tuteur : \textsc{Nicolas Petit}\par}
+    \vspace{0.15cm}
+    {\small Centre Automatique et Systèmes, École des Mines de Paris -
+    PSL\par}
+
+    \vspace{\stretch{1}}
+    {\large Octobre 2026\par}
+
+\end{titlepage}
+
+\tableofcontents
+
+% ============================================================================
+\chapter*{Notations et Conventions}
+\addcontentsline{toc}{chapter}{Notations et Conventions}
+% ============================================================================
+
+\section*{Notations}
+
+\begin{itemize}
+    \item \textbf{Vecteurs} : en gras, minuscules ou lettres grecques,
+        par exemple $\vect{u}$, $\vect{v}$, $\vect{\omega}$.
+    \item \textbf{Matrices et tenseurs} : majuscules en gras, par
+        exemple $\mat{R}$, $\mat{A}$, le tenseur d'inertie $\mat{I}_C$,        $\Id$ désigne l'identité.
+    \item \textbf{Quaternions} : en gras et soulignés, $\quat{q} =
+        (q_0,\vect{q})$, de partie scalaire $q_0$ et de partie vectorielle
+        $\vect{q}$, \\
+        $\quatmul$ désigne le produit quaternionique.
+    \item \textbf{Ensembles et groupes} :
+    \begin{itemize}
+        \item $\R^n$ : vecteurs colonnes à $n$ composantes ;
+        \item $\mathcal{M}_{m,n}(\R)$ : matrices réelles $m\times n$,
+            et $\mathcal{M}_n(\R) := \mathcal{M}_{n,n}(\R)$.
+        \item $\mathcal{A}_n(\R) = \{\mat{A}\in\mathcal{M}_n(\R) :
+            \mat{A}^T = -\mat{A}\}$ : matrices antisymétriques.
+        \item $\mathrm{O}(n) = \{\mat{Q}\in\mathcal{M}_n(\R) :
+            \mat{Q}^T\mat{Q} = \Id\}$ : groupe orthogonal.
+        \item $\SO = \{\mat{R}\in\mathrm{O}(3) : \det\mat{R} = 1\}$ :
+            groupe des rotations.
+        \item $C^k$ : fonctions $k$ fois continûment différentiables.
+    \end{itemize}
+    \item \textbf{Opérateurs} : $\mat{A}^T$ est la transposée,
+        $\Ker\mat{A}$, $\Ima\mat{A}$ et $\rang\mat{A}$ le noyau, l'image
+        et le rang de $\mat{A}$.
+    \item \textbf{Configuration} : $q$ désigne une configuration ou ses
+        coordonnées généralisées. Ces colonnes de coordonnées, sans
+        sens géométrique propre ($q$, $\dot q$, une perturbation
+        $\eta$, un état $X$, un gradient $\nabla_q L$), restent en
+        maigre, les matrices associées (jacobienne $\mat{J}_f$,
+        hessienne $\mat{H}_f$) suivent la règle des matrices.
+    \item \textbf{Produits} : $\langle\vect{u},\vect{v}\rangle =
+        \vect{u}^T\vect{v}$ est le produit scalaire et
+        $\vect{u}\wedge\vect{v}$ le produit vectoriel et
+        $\vect{u}\otimes\vect{v} = \vect{u}\vect{v}^T$ le produit
+        tensoriel. À $\vect{u}$ on
+        associe la matrice antisymétrique $\hatx{\vect{u}}$ telle que
+        $\hatx{\vect{u}}\vect{v} = \vect{u}\wedge\vect{v}$.
+    \item \textbf{Dérivées} : $\dot{\vect{u}} = \ddt\vect{u}$,
+        $\pd{L}{q}$ et $\nabla_q L$ désignent la dérivée partielle et le
+        gradient par rapport à $q$.
+\end{itemize}
+
+\section*{Repères}
+
+On considère deux repères orthonormés directs :
+\begin{itemize}
+    \item $\rep{s}$, lié au sol, supposé galiléen.
+    \item $\rep{b}$, lié au solide.
+\end{itemize}
+
+Pour un vecteur $\vect{u}$, on note $\vect{u}_s$ et $\vect{u}_b$ ses
+colonnes de composantes dans $\rep{s}$ et $\rep{b}$. Elles sont reliées
+par
+\[
+    \vect{u}_s = \mat{R}\,\vect{u}_b,
+    \qquad \mat{R} := \mat{R}_{b\to s}\in\SO,
+\]
+où les colonnes de $\mat{R}$ sont les axes du solide exprimés dans le
+repère du sol.
+
+La vitesse angulaire du solide par rapport au sol est notée
+$\vect{\omega}$ lorsqu'elle est exprimée dans $\rep{b}$, et
+$\vect{\Omega} = \mat{R}\,\vect{\omega}$ lorsqu'elle est exprimée dans
+$\rep{s}$.
+
+% ============================================================================
+\input{chapitre1/chapitre1}
+\input{chapitre2/chapitre2}
+\input{chapitre3/chapitre3}
+\input{chapitre4/chapitre4}
+
+\end{document}

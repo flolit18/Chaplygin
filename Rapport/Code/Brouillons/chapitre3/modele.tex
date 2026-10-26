@@ -1,0 +1,200 @@
+% ============================================================================
+%  Chapitre 3, partie I : Modèle et configuration
+%  (manuscrit Modélisation, p. 1 à 3)
+% ============================================================================
+
+% ----------------------------------------------------------------------------
+\section{Modèle et configuration}
+% ----------------------------------------------------------------------------
+
+% ----------------------------------------------------------------------------
+\subsection{Définition de la sphère de Chaplygin}
+
+\begin{hypotheses}[Sphère de Chaplygin]
+    La sphère de Chaplygin est un solide de masse $m$ qui vérifie :
+    \begin{itemize}
+        \item sa surface est une sphère de rayon $a$.
+        \item elle roule sans glisser sur un plan horizontal fixe.
+        \item son centre de masse coïncide avec son centre géométrique
+            $G$.
+        \item sa répartition de masse n'est pas uniforme : ses moments
+            principaux d'inertie $I_1$, $I_2$, $I_3$ sont différents.
+    \end{itemize}
+\end{hypotheses}
+
+\begin{figure}[H]
+    \centering
+    \input{chapitre3/fig/sphere}
+    \caption{Sphère de Chaplygin de centre $G$ et de rayon $a$, en
+    contact avec le sol au point $P$. Le repère corps
+    $(\vect{b}_1,\vect{b}_2,\vect{b}_3)$ suit les axes principaux
+    d'inertie.}
+    \label{fig-sphere}
+\end{figure}
+
+% ----------------------------------------------------------------------------
+\subsection{Repères}
+
+On utilise les deux repères orthonormés directs du chapitre
+précédent :
+\begin{itemize}
+    \item $\rep{s} = (O,\vect{e}_x,\vect{e}_y,\vect{e}_z)$, lié au sol et
+        galiléen, avec $\vect{e}_z$ vertical vers le haut ;
+    \item $\rep{b} = (G,\vect{b}_1,\vect{b}_2,\vect{b}_3)$, lié à la
+        sphère, dont les axes sont les axes principaux d'inertie.
+\end{itemize}
+L'orientation de la sphère est la matrice
+\[
+    \mat{R} = \mat{R}_{b\to s}\in\SO,
+    \qquad
+    \vect{u}_s = \mat{R}\,\vect{u}_b,
+    \qquad
+    \mat{R}^T = \mat{R}_{s\to b}
+\]
+Conformément au chapitre 2, $\vect{\omega}$ désigne la vitesse
+angulaire de la sphère exprimée dans $\rep{b}$, et
+$\vect{\Omega} = \mat{R}\,\vect{\omega}$ la même vitesse exprimée dans
+$\rep{s}$. Dans $\rep{b}$, le tenseur d'inertie est constant et
+diagonal :
+\[
+    \mat{I}_b = \mathrm{diag}(I_1,I_2,I_3)
+\]
+
+% ----------------------------------------------------------------------------
+\subsection{Espace de configuration}
+
+La position de $G$ ou d'un point matériel et
+l'orientation $\mat{R}$. Le contact avec le sol impose que le centre
+reste à la hauteur $a$ :
+\[
+    z_G(t) = a \qquad \forall\,t
+\]
+C'est une contrainte holonome, qui retire une coordonnée nécessaire. Il reste donc
+$6 - 1 = 5$ degrés de liberté :
+\[
+    q = (x,y,\mat{R})\in Q = \underbrace{\R^2}_{\text{translation plane
+    de } G}\times\underbrace{\SO}_{\text{orientation}}
+\]
+La symétrie géométrique de la sphère ne réduit pas $Q$ : comme la
+masse est répartie de façon anisotrope, toutes les orientations sont
+distinctes. Supposons que sur la sphère, on marque des points de repères en couleurs différentes pour déterminer l'orientation de la sphère.
+
+% ----------------------------------------------------------------------------
+\subsection{Angles d'Euler}
+
+Pour déterminer l'orientation de la sphère, on utilise les angles d'Euler
+$(\varphi,\theta,\psi)$ selon la convention $Z$-$Y'$-$X''$ :
+\begin{itemize}
+    \item $\psi$, l'azimut (\emph{yaw}), autour de la verticale
+        $\vect{e}_z$.
+    \item $\theta$, le tangage (\emph{pitch}), autour du nouvel axe
+        $\vect{a}_2$.
+    \item $\varphi$, le roulis (\emph{roll}), autour du dernier axe
+        $\vect{c}_1 = \vect{b}_1$.
+\end{itemize}
+Les coordonnées généralisées sont alors
+\[
+    q = (x,y,\varphi,\theta,\psi)\in\R^5
+\]
+
+\subsubsection{Rotations successives}
+
+On passe de la base du sol à celle du corps par trois rotations
+élémentaires, chacune autour d'un axe de la base précédente :
+\[
+    (\vect{e}_x,\vect{e}_y,\vect{e}_z)
+    \xrightarrow[\text{autour de } \vect{e}_z]{\psi}
+    (\vect{a}_1,\vect{a}_2,\vect{a}_3)
+    \xrightarrow[\text{autour de } \vect{a}_2]{\theta}
+    (\vect{c}_1,\vect{c}_2,\vect{c}_3)
+    \xrightarrow[\text{autour de } \vect{c}_1]{\varphi}
+    (\vect{b}_1,\vect{b}_2,\vect{b}_3)
+\]
+avec $\vect{a}_3 = \vect{e}_z$, $\vect{c}_2 = \vect{a}_2$ et
+$\vect{b}_1 = \vect{c}_1$. Les rotations élémentaires sont
+\[
+    \mat{R}_x(\varphi) = \begin{pmatrix}
+        1 & 0 & 0\\
+        0 & \cos\varphi & -\sin\varphi\\
+        0 & \sin\varphi & \cos\varphi
+    \end{pmatrix},
+    \quad
+    \mat{R}_y(\theta) = \begin{pmatrix}
+        \cos\theta & 0 & \sin\theta\\
+        0 & 1 & 0\\
+        -\sin\theta & 0 & \cos\theta
+    \end{pmatrix},
+    \quad
+    \mat{R}_z(\psi) = \begin{pmatrix}
+        \cos\psi & -\sin\psi & 0\\
+        \sin\psi & \cos\psi & 0\\
+        0 & 0 & 1
+    \end{pmatrix}
+\]
+
+\subsubsection{Matrice d'orientation}
+
+Selon la convention d'orientation $Z$-$Y'$-$X''$, on obtient la matrice d'orientation 
+$\mat{R}$ : 
+\[
+    \mat{R} = \mat{R}_z(\psi)\,\mat{R}_y(\theta)\,\mat{R}_x(\varphi)
+\]
+Avec $c_\alpha = \cos\alpha$ et
+$s_\alpha = \sin\alpha$, on a :
+\[
+    \mat{R} = \begin{pmatrix}
+        c_\psi c_\theta
+            & c_\psi s_\theta s_\varphi - s_\psi c_\varphi
+            & c_\psi s_\theta c_\varphi + s_\psi s_\varphi\\
+        s_\psi c_\theta
+            & s_\psi s_\theta s_\varphi + c_\psi c_\varphi
+            & s_\psi s_\theta c_\varphi - c_\psi s_\varphi\\
+        -s_\theta & c_\theta s_\varphi & c_\theta c_\varphi
+    \end{pmatrix}
+\]
+
+\subsubsection{Vitesse angulaire}
+
+Chaque angle tourne autour de son propre axe, donc la vitesse angulaire
+est la somme des trois vitesses élémentaires :
+\[
+    \vect{\Omega} = \dot\psi\,\vect{e}_z + \dot\theta\,\vect{a}_2
+    + \dot\varphi\,\vect{c}_1
+\]
+Dans $\rep{s}$, $\vect{a}_2 = \mat{R}_z(\psi)\,\vect{e}_y$ et
+$\vect{c}_1 = \mat{R}_z(\psi)\mat{R}_y(\theta)\,\vect{e}_x$, d'où
+\[
+    \vect{\Omega}_s = \begin{pmatrix}
+        \Omega_x\\ \Omega_y\\ \Omega_z
+    \end{pmatrix}
+    = \begin{pmatrix}
+        c_\psi c_\theta & -s_\psi & 0\\
+        s_\psi c_\theta & c_\psi & 0\\
+        -s_\theta & 0 & 1
+    \end{pmatrix}
+    \begin{pmatrix}
+        \dot\varphi\\ \dot\theta\\ \dot\psi
+    \end{pmatrix}
+\]
+Dans le corps, $\vect{\omega} = \mat{R}^T\vect{\Omega}$ donne
+\[
+    \vect{\omega} = \begin{pmatrix}
+        \omega_1\\ \omega_2\\ \omega_3
+    \end{pmatrix}
+    = \begin{pmatrix}
+        1 & 0 & -s_\theta\\
+        0 & c_\varphi & s_\varphi c_\theta\\
+        0 & -s_\varphi & c_\varphi c_\theta
+    \end{pmatrix}
+    \begin{pmatrix}
+        \dot\varphi\\ \dot\theta\\ \dot\psi
+    \end{pmatrix}
+    \longleftrightarrow
+    \left\{
+    \begin{aligned}
+        \omega_1 &= \dot\varphi - \dot\psi\,s_\theta\\
+        \omega_2 &= \dot\theta\,c_\varphi + \dot\psi\,s_\varphi c_\theta\\
+        \omega_3 &= -\dot\theta\,s_\varphi + \dot\psi\,c_\varphi c_\theta
+    \end{aligned}
+    \right.
+\]

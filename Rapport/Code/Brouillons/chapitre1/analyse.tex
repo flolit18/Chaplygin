@@ -1,0 +1,277 @@
+% ============================================================================
+%  Chapitre 1, partie II : Analyse, variations et EDOs
+% ============================================================================
+\newpage
+% ----------------------------------------------------------------------------
+\section{Analyse, variations et EDOs}
+% ----------------------------------------------------------------------------
+
+L'objectif de cette partie est de comprendre
+les bases mathématiques qui permettent de passer
+d'un \emph{lagrangien} aux équations de mouvement.
+On considère $q\in U\subset\R^n$ ouvert
+et
+\[
+    L : U\times\R^n\times I\to\R,
+    \qquad (q,v,t)\mapsto L(q,v,t)
+\]
+
+\subsection{Différentiabilité en dimension finie}
+
+\begin{definition}[Différentiabilité]
+    $f$ est \emph{différentiable} en $x$ s'il existe une application
+    linéaire $Df(x)$ telle que
+    \[
+        f(x+h) = f(x) + Df(x)\,h + o(\|h\|)
+    \]
+    La matrice de $Df(x)$ est la \emph{jacobienne} $\mat{J}_f(x)$. Si
+    $f$ est à valeurs scalaires, on note $\nabla f(x)$ son
+    \emph{gradient}.
+\end{definition}
+
+\subsection{Règle de chaîne et dérivation le long d'une trajectoire}
+
+\paragraph{Règle de chaîne}
+
+\begin{theoreme}[Règle de chaîne]
+    \[
+        D(f\circ g)(x) = Df(g(x))\circ Dg(x),
+        \qquad
+        \mat{J}_{f\circ g}(x) = \mat{J}_f(g(x))\,\mat{J}_g(x),
+    \]
+    et pour $f$ scalaire,
+    $\nabla(f\circ g)(x) = \mat{J}_g(x)^T\,\nabla f(g(x))$.
+\end{theoreme}
+
+\paragraph{Dérivée le long d'une trajectoire}
+
+Le long d'une trajectoire $t\mapsto q(t)$,
+\[
+    \ddt F(q(t),t) = \partial_t F + \nabla_q F\cdot\dot q
+\]
+Pour $L$, on dérive d'abord en traitant $q$ et $v$ comme des
+variables \emph{indépendantes}, puis on évalue en $v = \dot q$ :
+\[
+    \ddt L = \partial_t L + (\nabla_q L)^T\dot q
+    + (\nabla_v L)^T\ddot q
+\]
+
+\begin{exemple}[$L = \tfrac12 M(q)v^2 - V(q)$]
+    Ici $\partial_t L = 0$, et $v = \dot q$ est indépendant de $q$ :
+    \[
+        \pd{L}{v} = M(q)\,v,
+        \qquad
+        \pd{L}{q} = \tfrac12 M'(q)\,v^2 - V'(q),
+        \qquad
+        \ddt\pd{L}{\dot q} = M'(q)\,\dot q^2 + M(q)\,\ddot q
+    \]
+    L'équation d'Euler-Lagrange donne
+    \[
+        M(q)\,\ddot q + \tfrac12 M'(q)\,\dot q^2 + V'(q) = 0
+    \]
+\end{exemple}
+
+
+\subsection{Dérivées secondes, Schwarz et Taylor}
+
+\begin{theoreme}[Schwarz]
+    Si $f$ est de classe $C^2$, alors
+    $\dfrac{\partial^2 f}{\partial x_i\partial x_j}
+    = \dfrac{\partial^2 f}{\partial x_j\partial x_i}$ :
+    la \emph{hessienne} $\mat{H}_f := \nabla^2 f$ est donc symétrique.
+\end{theoreme}
+
+\begin{theoreme}[Taylor à l'ordre 2]
+    \[
+        f(x+h) = f(x) + \nabla f(x)^T h
+        + \tfrac12\, h^T\mat{H}_f(x)\,h + o(\|h\|^2)
+    \]
+\end{theoreme}
+
+\subsection{Fonctionnelles et première variation}
+
+\begin{definition}[Fonctionnelle]
+    Une fonction ordinaire associe une valeur à un point. 
+    Une \emph{fonctionnelle} associe une valeur à une fonction
+    entière, et on se restreint à : $S : \mathcal{F}\to\R$, où
+    \[
+        \mathcal{F} = \{q : [t_0,t_1]\to U
+        \text{ de classe } C^2\}
+    \]
+    Les éléments de $\mathcal{F}$ sont appelés \emph{chemins} ou
+    \emph{trajectoires admissibles}. On considère notamment la
+    fonctionnelle
+    \[
+        S[q] = \int_{t_0}^{t_1} L(q,\dot q,t)\,\dd t
+    \]
+\end{definition}
+
+\begin{definition}[Première variation]
+    Pour une perturbation $\eta$ et $q_\varepsilon (t) = q(t) + \varepsilon\eta(t)$,
+    \[
+        \delta S[q;\eta]
+        = \frac{\dd}{\dd\varepsilon}
+        S[q(t) + \varepsilon\eta(t)]\Big|_{\varepsilon=0}
+    \]
+\end{definition}
+
+On note $\delta q = \eta$, et $\delta\dot q = \dot\eta = \ddt\delta q$
+
+\begin{proposition}[Calcul de la première variation]
+    Si $L$ est de classe $C^2$, $q\in\mathcal{F}$ et $\eta$ de classe
+    $C^1$, alors
+    \begin{equation}\label{eq-premiere-variation}
+        \delta S[q;\eta]
+        = \int_{t_0}^{t_1}\sum_{i=1}^{n}
+        \left(\pd{L}{q_i}\,\eta_i + \pd{L}{\dot q_i}\,\dot\eta_i\right)
+        \dd t
+        = \int_{t_0}^{t_1}
+        \left(\nabla_q L^T\eta + \nabla_{\dot q} L^T\dot\eta\right)
+        \dd t
+    \end{equation}
+\end{proposition}
+
+\begin{demonstration}
+    On a $q_\varepsilon(t) = q(t) + \varepsilon\eta(t)$, donc
+    $\dot q_\varepsilon(t) = \dot q(t) + \varepsilon\dot\eta(t)$ La
+    fonctionnelle associée à $q_\varepsilon$ est
+    \[
+        S[q_\varepsilon] = \int_{t_0}^{t_1}
+        L(q+\varepsilon\eta,\dot q+\varepsilon\dot\eta,t)\,\dd t
+    \]
+    Comme $L$ est $C^2$ et l'intervalle est borné, on peut dériver
+    sous l'intégrale :
+    \[
+        \delta S[q;\eta]
+        = \frac{\dd}{\dd\varepsilon}\left(\int_{t_0}^{t_1}
+        L(q+\varepsilon\eta,\dot q+\varepsilon\dot\eta,t)\,\dd t\right)
+        \bigg|_{\varepsilon=0}
+        = \int_{t_0}^{t_1}\frac{\dd}{\dd\varepsilon}
+        L(q+\varepsilon\eta,\dot q+\varepsilon\dot\eta,t)
+        \Big|_{\varepsilon=0}\dd t
+    \]
+    On considère l'intégrande. Par la règle de chaîne, en traitant $q$
+    et $\dot q$ comme des \textbf{variables indépendantes},
+    \[
+        \frac{\dd}{\dd\varepsilon}L(q_\varepsilon,\dot q_\varepsilon,t)
+        \Big|_{\varepsilon=0}
+        = \left(\pd{L}{q}\,\pd{q_\varepsilon}{\varepsilon}
+        + \pd{L}{\dot q}\,\pd{\dot q_\varepsilon}{\varepsilon}\right)
+        \bigg|_{\varepsilon=0}
+        = \pd{L}{q}\,\eta + \pd{L}{\dot q}\,\dot\eta,
+    \]
+    car $\partial_\varepsilon q_\varepsilon = \eta$ et
+    $\partial_\varepsilon\dot q_\varepsilon = \dot\eta$ En écrivant
+    les composantes et en intégrant, on obtient
+    \eqref{eq-premiere-variation}.
+\end{demonstration}
+
+\subsection{Intégration par parties et lemme fondamental du calcul variationnel}
+
+\paragraph{Intégration par parties}
+
+\[
+    \int_{t_0}^{t_1} p^T\dot\eta\,\dd t
+    = \bigl[p^T\eta\bigr]_{t_0}^{t_1}
+    - \int_{t_0}^{t_1} \dot p^T\eta\,\dd t
+\]
+Si les extrémités sont fixées, $\eta(t_0) = \eta(t_1) = 0$ et le
+terme de bord disparaît.
+
+\paragraph{Lemme fondamental du calcul variationnel}
+
+\begin{definition}[Support]
+    Le \emph{support} d'une fonction $\eta$ définie sur un ouvert
+    $\Omega$ est l'adhérence de l'ensemble où elle ne s'annule pas :
+    \[
+        \operatorname{supp}\eta
+        = \overline{\{t\in\Omega : \eta(t)\neq 0\}}
+    \]
+    $\eta$ est \emph{à support compact dans} $\Omega$ si
+    $\operatorname{supp}\eta$ est un compact inclus dans $\Omega$,
+    en particulier $\eta$ est nulle au voisinage du bord de $\Omega$.
+\end{definition}
+
+\begin{lemme}[Lemme de Du Bois-Reymond]
+    Soit $f : [t_0,t_1]\to\R$ continue. Si
+    \[
+        \int_{t_0}^{t_1} f(t)\,\eta(t)\,\dd t = 0
+        \qquad \forall\,\eta\in C_c^\infty(]t_0,t_1[,\R),
+    \]
+    c'est-à-dire pour toute fonction $\eta$ de classe $C^\infty$ 
+    à support compact dans $]t_0,t_1[$, alors
+    \[
+        f = 0 \quad \text{sur } [t_0,t_1]
+    \]
+\end{lemme}
+Ici, on fait une petite démonstration de ce résultat important.
+\begin{demonstration}
+    On note $\Omega = \,]t_0,t_1[$. Par l'absurde, supposons qu'il
+    existe $t^*\in\Omega$ tel que $f(t^*)\neq 0$, et, sans perte de généralité
+    , on suppose que $f(t^*) > 0$ (sinon on prend $-f$). Comme $f$ est continue, il existe un
+    voisinage ouvert $\omega = \subset\Omega$ sur lequel
+    $f > 0$.
+
+    Soit $\eta\in C_c^\infty(\Omega)$ positive, non nulle, à support dans
+    $\omega$. Comme $\eta$ est nulle en dehors de $\omega$,
+    \[
+        0 = \int_\Omega f\,\eta\,\dd t = \int_\omega f\,\eta\,\dd t
+    \]
+    Or sur $\omega$, $f > 0$ et $\eta\geq 0$ non nulle, donc
+    $f\,\eta$ est continue, positive et non identiquement nulle, d'où
+    $\int_\omega f\,\eta\,\dd t > 0$ :
+    contradiction. Ainsi $f = 0$ sur $\Omega$, puis sur $[t_0,t_1]$ par
+    continuité.
+\end{demonstration}
+
+En appliquant l'intégration par parties à
+\eqref{eq-premiere-variation} avec $p = \nabla_{\dot q}L$ :
+\[
+    \delta S[q;\eta] = \int_{t_0}^{t_1}
+    \left(\nabla_q L - \ddt\nabla_{\dot q} L\right)^T\eta\,\dd t
+\]
+
+\begin{corollaire}[Équations d'Euler-Lagrange]
+    Si $\delta S[q;\eta] = 0$ pour tout $\eta$ nulle aux extrémités,
+    \[
+        \ddt\nabla_{\dot q} L - \nabla_q L = 0
+    \]
+\end{corollaire}
+
+\subsection{Problème de Cauchy}
+
+On considère le problème de Cauchy
+\[
+    \dot X = f(X,t),
+    \qquad X(t_0) = X_0
+\]
+
+\begin{theoreme}[Cauchy-Lipschitz]
+    Si $f$ est continue et localement lipschitzienne en $X$, il existe
+    une unique solution maximale, définie sur un intervalle ouvert
+    contenant $t_0$.
+\end{theoreme}
+
+\subsection{Linéarisation et intégrales premières}
+
+\paragraph{Équation variationnelle}
+
+Soit une famille de solutions $X_\varepsilon$ autour d'une solution
+de référence $X_* = X_{\varepsilon=0}$ L'écart
+$\xi = \partial_\varepsilon X_\varepsilon|_{\varepsilon=0}$ vérifie
+l'\emph{équation variationnelle}
+\[
+    \dot\xi = \mat{A}(t)\,\xi,
+    \qquad \mat{A}(t) := \mat{J}_f(X_*(t),t),
+\]
+où la jacobienne est prise par rapport à $X$.
+
+\paragraph{Intégrale première}
+
+\begin{definition}[Intégrale première]
+    $E(X,t)$ est une \emph{intégrale première} si elle est constante
+    le long des solutions :
+    \[
+        \ddt E = \partial_t E + (\nabla_X E)^T f = 0
+    \]
+\end{definition}

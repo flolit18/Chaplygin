@@ -1,0 +1,290 @@
+% ============================================================================
+%  Chapitre 2, partie II : Repères et rotations
+%  (manuscrit P1 p. 20 à 24,
+%  P2 p. 1 à 4)
+% ============================================================================
+
+% ----------------------------------------------------------------------------
+\section{Repères et rotations}
+% ----------------------------------------------------------------------------
+
+On reprend la convention des repères : $\rep{s}$ lié au sol et
+$\rep{b}$ lié au solide, orthonormés directs. Pour un vecteur
+$\vect{u}$, on note $\vect{u}_s$ et $\vect{u}_b$ ses colonnes de
+composantes dans ces deux repères, et
+\[
+    \vect{u}_s = \mat{R}\,\vect{u}_b,
+    \qquad \mat{R} := \mat{R}_{b\to s}
+\]
+
+% ----------------------------------------------------------------------------
+\subsection{Représentation d'une orientation : \texorpdfstring{$\SO$}{SO(3)}
+et \texorpdfstring{$S^3$}{S3}}
+
+Une rotation de l'espace peut être représentée par une matrice de
+\[
+    \SO = \{\mat{R}\in\mathcal{M}_3(\R) :
+    \mat{R}^T\mat{R} = \Id,\ \det\mat{R} = 1\}
+\]
+\begin{itemize}
+    \item $\mat{R}^T\mat{R} = \Id \longleftrightarrow
+        \mat{R}\in\mathrm{O}(3)$ : la rotation conserve le produit
+        scalaire ;
+    \item $\det\mat{R} = 1$ : elle conserve le volume et l'orientation.
+\end{itemize}
+
+Une autre représentation utilise les \emph{quaternions unitaires}
+\[
+    S^3 = \{\quat{q} = (q_0,q_1,q_2,q_3)\in\R^4 : \|\quat{q}\|^2 = 1\}
+\]
+$S^3$ désigne la sphère de dimension trois plongée dans $\R^4$. Cette
+représentation n'est pas unique : $\mat{R}(\quat{q})
+= \mat{R}(-\quat{q})$, donc chaque rotation correspond à deux
+quaternions opposés (revêtement double de $\SO$ par $S^3$).
+
+% ----------------------------------------------------------------------------
+\subsection{Matrices de rotation et cinématique sur \texorpdfstring{$\SO$}{SO(3)}}
+
+\subsubsection{Matrice de rotation}
+
+\begin{definition}[Matrice de rotation]
+    Soient $\vect{b}_1,\vect{b}_2,\vect{b}_3$ les axes du solide
+    exprimés dans le repère sol. La matrice de rotation est
+    \[
+        \mat{R} = \begin{pmatrix}
+            \vect{b}_1 & \vect{b}_2 & \vect{b}_3
+        \end{pmatrix},
+        \qquad
+        \mat{R}^T\mat{R} = \Id,
+        \qquad \det\mat{R} = 1
+    \]
+    Ainsi $\mat{R}^{-1} = \mat{R}^T$ et $\vect{u}_b
+    = \mat{R}^T\vect{u}_s$.
+\end{definition}
+
+\subsubsection{Matrices antisymétriques et vitesse angulaire}
+
+On note $\mathcal{A}_3(\R) = \{\mat{A}\in\mathcal{M}_3(\R) :
+\mat{A}^T = -\mat{A}\}$ l'ensemble des matrices antisymétriques. À
+$\vect{u}\in\R^3$ on associe
+\[
+    \hatx{\vect{u}} = \begin{pmatrix}
+        0 & -u_3 & u_2\\
+        u_3 & 0 & -u_1\\
+        -u_2 & u_1 & 0
+    \end{pmatrix},
+    \qquad
+    \hatx{\vect{u}}\vect{v} = \vect{u}\wedge\vect{v}
+\]
+
+\begin{proposition}[Cinématique d'une matrice de rotation]
+    Si $t\mapsto\mat{R}(t)$ est une courbe dérivable dans $\SO$, il
+    existe un unique $\vect{\omega}(t)\in\R^3$ tel que
+    \[
+        \dot{\mat{R}} = \mat{R}\,\hatx{\vect{\omega}}
+    \]
+\end{proposition}
+
+\begin{demonstration}
+    En dérivant $\mat{R}^T\mat{R} = \Id$,
+    \[
+        \dot{\mat{R}}^T\mat{R} + \mat{R}^T\dot{\mat{R}} = \mat{0}
+        \longleftrightarrow
+        \bigl(\mat{R}^T\dot{\mat{R}}\bigr)^T
+        = -\mat{R}^T\dot{\mat{R}}
+    \]
+    donc $\mat{R}^T\dot{\mat{R}}\in\mathcal{A}_3(\R)$, et il existe un
+    unique $\vect{\omega}$ tel que $\mat{R}^T\dot{\mat{R}}
+    = \hatx{\vect{\omega}}$
+\end{demonstration}
+
+$\vect{\omega}$ est la vitesse angulaire exprimée dans le corps, et
+$\vect{\Omega} = \mat{R}\,\vect{\omega}$ la même vitesse exprimée dans
+le sol. Comme $\mat{R}(\vect{u}\wedge\vect{v})
+= (\mat{R}\vect{u})\wedge(\mat{R}\vect{v})$, on a
+$\mat{R}\,\hatx{\vect{u}} = \hatx{\mat{R}\vect{u}}\,\mat{R}$, d'où
+\[
+    \dot{\mat{R}} = \mat{R}\,\hatx{\mat{R}^T\vect{\Omega}}
+    = \mat{R}\mat{R}^T\hatx{\vect{\Omega}}\,\mat{R}
+    = \hatx{\vect{\Omega}}\,\mat{R}
+\]
+
+\subsubsection{Formule de transport}
+
+\begin{theoreme}[Formule de transport]
+    Si $\vect{u}_s(t) = \mat{R}(t)\,\vect{u}_b(t)$, alors
+    \[
+        \dot{\vect{u}}_s
+        = \mat{R}\bigl(\dot{\vect{u}}_b + \vect{\omega}\wedge\vect{u}_b\bigr)
+    \]
+\end{theoreme}
+
+\begin{preuve}
+    $\dot{\vect{u}}_s = \dot{\mat{R}}\,\vect{u}_b
+    + \mat{R}\,\dot{\vect{u}}_b
+    = \mat{R}\bigl(\dot{\vect{u}}_b
+    + \hatx{\vect{\omega}}\vect{u}_b\bigr)
+    = \mat{R}\bigl(\dot{\vect{u}}_b + \vect{\omega}\wedge\vect{u}_b\bigr)$
+\end{preuve}
+
+\subsubsection{Équations d'Euler}
+
+Dans le repère corps, $\vect{L}_b = \mat{I}_b\,\vect{\omega}$ avec
+$\mat{I}_b$ constante. La formule de transport appliquée à
+$\vect{L}_s = \mat{R}\,\vect{L}_b$ donne
+\[
+    \mat{R}^T\dot{\vect{L}}_s
+    = \mat{I}_b\,\dot{\vect{\omega}}
+    + \vect{\omega}\wedge(\mat{I}_b\,\vect{\omega})
+\]
+
+\begin{theoreme}[Équations d'Euler]
+    Avec le théorème du moment cinétique, en notant
+    $\vect{M}_b^{\mathrm{ext}}$ le moment extérieur exprimé dans le
+    corps,
+    \[
+        \mat{I}_b\,\dot{\vect{\omega}}
+        + \underbrace{\vect{\omega}\wedge(\mat{I}_b\,\vect{\omega})}
+        _{\text{terme gyroscopique}}
+        = \vect{M}_b^{\mathrm{ext}}
+    \]
+\end{theoreme}
+
+Le terme gyroscopique apparaît dès que le solide tourne par rapport au
+sol. Pour un solide anisotrope, $\vect{\omega}$ n'est pas forcément parallèle à
+$\vect{L}_b$, et $\vect{\omega}\wedge(\mat{I}_b\vect{\omega})$ décrit
+la contribution de la rotation du solide au changement de direction du
+moment cinétique :
+\[
+    \mat{I}_b\,\dot{\vect{\omega}}
+    = \vect{M}_b^{\mathrm{ext}}
+    - \vect{\omega}\wedge(\mat{I}_b\,\vect{\omega})
+\]
+
+\begin{remarque}[Interprétation gyroscopique]
+    Le terme $\vect{\omega}\wedge\vect{L}_b$ ne conserve rien par
+    lui-même, il traduit seulement la rotation de $\rep{b}$. En
+    l'absence de moment extérieur, c'est $\vect{L}_s = \mat{R}\,
+    \vect{L}_b$ qui est constant, alors que ses composantes
+    $\vect{L}_b$ varient
+    \[
+        \dot{\vect{L}}_b = -\,\vect{\omega}\wedge\vect{L}_b
+    \]
+    \begin{itemize}
+        \item Si $\vect{\omega}$ est porté par un axe principal,
+            $\vect{\omega}\parallel\mat{I}_b\vect{\omega}$, le terme
+            s'annule et la rotation se maintient : c'est la toupie qui
+            continue de tourner.
+        \item Pour une toupie pesante, le poids exerce un moment
+            perpendiculaire à $\vect{L}$, avec une grande rotation
+            propre, $\dot{\vect{L}} = \vect{M}$ fait tourner l'axe
+            autour de la verticale (précession) au lieu de le faire
+            basculer.
+    \end{itemize}
+\end{remarque}
+
+% ----------------------------------------------------------------------------
+\subsection{Quaternions unitaires et \texorpdfstring{$S^3$}{S3}}
+
+\begin{definition}[Quaternion]
+    Un quaternion est $\quat{q} = (q_0,\vect{q})\in\R\times\R^3$, de
+    partie scalaire $q_0$ et de partie vectorielle $\vect{q}$. Le
+    produit de Hamilton est
+    \[
+        \quat{q}\quatmul\quat{p}
+        = \bigl(q_0p_0 - \vect{q}^T\vect{p},\
+        q_0\vect{p} + p_0\vect{q} + \vect{q}\wedge\vect{p}\bigr)
+    \]
+\end{definition}
+
+Ce produit n'est pas commutatif, à cause du terme
+$\vect{q}\wedge\vect{p}$. On définit le conjugué et la norme
+\[
+    \quat{q}^* = (q_0,-\vect{q}),
+    \qquad
+    \|\quat{q}\|^2 = q_0^2 + \|\vect{q}\|^2,
+    \qquad
+    \quat{q}\quatmul\quat{q}^* = (\|\quat{q}\|^2,\vect{0}),
+    \qquad
+    \quat{q}^{-1} = \frac{\quat{q}^*}{\|\quat{q}\|^2}
+\]
+et la norme est multiplicative : $\|\quat{q}\quatmul\quat{p}\|
+= \|\quat{q}\|\,\|\quat{p}\|$
+
+\subsubsection{Représentation d'une rotation}
+
+À un vecteur $\vect{u}\in\R^3$ on associe le quaternion pur
+$(0,\vect{u})$. Pour un quaternion unitaire $\quat{q}$, on définit
+\[
+    (0,\vect{u}_s) = \quat{q}\quatmul(0,\vect{u}_b)\quatmul\quat{q}^*
+\]
+
+\begin{proposition}[Matrice de rotation d'un quaternion]
+    \[
+        \vect{u}_s = (q_0^2 - \|\vect{q}\|^2)\,\vect{u}_b
+        + 2\,\vect{q}\,(\vect{q}^T\vect{u}_b)
+        + 2\,q_0\,(\vect{q}\wedge\vect{u}_b)
+    \]
+    La matrice associée est donc
+    \[
+        \mat{R}(\quat{q}) = (q_0^2 - \|\vect{q}\|^2)\,\Id
+        + 2\,\vect{q}\vect{q}^T + 2\,q_0\,\hatx{\vect{q}}
+    \]
+\end{proposition}
+
+Pour une rotation d'angle $\theta$ autour de l'axe unitaire $\vect{u}$,
+\[
+    \quat{q} = \Bigl(\cos\frac{\theta}{2},\
+    \vect{u}\,\sin\frac{\theta}{2}\Bigr)
+\]
+Comme $\mat{R}(\quat{q}) = \mat{R}(-\quat{q})$ et
+$\mat{R}(\quat{q}\quatmul\quat{p})
+= \mat{R}(\quat{q})\,\mat{R}(\quat{p})$, l'application
+$\quat{q}\mapsto\mat{R}(\quat{q})$ associe à chaque rotation deux
+quaternions opposés.
+
+\subsubsection{Cinématique quaternionique}
+
+On suppose que $\quat{q}(t)$ représente l'orientation du corps vers le
+sol et que $\vect{\omega}$ est la vitesse angulaire exprimée dans le
+corps. Pendant un petit intervalle $h$, le quaternion de rotation
+relative est
+\[
+    \delta\quat{q} = \Bigl(1,\ \frac{h}{2}\,\vect{\omega}\Bigr) + o(h)
+\]
+et $\quat{q}(t+h) = \quat{q}(t)\quatmul\delta\quat{q}$, d'où
+\[
+    \dot{\quat{q}}(t)
+    = \lim_{h\to 0}\frac{\quat{q}(t+h) - \quat{q}(t)}{h}
+    = \tfrac12\,\quat{q}\quatmul(0,\vect{\omega})
+\]
+
+\begin{proposition}[Cinématique quaternionique]
+    \[
+        \dot{\quat{q}} = \tfrac12\,\quat{q}\quatmul(0,\vect{\omega})
+        \qquad\longleftrightarrow\qquad
+        \left\{
+        \begin{aligned}
+            \dot q_0 &= -\tfrac12\,\vect{q}^T\vect{\omega}\\
+            \dot{\vect{q}} &= \tfrac12\bigl(q_0\,\vect{\omega}
+            + \vect{q}\wedge\vect{\omega}\bigr)
+        \end{aligned}
+        \right.
+    \]
+    Avec la vitesse angulaire exprimée dans le sol,
+    $\vect{\Omega} = \mat{R}(\quat{q})\,\vect{\omega}$, la même
+    équation s'écrit
+    \[
+        \dot{\quat{q}} = \tfrac12\,(0,\vect{\Omega})\quatmul\quat{q}
+    \]
+\end{proposition}
+
+\begin{proposition}[Conservation de la norme]
+    \[
+        \ddt\|\quat{q}\|^2
+        = 2\,q_0\dot q_0 + 2\,\vect{q}^T\dot{\vect{q}}
+        = -q_0\,\vect{q}^T\vect{\omega} + q_0\,\vect{q}^T\vect{\omega}
+        + \vect{q}^T(\vect{q}\wedge\vect{\omega}) = 0
+    \]
+    Un quaternion unitaire conserve sa norme au cours de son mouvement.
+\end{proposition}

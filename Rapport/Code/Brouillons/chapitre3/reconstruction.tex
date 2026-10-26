@@ -1,0 +1,118 @@
+% ============================================================================
+%  Chapitre 3, partie IV : Validation de la dynamique
+% ============================================================================
+
+% ----------------------------------------------------------------------------
+\section{Validation de la dynamique}
+% ----------------------------------------------------------------------------
+
+Cette partie sert à vérifier la dynamique obtenue par les équations
+d'Euler-Lagrange-d'Alembert à l'aide des équations de Gibbs-Appell.
+Cependant, celles obtenues par Gibbs-Appell ne font pas apparaître explicitement les forces de réaction, mais on peut les retrouver grâce aux relations cinématiques déjà
+imposées. Si les deux approches donnent le même résultat, la dynamique
+est validée et on peut commencer à travailler avec.
+
+% ----------------------------------------------------------------------------
+\subsection{Loi de Newton en \texorpdfstring{$x$ et $y$}{x et y}}
+
+Dans le plan horizontal, la seule force appliquée à la sphère est le
+frottement exercé par le sol en $P$, de composantes $(N_x,N_y)$. La
+loi de Newton en $x$ et $y$ donne
+\[
+    m\,\ddot x = N_x,
+    \qquad
+    m\,\ddot y = N_y
+\]
+D'après le roulement, $\dot r = -\,\mat{A}_\alpha\,\dot\alpha$, donc
+\[
+    \begin{pmatrix} N_x\\ N_y \end{pmatrix}
+    = m\,\ddot r
+    = -\,m\,\bigl(\mat{A}_\alpha\,\ddot\alpha
+    + \dot{\mat{A}}_\alpha\,\dot\alpha\bigr)
+\]
+Les frottements sont donc connus dès que l'on connaît $\alpha(t)$. On retrouve
+$\vect{\lambda} = (N_x,N_y)$ de II.3. En remplaçant $m\,\ddot r$ par
+$\vect{\lambda}$ dans les équations de Gibbs-Appell, et en y ajoutant
+la loi de Newton en $x$ et $y$, on retrouve exactement les équations
+d'Euler-Lagrange-d'Alembert.
+
+% ----------------------------------------------------------------------------
+\subsection{Résumé : Dynamique du système}
+\begin{theoreme}[Dynamique de la sphère de Chaplygin]
+    Avec
+    \[
+        \left\{
+        \begin{aligned}
+            \omega_1 &= \dot\varphi - \dot\psi\,s_\theta\\
+            \omega_2 &= \dot\theta\,c_\varphi
+                + \dot\psi\,s_\varphi c_\theta\\
+            \omega_3 &= -\dot\theta\,s_\varphi
+                + \dot\psi\,c_\varphi c_\theta
+        \end{aligned}
+        \right.
+        \qquad
+        \left\{
+        \begin{aligned}
+            \Gamma_1 &= I_1\,\dot\omega_1
+                + (I_3 - I_2)\,\omega_2\,\omega_3\\
+            \Gamma_2 &= I_2\,\dot\omega_2
+                + (I_1 - I_3)\,\omega_3\,\omega_1\\
+            \Gamma_3 &= I_3\,\dot\omega_3
+                + (I_2 - I_1)\,\omega_1\,\omega_2
+        \end{aligned}
+        \right.
+    \]
+    l'orientation de la sphère vérifie
+    \begin{align*}
+        &\Gamma_1 + m\,a\,c_\theta\,(s_\psi\,\ddot x - c_\psi\,\ddot y)
+            = 0\\
+        &c_\varphi\,\Gamma_2 - s_\varphi\,\Gamma_3
+            + m\,a\,(c_\psi\,\ddot x + s_\psi\,\ddot y) = 0\\
+        &-\,s_\theta\,\Gamma_1 + s_\varphi c_\theta\,\Gamma_2
+            + c_\varphi c_\theta\,\Gamma_3 = 0
+    \end{align*}
+    la position du centre vérifie le roulement
+    \[
+        \left\{
+        \begin{aligned}
+            \dot x &= a\,(\dot\varphi\,s_\psi c_\theta
+                + \dot\theta\,c_\psi)\\
+            \dot y &= -\,a\,(\dot\varphi\,c_\psi c_\theta
+                - \dot\theta\,s_\psi)
+        \end{aligned}
+        \right.
+    \]
+    et les frottements sont donnés par la loi de Newton
+    \[
+        N_x = m\,\ddot x,
+        \qquad
+        N_y = m\,\ddot y
+    \]
+\end{theoreme}
+
+% ----------------------------------------------------------------------------
+\subsection{Remarques}
+
+\begin{remarque}[Complémentarité des deux méthodes]
+    Les deux méthodes sont complémentaires et chacune a ses points
+    forts, et on ne peut pas dire que l'une peut l'emporter sur l'autorisées.
+    
+    L'approche d'Euler-Lagrange-d'Alembert est directe : elle
+    donne toutes les inconnues, frottements compris, mais à un prix de
+    calculs lourds et longs. 
+    
+    L'approche de Gibbs-Appell donne plus rapidement
+    les équations en $\alpha$, mais ne fait pas apparaître les
+    réactions. Il suffit alors d'utiliser les relations cinématiques
+    imposées pour retrouver la dynamique complète du système.
+\end{remarque}
+
+\begin{remarque}[Recul]
+    Avec le recul du chapitre 4 (je fais la validation après avoir fait le modèle de simulation), l'approche de Gibbs-Appell m'aurait
+    permis d'obtenir plus rapidement l'équation en $\ddot\alpha$. 
+    
+    En revanche, sans l'approche d'Euler-Lagrange-d'Alembert, je n'aurais
+    pas vu qu'il était important de faire intervenir les frottements,
+    dont dépend la validité de la condition de non-glissement. 
+\end{remarque}
+

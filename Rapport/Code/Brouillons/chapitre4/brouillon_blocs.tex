@@ -1,0 +1,170 @@
+% ============================================================================
+%  Brouillon : ancienne sous-partie « Forme matricielle par blocs » du
+%  chapitre 3, gardée comme matériau pour le chapitre 4. Non incluse.
+% ============================================================================
+
+\subsubsection{Forme matricielle par blocs}
+
+Au terme constant $-\,m g a$ près, le lagrangien se réduit à l'énergie
+cinétique, quadratique en $\dot q$ :
+$T = \tfrac12\,\dot q^T\mat{M}(q)\,\dot q$. En généralisant l'exemple
+$L = \tfrac12\,M(q)\,v^2 - V(q)$ du chapitre 1, les cinq équations
+d'Euler-Lagrange-d'Alembert s'écrivent
+\[
+    \mat{M}(q)\,\ddot q + \vect{h}(q,\dot q) = \mat{A}(q)^T\vect{\lambda},
+    \qquad
+    \vect{h} = \dot{\mat{M}}\,\dot q
+    - \tfrac12\,\nabla_q\bigl(\dot q^T\mat{M}\,\dot q\bigr)
+\]
+où $\vect{h}$ regroupe les termes quadratiques en $\dot q$. En dérivant
+la contrainte $\mat{A}(q)\,\dot q = 0$ par rapport au temps,
+\[
+    \mat{A}(q)\,\ddot q + \dot{\mat{A}}\,\dot q = 0
+\]
+
+Pour expliciter ces termes, on sépare les coordonnées de translation
+et d'orientation, $q = (r,\alpha)$ avec $r = (x,y)$ et
+$\alpha = (\varphi,\theta,\psi)$, et on note $\mat{E}(\alpha)$ la
+matrice de I.4.3 telle que $\vect{\omega} = \mat{E}(\alpha)\,\dot\alpha$.
+On note aussi $\Id_2$ l'identité de taille $2$.
+
+\paragraph{Matrice de masse}
+Avec $T = \tfrac12\,m\,\dot r^T\dot r
++ \tfrac12\,\vect{\omega}^T\mat{I}_b\,\vect{\omega}$,
+\[
+    \mat{M} = \begin{pmatrix}
+        m\,\Id_2 & \mat{0}\\
+        \mat{0} & \mat{M}_\alpha
+    \end{pmatrix},
+    \qquad
+    \mat{M}_\alpha = \mat{E}^T\mat{I}_b\,\mat{E}
+\]
+avec
+\[
+    \mat{M}_\alpha = \begin{pmatrix}
+        I_1 & 0 & -I_1 s_\theta\\
+        0 & I_2 c_\varphi^2 + I_3 s_\varphi^2
+            & (I_2 - I_3)\,s_\varphi c_\varphi c_\theta\\
+        -I_1 s_\theta & (I_2 - I_3)\,s_\varphi c_\varphi c_\theta
+            & I_1 s_\theta^2 + (I_2 s_\varphi^2 + I_3 c_\varphi^2)\,
+            c_\theta^2
+    \end{pmatrix}
+\]
+
+\paragraph{Termes quadratiques}
+Seul $\mat{M}_\alpha$ dépend de $q$, donc
+$\vect{h} = (\vect{0},\vect{h}_\alpha)$. En pratique, on calcule
+$\vect{h}_\alpha$ plus simplement à partir des équations d'Euler : un
+couple $\vect{\tau}$ exprimé dans $\rep{b}$ a pour puissance
+$\vect{\tau}\cdot\vect{\omega} = (\mat{E}^T\vect{\tau})\cdot\dot\alpha$,
+donc les équations en $\alpha$ sont les équations d'Euler multipliées
+par $\mat{E}^T$. Avec $\dot{\vect{\omega}} = \mat{E}\,\ddot\alpha
++ \dot{\mat{E}}\,\dot\alpha$,
+\[
+    \vect{h}_\alpha = \mat{E}^T\bigl(\mat{I}_b\,\dot{\mat{E}}\,\dot\alpha
+    + \vect{\omega}\wedge(\mat{I}_b\,\vect{\omega})\bigr),
+    \qquad
+    \dot{\mat{E}}\,\dot\alpha = \begin{pmatrix}
+        -\,\dot\theta\dot\psi\,c_\theta\\
+        -\,\dot\varphi\dot\theta\,s_\varphi
+            + \dot\psi\,(\dot\varphi\,c_\varphi c_\theta
+            - \dot\theta\,s_\varphi s_\theta)\\
+        -\,\dot\varphi\dot\theta\,c_\varphi
+            - \dot\psi\,(\dot\varphi\,s_\varphi c_\theta
+            + \dot\theta\,c_\varphi s_\theta)
+    \end{pmatrix}
+\]
+
+\paragraph{Contrainte}
+La matrice des contraintes se découpe en
+$\mat{A} = (\Id_2\ \ \mat{A}_\alpha)$, et seul $\mat{A}_\alpha$ dépend
+de $q$, donc $\dot{\mat{A}}\,\dot q = \dot{\mat{A}}_\alpha\,\dot\alpha$,
+avec
+\[
+    \mat{A}_\alpha = a\begin{pmatrix}
+        -s_\psi c_\theta & -c_\psi & 0\\
+        c_\psi c_\theta & -s_\psi & 0
+    \end{pmatrix},
+    \qquad
+    \dot{\mat{A}}_\alpha\,\dot\alpha = a\begin{pmatrix}
+        -\,\dot\varphi\dot\psi\,c_\psi c_\theta
+            + \dot\varphi\dot\theta\,s_\psi s_\theta
+            + \dot\theta\dot\psi\,s_\psi\\
+        -\,\dot\varphi\dot\psi\,s_\psi c_\theta
+            - \dot\varphi\dot\theta\,c_\psi s_\theta
+            - \dot\theta\dot\psi\,c_\psi
+    \end{pmatrix}
+\]
+
+\begin{proposition}[Forme par blocs]
+    Pour des conditions initiales qui vérifient la contrainte, le
+    système du théorème précédent équivaut à
+    \[
+        \begin{pmatrix}
+            \mat{M}(q) & -\,\mat{A}(q)^T\\
+            \mat{A}(q) & \mat{0}
+        \end{pmatrix}
+        \begin{pmatrix}
+            \ddot q\\ \vect{\lambda}
+        \end{pmatrix}
+        = \begin{pmatrix}
+            -\,\vect{h}(q,\dot q)\\ -\,\dot{\mat{A}}\,\dot q
+        \end{pmatrix}
+    \]
+    et la matrice du système est inversible tant que
+    $\cos\theta \neq 0$.
+\end{proposition}
+
+\begin{demonstration}
+    La première ligne de blocs regroupe les équations
+    d'Euler-Lagrange-d'Alembert, la seconde est la contrainte dérivée,
+    qui équivaut à la contrainte si elle est vérifiée à l'instant
+    initial. Pour l'inversibilité, $\mat{M}_\alpha = \mat{E}^T\mat{I}_b\,
+    \mat{E}$ est symétrique définie positive car $\mat{I}_b$ l'est et
+    $\det\mat{E} = \cos\theta \neq 0$, donc $\mat{M}$ aussi. Soit
+    $(u,\vect{\nu})\in\R^5\times\R^2$ dans le noyau, c'est-à-dire
+    $\mat{M}\,u = \mat{A}^T\vect{\nu}$ et $\mat{A}\,u = 0$. Alors
+    \[
+        u^T\mat{M}\,u = u^T\mat{A}^T\vect{\nu}
+        = (\mat{A}\,u)^T\vect{\nu} = 0
+    \]
+    donc $u = 0$, puis $\mat{A}^T\vect{\nu} = \vect{0}$, donc
+    $\vect{\nu} = \vect{0}$ car $\rang\mat{A} = 2$. La matrice, carrée
+    et de noyau nul, est inversible.
+\end{demonstration}
+
+Ainsi, tant que $\cos\theta \neq 0$, $(q,\dot q)$ détermine
+$(\ddot q,\vect{\lambda})$ à chaque instant : c'est la forme utilisée
+pour la simulation numérique.
+
+\begin{corollaire}[Système réduit]
+    En éliminant $\vect{\lambda} = m\,\ddot r$ et
+    $\ddot r = -(\mat{A}_\alpha\,\ddot\alpha
+    + \dot{\mat{A}}_\alpha\,\dot\alpha)$, l'orientation vérifie
+    \[
+        \bigl(\mat{M}_\alpha + m\,\mat{A}_\alpha^T\mat{A}_\alpha\bigr)\,
+        \ddot\alpha
+        = -\,\vect{h}_\alpha - m\,\mat{A}_\alpha^T\dot{\mat{A}}_\alpha\,
+        \dot\alpha
+    \]
+    puis $\dot r = -\,\mat{A}_\alpha\,\dot\alpha$ et
+    $\vect{\lambda} = -\,m\,(\mat{A}_\alpha\,\ddot\alpha
+    + \dot{\mat{A}}_\alpha\,\dot\alpha)$.
+\end{corollaire}
+
+La matrice $\mat{M}_\alpha + m\,\mat{A}_\alpha^T\mat{A}_\alpha$ est la
+matrice d'inertie autour du point de contact, écrite dans les
+coordonnées $\alpha$. En effet, $\vect{v}_G = a\,\vect{\Omega}\wedge
+\vect{e}_z$ donne $m\,\|\vect{v}_G\|^2 = m\,a^2\,\vect{\Omega}^T
+(\Id - \vect{e}_z\vect{e}_z^T)\,\vect{\Omega}$, donc, pour un mouvement
+qui respecte la contrainte,
+\[
+    T = \tfrac12\,\dot\alpha^T\bigl(\mat{M}_\alpha
+    + m\,\mat{A}_\alpha^T\mat{A}_\alpha\bigr)\,\dot\alpha
+    = \tfrac12\,\vect{\Omega}^T\mat{I}_P\,\vect{\Omega},
+    \qquad
+    \mat{I}_P = \mat{I}_G
+    + m\,a^2\,\bigl(\Id - \vect{e}_z\vect{e}_z^T\bigr)
+\]
+ce qui est le théorème de Huygens-Steiner du chapitre 2 avec
+$\overrightarrow{PG} = a\,\vect{e}_z$.

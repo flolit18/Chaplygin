@@ -1,0 +1,219 @@
+% ============================================================================
+%  preambule.tex : paquets, mise en page, notations et environnements
+%  (inclus dans main.tex par \input{preambule})
+% ============================================================================
+
+% ----------------------------------------------------------------------------
+%  Polices et langue
+% ----------------------------------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}     % à SUPPRIMER si lualatex/xelatex
+\usepackage[french]{babel}
+\usepackage{lmodern}
+\usepackage{microtype}          % justification nettement meilleure
+
+% ----------------------------------------------------------------------------
+%  Géométrie
+% ----------------------------------------------------------------------------
+% 11 pt et 3 cm de marges latérales : environ 80 caractères par ligne,
+% texte dense mais lisible.
+\usepackage[a4paper,
+            left=2.0cm, right=2.0cm, top=2.5cm, bottom=2.5cm,
+            headheight=15pt]{geometry}
+
+% ----------------------------------------------------------------------------
+%  Mathématiques
+% ----------------------------------------------------------------------------
+\usepackage{amsmath, amssymb, amsthm, mathtools}
+\usepackage{bm}
+\usepackage{mathrsfs}
+
+% ----------------------------------------------------------------------------
+%  Flottants, tableaux, listes
+% ----------------------------------------------------------------------------
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{subcaption}         % APRÈS caption
+\usepackage[inline]{enumitem}
+
+% ----------------------------------------------------------------------------
+%  Dessins
+% ----------------------------------------------------------------------------
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, calc, angles, quotes,
+    decorations.pathmorphing, patterns}
+
+% ----------------------------------------------------------------------------
+%  Couleurs, encadrés et liens
+% ----------------------------------------------------------------------------
+\usepackage{xcolor}
+\definecolor{accent}{HTML}{1F3A5F}
+\usepackage[most]{tcolorbox}
+
+% Ligne « institution » de la page de titre.
+\newcommand{\kicker}[1]{{\scshape\large\textcolor{accent}{#1}}}
+
+\usepackage[colorlinks=true, linkcolor=accent, citecolor=accent,
+            urlcolor=accent]{hyperref}
+\usepackage{cleveref}           % IMPÉRATIVEMENT après hyperref
+
+% ============================================================================
+%  MISE EN PAGE
+% ============================================================================
+
+% --- 1. Titres ---------------------------------------------------------------
+\usepackage{titlesec}
+
+% Chapitre : « Chapitre » en petites capitales, gros numéro, titre
+% en dessous, filet pour fermer.
+\titleformat{\chapter}[display]
+    {\normalfont}
+    {%
+        {\color{accent!55}\large\scshape\chaptertitlename}\;\;
+        {\color{accent}\fontsize{52}{52}\selectfont\bfseries\thechapter}%
+    }
+    {10pt}
+    {\color{accent}\Huge\bfseries}
+    [\vspace{4mm}{\color{accent!40}\titlerule[1.4pt]}]
+\titlespacing*{\chapter}{0pt}{20pt}{34pt}
+
+% Structure : Chapitre -> I. -> 1. -> 1.1 -> a)
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{3}
+\renewcommand{\thesection}{\Roman{section}.}
+\renewcommand{\thesubsection}{\arabic{subsection}.}
+\renewcommand{\thesubsubsection}{%
+    \arabic{subsection}.\arabic{subsubsection}}
+\renewcommand{\theparagraph}{\alph{paragraph})}
+
+\titlespacing*{\section}{0pt}{2.2ex plus 1ex minus .2ex}{1.4ex plus .2ex}
+\titlespacing*{\subsection}{0pt}{1.8ex plus 1ex minus .2ex}{1.0ex plus .2ex}
+% a) : titre sur sa propre ligne
+\titleformat{\paragraph}
+    {\normalfont\normalsize\bfseries}{\theparagraph}{0.5em}{}
+\titlespacing*{\paragraph}{0pt}{1.4ex plus .5ex minus .2ex}{0.6ex}
+
+% --- 2. Flottants ------------------------------------------------------------
+\renewcommand{\topfraction}{0.90}
+\renewcommand{\bottomfraction}{0.75}
+\renewcommand{\textfraction}{0.10}
+\renewcommand{\floatpagefraction}{0.75}
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{5}
+
+% --- 3. Coupures de page -----------------------------------------------------
+\widowpenalty=10000
+\clubpenalty=10000
+\raggedbottom
+
+% --- 4. Listes et légendes ---------------------------------------------------
+\setlist{itemsep=2pt, parsep=0pt, topsep=4pt}
+\captionsetup{font=small, labelfont={bf,color=accent}, skip=6pt}
+
+% --- 5. Accroche : phrase clé mise en exergue --------------------------------
+% Usage : \begin{accroche} ... \end{accroche}
+\newenvironment{accroche}[1][accent]{%
+    \par\medskip\noindent
+    \begingroup
+    \color{#1}\itshape\large
+    \rightskip=1.5em \leftskip=1.5em
+    \parindent=0pt
+    \hrule height 0.9pt\vspace{7pt}%
+}{%
+    \par\vspace{7pt}\hrule height 0.9pt
+    \endgroup
+    \par\medskip
+}
+
+% ============================================================================
+%  NOTATIONS
+% ============================================================================
+% Vecteur : minuscule ou grecque, en gras italique
+% (ex. \vect{u}, \vect{\omega}).
+\newcommand{\vect}[1]{\bm{#1}}
+% Matrice / tenseur : majuscule en gras droit (ex. \mat{R}, \mat{I}).
+\newcommand{\mat}[1]{\mathbf{#1}}
+% Quaternion : gras, souligné (ex. \quat{q} = (q_0, \vect{q})).
+\newcommand{\quat}[1]{\underline{\bm{#1}}}
+% Produit quaternionique : étoile centrée (\otimes est réservé au
+% produit tensoriel).
+\newcommand{\quatmul}{\ast}
+% Repères : \rep{s} (sol), \rep{b} (solide).
+\newcommand{\rep}[1]{\mathcal{R}_{#1}}
+% Matrice antisymétrique associée à u : [u]_x v = u \wedge v
+\newcommand{\hatx}[1]{[#1]_{\times}}
+% Ensembles et opérateurs
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\SO}{\mathrm{SO}(3)}
+\newcommand{\Id}{\mat{I}}
+\newcommand{\dd}{\mathrm{d}}
+\newcommand{\ddt}{\frac{\dd}{\dd t}}
+\newcommand{\pd}[2]{\frac{\partial #1}{\partial #2}}
+\DeclareMathOperator{\rang}{rang}
+\DeclareMathOperator{\Ker}{Ker}
+\DeclareMathOperator{\Ima}{Im}
+
+% ============================================================================
+%  ENVIRONNEMENTS (numérotés par chapitre)
+% ============================================================================
+\theoremstyle{plain}
+\newtheorem{theoreme}{Théorème}[chapter]
+\newtheorem{corollaire}[theoreme]{Corollaire}
+\newtheorem{proposition}[theoreme]{Proposition}
+\newtheorem{lemme}[theoreme]{Lemme}
+\theoremstyle{definition}
+\newtheorem{definition}[theoreme]{Définition}
+\newtheorem{hypotheses}[theoreme]{Hypothèses}
+\newtheorem{exemple}[theoreme]{Exemple}
+\theoremstyle{remark}
+\newtheorem{remarque}[theoreme]{Remarque}
+\newtheorem{note}[theoreme]{Note}
+\renewcommand{\proofname}{Démonstration}
+% Démonstration détaillée et preuve courte : même mise en forme
+% (titre en italique, carré en fin).
+\newenvironment{demonstration}[1][Démonstration]
+    {\begin{proof}[#1]}{\end{proof}}
+\newenvironment{preuve}[1][Preuve]
+    {\begin{proof}[#1]}{\end{proof}}
+
+% Couleurs des cadres : théorème en rouge, définition et hypothèses
+% en vert, proposition, corollaire et lemme en bleu.
+\definecolor{coulthm}{HTML}{A8322D}
+\definecolor{couldef}{HTML}{2E7D32}
+\definecolor{coulprop}{HTML}{1F5A9E}
+\tcbset{
+    cadre/.style={enhanced,colback=#1!7,colframe=#1!80,
+        boxrule=0.6pt,leftrule=3pt,arc=1pt,left=6pt,right=6pt,
+        before skip=6pt,after skip=6pt}}
+\tcolorboxenvironment{theoreme}{cadre=coulthm}
+\tcolorboxenvironment{definition}{cadre=couldef}
+\tcolorboxenvironment{hypotheses}{cadre=couldef}
+\tcolorboxenvironment{proposition}{cadre=coulprop}
+\tcolorboxenvironment{corollaire}{cadre=coulprop}
+\tcolorboxenvironment{lemme}{cadre=coulprop}
+% Note : notation ou commentaire personnel, cadre gris.
+\tcolorboxenvironment{note}{cadre=gray}
+
+% Renvois \cref en français
+\crefname{theoreme}{théorème}{théorèmes}
+\Crefname{theoreme}{Théorème}{Théorèmes}
+\crefname{corollaire}{corollaire}{corollaires}
+\Crefname{corollaire}{Corollaire}{Corollaires}
+\crefname{proposition}{proposition}{propositions}
+\Crefname{proposition}{Proposition}{Propositions}
+\crefname{lemme}{lemme}{lemmes}
+\Crefname{lemme}{Lemme}{Lemmes}
+\crefname{definition}{définition}{définitions}
+\Crefname{definition}{Définition}{Définitions}
+\crefname{hypotheses}{hypothèses}{hypothèses}
+\Crefname{hypotheses}{Hypothèses}{Hypothèses}
+\crefname{exemple}{exemple}{exemples}
+\Crefname{exemple}{Exemple}{Exemples}
+\crefname{remarque}{remarque}{remarques}
+\Crefname{remarque}{Remarque}{Remarques}
+\crefname{note}{note}{notes}
+\Crefname{note}{Note}{Notes}
+\newcommand{\creflastconjunction}{ et~}

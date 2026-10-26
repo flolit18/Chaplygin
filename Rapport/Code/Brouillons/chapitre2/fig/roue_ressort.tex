@@ -1,0 +1,52 @@
+% ============================================================================
+%  Figure : roue roulant sans glisser, reliée à un mur par un ressort,
+%  soumise à une force horizontale constante F
+% ============================================================================
+\begin{tikzpicture}[>=Stealth, line cap=round]
+    % paramètres
+    \def\R{1}       % rayon de la roue
+    \def\xc{5.2}    % abscisse du centre
+
+    % sol et mur hachurés
+    \fill[pattern=north east lines] (-0.3,-0.25) rectangle (8.3,0);
+    \fill[pattern=north east lines] (-0.3,0) rectangle (0,2.6);
+    \draw[thick] (8.3,0) -- (0,0) -- (0,2.6);
+
+    % ressort du mur au centre
+    \draw[thick] (0,\R) -- (0.5,\R);
+    \draw[thick, decorate, decoration={coil, aspect=0.5,
+        segment length=6pt, amplitude=6pt}]
+        (0.5,\R) -- (\xc-1.4,\R);
+    \node[above] at (2.2,\R+0.25) {$k$};
+
+    % roue
+    \draw[thick, fill=accent!8] (\xc,\R) circle (\R);
+    \draw[thick] (\xc-1.4,\R) -- (\xc,\R);   % attache du ressort en C
+    \fill (\xc,\R) circle (1.5pt);
+    \node[below left] at (\xc,\R) {$C$};
+    \draw (\xc,\R) -- ++(60:\R);   % rayon repère de l'angle
+
+    % angle phi
+    \draw[->, accent] (\xc,\R) ++(120:0.55) arc (120:30:0.55);
+    \node[accent] at ($(\xc,\R)+(80:0.8)$) {$\varphi$};
+
+    % force F au centre
+    \draw[->, very thick, couldef] (\xc,\R) -- ++(1.6,0)
+        node[right] {$\vect{F}$};
+
+    % point de contact et frottement
+    \fill (\xc,0) circle (1.5pt);
+    \node[below=2pt] at (\xc,-0.25) {$I$};
+    \draw[->, very thick, coulthm] (\xc,0.06) -- ++(-1.1,0)
+        node[above] {$\lambda$};
+
+    % rayon r
+    \draw[<->] (\xc,0.05) -- (\xc,\R-0.05)
+        node[midway, right] {$r$};
+
+    % repérage de x depuis la position à vide du ressort
+    \def\xo{3.4}
+    \draw[densely dashed, gray] (\xo,-0.25) -- (\xo,2.3);
+    \node[gray, above] at (\xo,2.3) {$x = 0$};
+    \draw[|->] (\xo,-0.95) -- (\xc,-0.95) node[midway, below] {$x$};
+\end{tikzpicture}

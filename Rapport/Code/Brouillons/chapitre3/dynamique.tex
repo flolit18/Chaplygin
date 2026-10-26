@@ -1,0 +1,334 @@
+% ============================================================================
+%  Chapitre 3, partie II : Équations du mouvement
+%  Approche Euler-Lagrange-d'Alembert
+%  (manuscrit Modélisation, p. 4 à 11)
+% ============================================================================
+
+% ----------------------------------------------------------------------------
+\section{Équations du mouvement - Approche Euler-Lagrange-d'Alembert}
+% ----------------------------------------------------------------------------
+
+% ----------------------------------------------------------------------------
+\subsection{Lagrangien}
+
+D'après le deuxième théorème de König, $T = E_K + E_K^*$. Le potentiel
+de pesanteur vaut $V = m g z_G = m g a$, constant. Avec
+$\vect{\Omega}^T\mat{I}_G\,\vect{\Omega} = \vect{\omega}^T\mat{I}_b\,
+\vect{\omega}$, où $\mat{I}_G = \mat{R}\,\mat{I}_b\,\mat{R}^T$ est le
+tenseur d'inertie exprimé dans $\rep{s}$,
+\[
+    L = T - V
+    = \tfrac12\,m\,\|\vect{v}_G\|^2
+    + \tfrac12\,\vect{\omega}^T\mat{I}_b\,\vect{\omega}
+    - m g a
+\]
+Comme $\vect{v}_G = (\dot x,\dot y,0)$ et
+$\mat{I}_b = \mathrm{diag}(I_1,I_2,I_3)$,
+\[
+    L = \tfrac12\,m\,(\dot x^2 + \dot y^2)
+    + \tfrac12\,\bigl(I_1\omega_1^2 + I_2\omega_2^2
+    + I_3\omega_3^2\bigr) - m g a
+\]
+où $\omega_1$, $\omega_2$, $\omega_3$ sont les fonctions de
+$(\varphi,\theta,\dot\varphi,\dot\theta,\dot\psi)$ obtenues en I. La
+constante $m g a$ ne joue aucun rôle dans les équations.
+
+
+% ----------------------------------------------------------------------------
+\subsection{Contrainte de roulement}
+
+\subsubsection{Non-glissement au point de contact}
+
+Soit $P$ le point matériel de la sphère en contact avec le sol soit : 
+\[
+    \overrightarrow{GP} = -\,a\,\vect{e}_z
+\]
+Le champ des vitesses du solide donne
+\[
+    \vect{v}_P = \vect{v}_G + \vect{\Omega}\wedge\overrightarrow{GP}
+    = \vect{v}_G - a\,\vect{\Omega}\wedge\vect{e}_z
+\]
+Le roulement sans glissement impose $\vect{v}_P = \vect{0}$ à chaque
+instant, donc
+\[
+    \vect{v}_G = a\,\vect{\Omega}\wedge\vect{e}_z
+    \longleftrightarrow
+    \begin{pmatrix}
+        \dot x\\ \dot y\\ \dot z_G
+    \end{pmatrix}
+    = a\begin{vmatrix}
+        \vect{e}_x & \vect{e}_y & \vect{e}_z\\
+        \Omega_x & \Omega_y & \Omega_z\\
+        0 & 0 & 1
+    \end{vmatrix}
+    = a\begin{pmatrix}
+        \Omega_y\\ -\Omega_x\\ 0
+    \end{pmatrix}
+\]
+La troisième ligne redonne $\dot z_G = 0$, déjà pris en compte dans
+$Q$. Les deux autres forment la contrainte de roulement :
+\[
+    \left\{
+    \begin{aligned}
+        \dot x &= a\,\Omega_y\\
+        \dot y &= -\,a\,\Omega_x
+    \end{aligned}
+    \right.
+\]
+
+
+\subsubsection{Forme matricielle}
+
+On cherche à écrire la contrainte sous la forme
+$\mat{A}(q)\,\dot q = 0$. Avec l'expression de $\vect{\Omega}_s$,
+\[
+    \Omega_x = \dot\varphi\,c_\psi c_\theta - \dot\theta\,s_\psi,
+    \qquad
+    \Omega_y = \dot\varphi\,s_\psi c_\theta + \dot\theta\,c_\psi
+\]
+donc
+\[
+    \left\{
+    \begin{aligned}
+        \dot x - a\,(\dot\varphi\,s_\psi c_\theta
+            + \dot\theta\,c_\psi) &= 0\\
+        \dot y + a\,(\dot\varphi\,c_\psi c_\theta
+            - \dot\theta\,s_\psi) &= 0
+    \end{aligned}
+    \right.
+\]
+soit, avec $q = (x,y,\varphi,\theta,\psi)$,
+\[
+    \underbrace{\begin{pmatrix}
+        1 & 0 & -a\,s_\psi c_\theta & -a\,c_\psi & 0\\
+        0 & 1 & a\,c_\psi c_\theta & -a\,s_\psi & 0
+    \end{pmatrix}}_{\mat{A}(q)}
+    \begin{pmatrix}
+        \dot x\\ \dot y\\ \dot\varphi\\ \dot\theta\\ \dot\psi
+    \end{pmatrix}
+    = 0
+\]
+On peut voir que $\rang\mat{A}(q) = 2$ pour tout
+$q$. D'après le théorème du rang, les vitesses admissibles forment un
+espace de dimension $5 - 2 = 3$ : il suffit de déterminer
+$(\dot\varphi,\dot\theta,\dot\psi)$, et la vitesse de $G$ s'en
+déduit.
+
+
+% ----------------------------------------------------------------------------
+\subsection{Réactions généralisées}
+
+La liaison étant idéale, les réactions généralisées sont
+$\vect{Q}^r = \mat{A}(q)^T\vect{\lambda}$, avec
+$\vect{\lambda} = (\lambda_1,\lambda_2)\in\R^2$ :
+\[
+    \vect{Q}^r = \mat{A}(q)^T\vect{\lambda}
+    = \begin{pmatrix}
+        \lambda_1\\
+        \lambda_2\\
+        a\,c_\theta\,(-\lambda_1 s_\psi + \lambda_2 c_\psi)\\
+        -\,a\,(\lambda_1 c_\psi + \lambda_2 s_\psi)\\
+        0
+    \end{pmatrix}
+\]
+Le multiplicateur $\vect{\lambda}$ vit dans l'espace des contraintes
+$\R^2$. Ce sont donc les forces de réaction qui imposent le roulement sans
+glissement, à savoir le frottement exercé par le sol en $P$ :
+\[
+    \vect{\lambda} = \begin{pmatrix} N_x\\ N_y \end{pmatrix}
+\]
+La réaction normale $N_z$ est liée à la contrainte holonome
+$z_G = a$, la loi de Newton verticale, avec
+$\ddot z_G = 0$, donne $N_z = m g$.
+
+\begin{remarque}[Vérification par le travail virtuel]
+    On retrouve ce résultat comme pour la roue. D'après II.2.1,
+    $\vect{v}_P = \vect{v}_G - a\,\vect{\Omega}\wedge\vect{e}_z$ est
+    horizontal, et ses composantes horizontales sont exactement
+    $\mat{A}(q)\,\dot q$. Un déplacement virtuel $\delta q$ déplace
+    donc le point matériel $P$ horizontalement de
+    \[
+        \delta\vect{r}_P = \begin{pmatrix}
+            \mat{A}\,\delta q\\ 0
+        \end{pmatrix}
+    \]
+    Le travail virtuel de la force de contact
+    $\vect{N} = N_x\vect{e}_x + N_y\vect{e}_y + N_z\vect{e}_z$ vaut
+    alors
+    \[
+        \delta W_r = \vect{N}\cdot\delta\vect{r}_P
+        = \begin{pmatrix} N_x & N_y \end{pmatrix}\mat{A}\,\delta q
+        = \left(\mat{A}^T\begin{pmatrix} N_x\\ N_y \end{pmatrix}
+        \right)^T\delta q
+    \]
+    ce qui redonne $\vect{Q}^r = \mat{A}^T\vect{\lambda}$ avec
+    $\vect{\lambda} = (N_x,N_y)$. La réaction normale $N_z$ ne
+    travaille pas, car $\delta\vect{r}_P$ est horizontal.
+\end{remarque}
+
+
+
+\subsubsection{Validité du non-glissement}
+
+Pour que la condition de non-glissement se vérifie, il faut que 
+\[
+    \sqrt{\lambda_1^2 + \lambda_2^2} \leq \mu_s\,m\,g
+\]
+avec $\mu _s$ le coefficient de frottement du sol, c'est une condition à vérifier a posteriori le long de la trajectoire.
+
+% ----------------------------------------------------------------------------
+\subsection{Équations d'Euler-Lagrange-d'Alembert}
+
+Aucune force non conservative n'est appliquée, donc
+$\vect{Q}^{\mathrm{nc}} = \vect{0}$ et les équations s'écrivent
+\[
+    \ddt\pd{L}{\dot q} - \pd{L}{q} = \mat{A}(q)^T\vect{\lambda},
+    \qquad
+    \mat{A}(q)\,\dot q = 0
+\]
+On les écrit coordonnée par coordonnée, en utilisant
+\[
+    \pd{L}{\dot q_j} = \sum_{i=1}^{3} I_i\,\omega_i\,
+    \pd{\omega_i}{\dot q_j},
+    \qquad
+    \pd{L}{q_j} = \sum_{i=1}^{3} I_i\,\omega_i\,\pd{\omega_i}{q_j}
+    \qquad (q_j\in\{\varphi,\theta,\psi\})
+\]
+
+\subsubsection{Translation : \texorpdfstring{$x$ et $y$}{x et y}}
+
+$\pd{L}{x} = 0$ et $\pd{L}{\dot x} = m\,\dot x$, de même pour $y$,
+donc
+\[
+    m\,\ddot x = \lambda_1,
+    \qquad
+    m\,\ddot y = \lambda_2
+\]
+\subsubsection{Roulis : \texorpdfstring{$\varphi$}{phi}}
+
+Seul $\omega_1$ dépend de $\dot\varphi$, avec
+$\pd{\omega_1}{\dot\varphi} = 1$, donc
+\[
+    \pd{L}{\dot\varphi} = I_1\,\omega_1
+    \longrightarrow
+    \ddt\pd{L}{\dot\varphi} = I_1\,\dot\omega_1
+\]
+Ensuite, $\pd{\omega_1}{\varphi} = 0$, $\pd{\omega_2}{\varphi}
+= -\dot\theta\,s_\varphi + \dot\psi\,c_\varphi c_\theta = \omega_3$ et
+$\pd{\omega_3}{\varphi} = -\dot\theta\,c_\varphi - \dot\psi\,s_\varphi
+c_\theta = -\,\omega_2$, d'où
+\[
+    \pd{L}{\varphi} = I_2\,\omega_2\,\omega_3 - I_3\,\omega_3\,\omega_2
+    = (I_2 - I_3)\,\omega_2\,\omega_3
+\]
+L'équation en $\varphi$ est donc
+\[
+    I_1\,\dot\omega_1 + (I_3 - I_2)\,\omega_2\,\omega_3
+    = a\,c_\theta\,(-\lambda_1 s_\psi + \lambda_2 c_\psi)
+\]
+\subsubsection{Tangage : \texorpdfstring{$\theta$}{theta}}
+
+On a
+\[
+    \pd{\vect{\omega}}{\dot\theta} = \begin{pmatrix}
+        0\\ c_\varphi\\ -s_\varphi
+    \end{pmatrix}
+    \longrightarrow
+    \pd{L}{\dot\theta} = I_2\,\omega_2\,c_\varphi
+    - I_3\,\omega_3\,s_\varphi
+\]
+et
+\[
+    \pd{\vect{\omega}}{\theta} = -\,\dot\psi\begin{pmatrix}
+        c_\theta\\ s_\varphi s_\theta\\ c_\varphi s_\theta
+    \end{pmatrix}
+    \longrightarrow
+    \pd{L}{\theta} = -\,\dot\psi\,\bigl(I_1\,\omega_1\,c_\theta
+    + (I_2\,\omega_2\,s_\varphi + I_3\,\omega_3\,c_\varphi)\,s_\theta
+    \bigr)
+\]
+L'équation en $\theta$ est donc
+\[
+    \ddt\bigl(I_2\,\omega_2\,c_\varphi - I_3\,\omega_3\,s_\varphi\bigr)
+    + \dot\psi\,\bigl(I_1\,\omega_1\,c_\theta
+    + (I_2\,\omega_2\,s_\varphi + I_3\,\omega_3\,c_\varphi)\,s_\theta
+    \bigr)
+    = -\,a\,(\lambda_1 c_\psi + \lambda_2 s_\psi)
+\]
+
+\subsubsection{Azimut : \texorpdfstring{$\psi$}{psi}}
+
+Aucune composante de $\vect{\omega}$ ne dépend de $\psi$, donc
+$\pd{L}{\psi} = 0$, et la dernière composante de
+$\mat{A}^T\vect{\lambda}$ est nulle. Avec
+\[
+    \pd{\vect{\omega}}{\dot\psi} = \begin{pmatrix}
+        -s_\theta\\ s_\varphi c_\theta\\ c_\varphi c_\theta
+    \end{pmatrix}
+\]
+l'équation en $\psi$ est donc : 
+\[
+    \ddt\Bigl(-\,I_1\,\omega_1\,s_\theta
+    + (I_2\,\omega_2\,s_\varphi + I_3\,\omega_3\,c_\varphi)\,c_\theta
+    \Bigr) = 0
+\]
+
+\begin{remarque}[Moment cinétique vertical]
+    Le vecteur $\pd{\vect{\omega}}{\dot\psi}$ est la transposée de la troisième ligne de
+    $\mat{R}$, c'est-à-dire $\vect{e}_z$ exprimé dans $\rep{b}$. La
+    quantité conservée est donc
+    \[
+        \pd{L}{\dot\psi} = (\mat{I}_b\,\vect{\omega})^T\mat{R}^T
+        \vect{e}_z = \vect{L}_G\cdot\vect{e}_z
+    \]
+\end{remarque}
+
+% ----------------------------------------------------------------------------
+\subsection{Résumé}
+
+Les inconnues sont $q = (x,y,\varphi,\theta,\psi)$ et
+$\vect{\lambda} = (\lambda_1,\lambda_2)$, soit $7$ fonctions du temps,
+pour $5$ équations d'Euler-Lagrange-d'Alembert et $2$ équations de
+contrainte.
+
+\begin{theoreme}[Équations de la sphère de Chaplygin]
+    Avec
+    \[
+        \left\{
+        \begin{aligned}
+            \omega_1 &= \dot\varphi - \dot\psi\,s_\theta\\
+            \omega_2 &= \dot\theta\,c_\varphi
+                + \dot\psi\,s_\varphi c_\theta\\
+            \omega_3 &= -\dot\theta\,s_\varphi
+                + \dot\psi\,c_\varphi c_\theta
+        \end{aligned}
+        \right.
+    \]
+    le mouvement de la sphère de Chaplygin vérifie
+    \begin{align*}
+        &m\,\ddot x = \lambda_1\\
+        &m\,\ddot y = \lambda_2\\
+        &I_1\,\dot\omega_1 + (I_3 - I_2)\,\omega_2\,\omega_3
+            = a\,c_\theta\,(-\lambda_1 s_\psi + \lambda_2 c_\psi)\\
+        &\ddt\bigl(I_2\,\omega_2\,c_\varphi
+            - I_3\,\omega_3\,s_\varphi\bigr)
+            + \dot\psi\,\bigl(I_1\,\omega_1\,c_\theta
+            + (I_2\,\omega_2\,s_\varphi
+            + I_3\,\omega_3\,c_\varphi)\,s_\theta\bigr)
+            = -\,a\,(\lambda_1 c_\psi + \lambda_2 s_\psi)\\
+        &\ddt\Bigl(-\,I_1\,\omega_1\,s_\theta
+            + (I_2\,\omega_2\,s_\varphi
+            + I_3\,\omega_3\,c_\varphi)\,c_\theta\Bigr) = 0
+    \end{align*}
+    avec les contraintes de roulement
+    \[
+        \left\{
+        \begin{aligned}
+            \dot x - a\,(\dot\varphi\,s_\psi c_\theta
+                + \dot\theta\,c_\psi) &= 0\\
+            \dot y + a\,(\dot\varphi\,c_\psi c_\theta
+                - \dot\theta\,s_\psi) &= 0
+        \end{aligned}
+        \right.
+    \]
+\end{theoreme}

@@ -1,0 +1,291 @@
+% ============================================================================
+%  Chapitre 2, partie I : Mécanique du solide
+%  (manuscrit P1, p. 13 à 19)
+% ============================================================================
+
+% ----------------------------------------------------------------------------
+\section{Mécanique du solide}
+% ----------------------------------------------------------------------------
+
+On considère un solide $\mathcal{B}$ de masse $m$, de centre de masse
+$C$, et un point courant $P\in\mathcal{B}$ de masse élémentaire
+$\dd m$.
+
+% ----------------------------------------------------------------------------
+\subsection{Centre de masse et cinématique}
+
+\subsubsection{Centre de masse}
+
+\begin{definition}[Centre de masse]
+    Le \emph{centre de masse} $C$ est défini par
+    \[
+        \overrightarrow{OC}
+        = \frac{1}{m}\int_{\mathcal{B}} \overrightarrow{OP}\,\dd m,
+        \qquad m = \int_{\mathcal{B}} \dd m
+    \]
+\end{definition}
+
+En écrivant $\overrightarrow{OP} = \overrightarrow{OC}
++ \overrightarrow{CP}$,
+\[
+    \overrightarrow{OC}
+    = \frac{1}{m}\int_{\mathcal{B}} \overrightarrow{OC}\,\dd m
+    + \frac{1}{m}\int_{\mathcal{B}} \overrightarrow{CP}\,\dd m
+    = \overrightarrow{OC}
+    + \frac{1}{m}\int_{\mathcal{B}} \overrightarrow{CP}\,\dd m
+    \longleftrightarrow
+    \int_{\mathcal{B}} \overrightarrow{CP}\,\dd m = \vect{0}
+\]
+
+\subsubsection{Champ des vitesses d'un solide}
+
+Soient deux points $A$ et $B$ fixes dans un repère $\rep{j}$ en
+mouvement par rapport à un repère $\rep{i}$ d'origine $O_i$. La vitesse
+de $B$ par rapport à $\rep{i}$ est par définition
+\[
+    \vect{v}_{B/i}
+    = \left(\ddt\overrightarrow{O_iB}\right)_{\rep{i}}
+    = \left(\ddt\overrightarrow{O_iA}\right)_{\rep{i}}
+    + \left(\ddt\overrightarrow{AB}\right)_{\rep{i}}
+    = \vect{v}_{A/i}
+    + \left(\ddt\overrightarrow{AB}\right)_{\rep{i}}
+\]
+
+\begin{theoreme}[Dérivation en base mobile]
+    Soient deux repères $\rep{i}$ et $\rep{j}$, $\rep{j}$ étant en
+    mouvement par rapport à $\rep{i}$ avec la vitesse angulaire
+    $\vect{\Omega}_{j/i}$. Pour deux points $A$ et $B$,
+    \[
+        \left(\ddt\overrightarrow{AB}\right)_{\rep{i}}
+        = \left(\ddt\overrightarrow{AB}\right)_{\rep{j}}
+        + \vect{\Omega}_{j/i}\wedge\overrightarrow{AB}
+    \]
+\end{theoreme}
+
+Si $A$ et $B$ sont fixes dans $\rep{j}$, $\overrightarrow{AB}$ y est
+constant et
+\[
+    \vect{v}_{B/i} = \vect{v}_{A/i}
+    + \vect{\Omega}_{j/i}\wedge\overrightarrow{AB}
+\]
+Appliquée au solide, avec $\vect{\Omega}$ sa vitesse angulaire, cette
+relation donne le \emph{champ des vitesses}
+\[
+    \vect{v}_P = \vect{v}_C + \vect{\Omega}\wedge\overrightarrow{CP}
+\]
+
+\subsubsection{Champ des accélérations}
+
+En dérivant le champ des vitesses dans $\rep{i}$,
+\[
+    \vect{a}_P = \dot{\vect{v}}_P
+    = \dot{\vect{v}}_C
+    + \dot{\vect{\Omega}}\wedge\overrightarrow{CP}
+    + \vect{\Omega}\wedge
+    \left(\ddt\overrightarrow{CP}\right)_{\rep{i}}
+\]
+et, puisque $\bigl(\ddt\overrightarrow{CP}\bigr)_{\rep{i}}
+= \vect{\Omega}\wedge\overrightarrow{CP}$,
+
+\begin{proposition}[Champ des accélérations]
+    \[
+        \vect{a}_P = \vect{a}_C
+        + \dot{\vect{\Omega}}\wedge\overrightarrow{CP}
+        + \vect{\Omega}\wedge\bigl(\vect{\Omega}\wedge
+        \overrightarrow{CP}\bigr)
+    \]
+\end{proposition}
+
+% ----------------------------------------------------------------------------
+\subsection{Quantité de mouvement et loi de Newton}
+
+\begin{definition}[Quantité de mouvement du solide]
+    \[
+        \vect{P} = \int_{\mathcal{B}} \vect{v}_P\,\dd m
+    \]
+\end{definition}
+
+Avec le champ des vitesses et $\int_{\mathcal{B}}\overrightarrow{CP}\,
+\dd m = \vect{0}$, on obtient $\vect{P} = m\,\vect{v}_C$
+
+\begin{theoreme}[Loi de Newton]
+    Dans un repère galiléen, si $\vect{F}_{\mathrm{ext}}$ est la
+    résultante des actions extérieures,
+    \[
+        \ddt\vect{P} = \vect{F}_{\mathrm{ext}},
+        \qquad\text{donc}\qquad
+        m\,\vect{a}_C = \vect{F}_{\mathrm{ext}}
+    \]
+\end{theoreme}
+
+% ----------------------------------------------------------------------------
+\subsection{Tenseur d'inertie et moment cinétique}
+
+\begin{definition}[Moment cinétique]
+    Le \emph{moment cinétique} au centre de masse est
+    \[
+        \vect{L}_C = \int_{\mathcal{B}}
+        \overrightarrow{CP}\wedge\vect{v}_P\,\dd m
+    \]
+\end{definition}
+
+En posant $\vect{r} = \overrightarrow{CP}$, le champ des vitesses donne
+\[
+    \vect{L}_C = \int_{\mathcal{B}}
+    \vect{r}\wedge(\vect{\Omega}\wedge\vect{r})\,\dd m,
+    \qquad\text{car}\qquad
+    \int_{\mathcal{B}} \vect{r}\wedge\vect{v}_C\,\dd m
+    = \left(\int_{\mathcal{B}}\vect{r}\,\dd m\right)\wedge\vect{v}_C
+    = \vect{0}
+\]
+
+\begin{proposition}[Double produit vectoriel]
+    \[
+        \vect{r}\wedge(\vect{\Omega}\wedge\vect{r})
+        = \|\vect{r}\|^2\vect{\Omega} - \vect{r}\,(\vect{r}^T\vect{\Omega})
+        = \bigl(\|\vect{r}\|^2\Id - \vect{r}\vect{r}^T\bigr)\vect{\Omega}
+    \]
+\end{proposition}
+
+On obtient alors
+\[
+    \vect{L}_C = \left(\int_{\mathcal{B}}
+    \bigl(\|\vect{r}\|^2\Id - \vect{r}\vect{r}^T\bigr)\dd m\right)
+    \vect{\Omega}
+\]
+
+\begin{definition}[Tenseur d'inertie autour de $C$]
+    \[
+        \mat{I}_C = \int_{\mathcal{B}}
+        \bigl(\|\vect{r}\|^2\Id - \vect{r}\vect{r}^T\bigr)\dd m,
+        \qquad
+        \vect{L}_C = \mat{I}_C\,\vect{\Omega}
+    \]
+\end{definition}
+
+\begin{theoreme}[Propriétés du tenseur d'inertie]
+    \leavevmode
+    \begin{itemize}
+        \item $\mat{I}_C$ est symétrique : $\mat{I}_C^T = \mat{I}_C$ ;
+        \item $\mat{I}_C$ est positive : pour tout $\vect{u}\in\R^3$,  c'est-à-dire
+            \[
+                \vect{u}^T\mat{I}_C\,\vect{u}
+                = \int_{\mathcal{B}}\|\vect{r}\wedge\vect{u}\|^2\,\dd m
+                \geq 0
+            \]
+    \end{itemize}
+    Par le théorème spectral, $\mat{I}_C$ est donc diagonalisable en
+    base orthonormée : dans la base des \emph{axes principaux
+    d'inertie},
+    \[
+        \mat{I}_C = \mathrm{diag}(I_1,I_2,I_3),
+        \qquad I_1, I_2, I_3 \geq 0
+    \]
+\end{theoreme}
+
+% ----------------------------------------------------------------------------
+\subsection{Théorème du moment cinétique}
+
+On note $\vect{M}_C^{\mathrm{ext}}$ le moment résultant des actions
+extérieures autour de $C$.
+
+\begin{theoreme}[Théorème du moment cinétique]
+    \[
+        \left(\ddt\vect{L}_C\right)_{\text{galiléen}}
+        = \vect{M}_C^{\mathrm{ext}}
+    \]
+\end{theoreme}
+
+% ----------------------------------------------------------------------------
+\subsection{Théorèmes de König}
+
+\begin{theoreme}[Premier théorème de König]
+    Pour tout point $A$,
+    \[
+        \vect{L}_A = \vect{L}_C
+        + \overrightarrow{AC}\wedge m\,\vect{v}_C
+    \]
+\end{theoreme}
+
+\begin{theoreme}[Deuxième théorème de König]
+    L'énergie cinétique d'un corps rigide est
+    \[
+        T = E_K + E_K^*,
+        \qquad
+        E_K = \tfrac12\,m\,\|\vect{v}_C\|^2,
+        \qquad
+        E_K^* = \tfrac12\,\vect{\Omega}^T\mat{I}_C\,\vect{\Omega}
+    \]
+\end{theoreme}
+
+\begin{preuve}
+    Avec $\vect{v}_P = \vect{v}_C + \vect{\Omega}\wedge\vect{r}$,
+    \begin{align*}
+        T &= \frac12\int_{\mathcal{B}}\|\vect{v}_P\|^2\,\dd m
+        = \frac12\int_{\mathcal{B}}
+        \langle\vect{v}_C + \vect{\Omega}\wedge\vect{r},
+        \vect{v}_C + \vect{\Omega}\wedge\vect{r}\rangle\,\dd m\\
+        &= \frac12\,m\,\|\vect{v}_C\|^2
+        + \frac12\int_{\mathcal{B}}\|\vect{\Omega}\wedge\vect{r}\|^2
+        \,\dd m
+        + \Bigl\langle\vect{v}_C,\ \vect{\Omega}\wedge
+        \underbrace{\int_{\mathcal{B}}\vect{r}\,\dd m}_{=\,\vect{0}}
+        \Bigr\rangle
+    \end{align*}
+    Enfin, d'après les propriétés du tenseur d'inertie,
+    \[
+        \frac12\int_{\mathcal{B}}\|\vect{\Omega}\wedge\vect{r}\|^2\,\dd m
+        = \frac12\int_{\mathcal{B}}\|\vect{r}\wedge\vect{\Omega}\|^2\,\dd m
+        = \frac12\,\vect{\Omega}^T\mat{I}_C\,\vect{\Omega}
+        \qedhere
+    \]
+\end{preuve}
+
+\begin{note}
+    $E_K$ est l'énergie cinétique de translation : celle d'un point
+    de masse $m$ placé en $C$. $E_K^*$ est l'énergie liée à la
+    rotation autour du centre de masse.
+\end{note}
+
+% ----------------------------------------------------------------------------
+\newpage
+\subsection{Théorème de Huygens-Steiner}
+
+Ce théorème permet de transporter le tenseur d'inertie du centre de
+masse vers un autre point $A$. On pose $\vect{a} = \overrightarrow{AC}$.
+
+\begin{theoreme}[Huygens-Steiner]
+    \[
+        \mat{I}_A = \mat{I}_C
+        + m\bigl(\|\vect{a}\|^2\Id - \vect{a}\vect{a}^T\bigr)
+    \]
+\end{theoreme}
+
+% ----------------------------------------------------------------------------
+\subsection{Travail et puissance}
+
+\begin{definition}[Puissance]
+    Une force $\vect{F}$ appliquée au point matériel $P$ a pour
+    \emph{puissance}
+    \[
+        \mathcal{P} = \vect{F}\cdot\vect{v}_P
+    \]
+\end{definition}
+
+\begin{definition}[Travail]
+    Le \emph{travail} de cette force entre deux instants $t_1$ et $t_2$
+    est
+    \[
+        W = \int_{t_1}^{t_2}\mathcal{P}(t)\,\dd t
+    \]
+\end{definition}
+
+Pour un solide, avec le champ des vitesses
+$\vect{v}_P = \vect{v}_C + \vect{\Omega}\wedge\overrightarrow{CP}$, la
+puissance totale des actions extérieures s'écrit
+\[
+    \mathcal{P}_{\mathrm{ext}}
+    = \vect{F}_{\mathrm{ext}}\cdot\vect{v}_C
+    + \vect{M}_C^{\mathrm{ext}}\cdot\vect{\Omega}
+\]
+\newpage

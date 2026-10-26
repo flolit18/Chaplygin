@@ -1,0 +1,44 @@
+% ============================================================================
+%  Figure : sphère de Chaplygin sur le plan horizontal, repère sol et
+%  repère corps
+% ============================================================================
+\begin{tikzpicture}[>=Stealth, line cap=round]
+    \def\a{1.5}   % rayon de la sphère
+
+    % sol hachuré
+    \fill[pattern=north east lines] (-3.4,-0.25) rectangle (3.6,0);
+    \draw[thick] (-3.4,0) -- (3.6,0);
+
+    % repère sol
+    \begin{scope}[shift={(-2.9,0.45)}]
+        \draw[->, thick] (0,0) -- (0.9,0) node[below] {$\vect{e}_x$};
+        \draw[->, thick] (0,0) -- (0.5,0.4) node[right] {$\vect{e}_y$};
+        \draw[->, thick] (0,0) -- (0,0.9) node[left] {$\vect{e}_z$};
+        \node[below left] at (0,0) {$O$};
+    \end{scope}
+
+    % sphère
+    \shade[ball color=accent!12] (0,\a) circle (\a);
+    \draw[thick] (0,\a) circle (\a);
+    \draw[gray, densely dashed] (-\a,\a) arc (180:360:\a cm and 0.35cm);
+    \fill (0,\a) circle (1.5pt);
+    \node[below left] at (0,\a) {$G$};
+
+    % repère corps
+    \draw[->, thick, coulprop] (0,\a) -- ++(25:0.9)
+        node[above right=-2pt] {$\vect{b}_1$};
+    \draw[->, thick, coulprop] (0,\a) -- ++(140:0.9)
+        node[above left] {$\vect{b}_2$};
+    \draw[->, thick, coulprop] (0,\a) -- ++(80:1.0)
+        node[above] {$\vect{b}_3$};
+
+    % vecteur GP et point de contact
+    \draw[->, coulthm] (0.08,\a) -- (0.08,0.06)
+        node[pos=0.6, left] {$-a\,\vect{e}_z$};
+    \fill (0,0) circle (1.5pt);
+    \node[below=2pt] at (0,-0.25) {$P$};
+
+    % vitesse angulaire
+    \draw[->, very thick, couldef] (0,\a) -- ++(-25:2.1)
+        node[right] {$\vect{\Omega}$};
+\end{tikzpicture}

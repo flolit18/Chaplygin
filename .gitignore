@@ -1,0 +1,22 @@
+
+# LaTeX
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+# Python
+__pycache__/
+.venv/
+venv/
+# MATLAB
+*.asv
+*.mex*
+slprj/
+# resultats lourds
+*.gif
+Docs/
+Rapport/Code/Final
+Rapport/Manuscrites.vscode/

@@ -1,0 +1,473 @@
+% ============================================================================
+%  Chapitre 4, partie I : Dynamique par blocs de matrices
+%  Matériau déjà rédigé : chapitre4/brouillon_blocs.tex
+% ============================================================================
+
+% ----------------------------------------------------------------------------
+\section{Dynamique par blocs de matrices}
+% ----------------------------------------------------------------------------
+
+% ----------------------------------------------------------------------------
+\subsection{Position du problème}
+
+Simuler la sphère, c'est retrouver $q(t) = (r(t),\alpha(t))$ le long de
+la trajectoire, où $r = (x,y)$ est la position de $G$ dans le plan et
+$\alpha = (\varphi,\theta,\psi)$ l'orientation de la sphère. Cependant, avec le principe d'Alembert, on a deux inconnues qui interviennent en plus
+$\vect{\lambda} = (\lambda_1,\lambda_2)$. On a donc
+$5 + 2 = 7$ inconnues, pour $5$ équations
+d'Euler-Lagrange-d'Alembert et $2$ équations de contrainte.
+
+Ces deux familles d'équations ne sont pas de même nature : les
+premières sont du second ordre en $q$, les secondes du premier ordre,
+et $\vect{\lambda}$ n'y apparaît jamais dérivé. On ne peut donc pas les
+intégrer directement. L'idée est de chercher, à chaque instant, un
+système qui détermine $(\ddot q,\vect{\lambda})$ à partir de
+$(q,\dot q)$ : il suffit ensuite d'intégrer $\ddot q$ dans le temps
+pour obtenir $q(t)$.
+
+% ----------------------------------------------------------------------------
+\subsection{Forme générale}
+
+On considère un lagrangien de la forme
+\[
+    L(q,\dot q) = \tfrac12\,\dot q^T\mat{M}(q)\,\dot q - V(q)
+\]
+où $\mat{M}(q) = \partial^2 T/\partial\dot q^2$ est la matrice de
+masse, symétrique définie positive. C'est la version matricielle de
+l'exemple scalaire du chapitre 1. Comme $\mat{M}$ est symétrique,
+\[
+    \pd{L}{\dot q} = \mat{M}\,\dot q
+    \longrightarrow
+    \ddt\pd{L}{\dot q} = \mat{M}\,\ddot q + \dot{\mat{M}}\,\dot q,
+    \qquad
+    \pd{L}{q} = \tfrac12\,\nabla_q\bigl(\dot q^T\mat{M}\,\dot q\bigr)
+    - \nabla V
+\]
+où $\dot{\mat{M}} = \sum_k \pd{\mat{M}}{q_k}\,\dot q_k$. Les équations
+d'Euler-Lagrange-d'Alembert, sans force non conservative, deviennent
+\[
+    \mat{M}(q)\,\ddot q + \vect{h}(q,\dot q) + \nabla V(q)
+    = \mat{A}(q)^T\vect{\lambda},
+    \qquad
+    \vect{h} = \dot{\mat{M}}\,\dot q
+    - \tfrac12\,\nabla_q\bigl(\dot q^T\mat{M}\,\dot q\bigr)
+\]
+où $\vect{h}$ regroupe les termes quadratiques en $\dot q$. Pour la
+sphère de Chaplygin, $V = m g a$ est constant, donc $\nabla V = 0$.
+
+Ces $5$ équations sont linéaires en $(\ddot q,\vect{\lambda})$, mais
+il en faut $7$. La contrainte $\mat{A}(q)\,\dot q = 0$ ne fait pas
+intervenir $\ddot q$ donc on la dérive par rapport au temps pour obtenir
+deux équations en $\ddot q$,
+\[
+    \mat{A}(q)\,\ddot q + \dot{\mat{A}}\,\dot q = 0,
+    \qquad
+    \dot{\mat{A}} = \sum_k \pd{\mat{A}}{q_k}\,\dot q_k
+\]
+
+\begin{proposition}[Système par blocs]
+    Si la contrainte est vérifiée à l'instant initial, les équations
+    d'Euler-Lagrange-d'Alembert et la contrainte équivalent au système
+    \[
+        \begin{pmatrix}
+            \mat{M}(q) & -\,\mat{A}(q)^T\\
+            \mat{A}(q) & \mat{0}
+        \end{pmatrix}
+        \begin{pmatrix}
+            \ddot q\\ \vect{\lambda}
+        \end{pmatrix}
+        = \begin{pmatrix}
+            -\,\vect{h}(q,\dot q) - \nabla V(q)\\
+            -\,\dot{\mat{A}}\,\dot q
+        \end{pmatrix}
+    \]
+    Si $\mat{M}(q)$ est symétrique définie positive et si
+    $\mat{A}(q)$ est de rang maximal, la matrice du système est
+    inversible : $(q,\dot q)$ permet donc de déterminer $(\ddot q,\vect{\lambda})$.
+\end{proposition}
+
+Pour simuler la sphère, il reste donc à calculer les blocs
+$\mat{M}$, $\vect{h}$, $\mat{A}$ et $\dot{\mat{A}}\,\dot q$.
+
+% ----------------------------------------------------------------------------
+\subsection{Séparation translation et orientation}
+
+On sépare la position de $G$ dans le plan et l'orientation de la
+sphère :
+\[
+    q = (r,\alpha),
+    \qquad
+    r = (x,y),
+    \qquad
+    \alpha = (\varphi,\theta,\psi)
+\]
+D'après le chapitre 3 (I.4.3), la vitesse angulaire dans $\rep{s}$
+s'écrit $\vect{\Omega} = \mat{E}_s(\alpha)\,\dot\alpha$, où
+$\mat{E}_s$ est la matrice de la convention d'Euler $Z$-$Y'$-$X''$. Dans le
+corps, $\vect{\omega} = \mat{R}^T\vect{\Omega}$, donc
+\[
+    \vect{\omega} = \mat{E}(\alpha)\,\dot\alpha,
+    \qquad 
+    \text{avec} \quad
+    \mat{E} = \mat{R}^T\mat{E}_s
+    = \begin{pmatrix}
+        1 & 0 & -s_\theta\\
+        0 & c_\varphi & s_\varphi c_\theta\\
+        0 & -s_\varphi & c_\varphi c_\theta
+    \end{pmatrix}
+\]
+avec $\det\mat{E} = \cos\theta$. De même, la contrainte
+$\mat{A}(q)\,\dot q = 0$ se découpe selon $q = (r,\alpha)$ :
+\[
+    \mat{A} = \begin{pmatrix} \Id_2 & \mat{A}_\alpha(\alpha)
+    \end{pmatrix}
+    \longleftrightarrow
+    \dot r + \mat{A}_\alpha\,\dot\alpha = 0
+\]
+\begin{remarque}
+    Lorsque le pitch $\theta = \pm \frac{\pi}{2}$, on aura la dégénéresance, et le système n'est plus solvable. Ainsi, pour la simulation numérique, il faut encoder 
+    l'orientation par quaternion.
+\end{remarque}
+% ----------------------------------------------------------------------------
+\subsection{Calcul des blocs}
+
+\subsubsection{Matrice de masse}
+
+D'après le théorème de König, avec
+$\vect{\omega} = \mat{E}(\alpha)\,\dot\alpha$,
+\[
+    T = \tfrac12\,m\,\dot r^T\dot r
+    + \tfrac12\,\vect{\omega}^T\mat{I}_b\,\vect{\omega}
+    = \tfrac12\,m\,\dot r^T\dot r
+    + \tfrac12\,\dot\alpha^T\mat{E}^T\mat{I}_b\,\mat{E}\,\dot\alpha
+    = \tfrac12\,\dot q^T\mat{M}\,\dot q
+\]
+d'où la matrice de masse, diagonale par blocs,
+\[
+    \mat{M} = \begin{pmatrix}
+        m\,\Id_2 & \mat{0}\\
+        \mat{0} & \mat{M}_\alpha
+    \end{pmatrix},
+    \qquad
+    \mat{M}_\alpha = \mat{E}^T\mat{I}_b\,\mat{E}
+\]
+Avec $\mat{I}_b = \mathrm{diag}(I_1,I_2,I_3)$ et l'expression de
+$\mat{E}$,
+\[
+    \mat{M}_\alpha = \begin{pmatrix}
+        I_1 & 0 & -I_1 s_\theta\\
+        0 & I_2 c_\varphi^2 + I_3 s_\varphi^2
+            & (I_2 - I_3)\,s_\varphi c_\varphi c_\theta\\
+        -I_1 s_\theta & (I_2 - I_3)\,s_\varphi c_\varphi c_\theta
+            & I_1 s_\theta^2 + (I_2 s_\varphi^2 + I_3 c_\varphi^2)\,
+            c_\theta^2
+    \end{pmatrix}
+\]
+
+\subsubsection{Termes quadratiques}
+
+Comme $\mat{M}$ ne dépend que de $\alpha$, et pas de $r$, et que son
+bloc $m\,\Id_2$ est constant, la partie de $\vect{h}$ en $r$ s'annule :
+\[
+    \vect{h} = \begin{pmatrix} \vect{0}\\ \vect{h}_\alpha \end{pmatrix},
+    \qquad
+    \vect{h}_\alpha = \dot{\mat{M}}_\alpha\,\dot\alpha
+    - \tfrac12\,\nabla_\alpha\bigl(\dot\alpha^T\mat{M}_\alpha\,\dot\alpha\bigr)
+\]
+Ce calcul direct est lourd, car il faut dériver chaque coefficient de
+$\mat{M}_\alpha$. On passe plutôt par $\vect{\omega}$. L'énergie de
+rotation s'écrit
+\[
+    T_\alpha = \tfrac12\,\vect{\omega}^T\mat{I}_b\,\vect{\omega}
+    = \tfrac12\,\dot\alpha^T\mat{M}_\alpha\,\dot\alpha,
+    \qquad
+    \vect{\omega} = \mat{E}(\alpha)\,\dot\alpha
+\]
+et, on a
+$\ddt\pd{T_\alpha}{\dot\alpha} - \pd{T_\alpha}{\alpha}
+= \mat{M}_\alpha\,\ddot\alpha + \vect{h}_\alpha$. Par la règle de chaîne,
+\[
+    \pd{T_\alpha}{\dot\alpha}
+    = \Bigl(\pd{\vect{\omega}}{\dot\alpha}\Bigr)^T\mat{I}_b\,\vect{\omega}
+    = \mat{E}^T\mat{I}_b\,\vect{\omega},
+    \qquad
+    \pd{T_\alpha}{\alpha}
+    = \Bigl(\pd{\vect{\omega}}{\alpha}\Bigr)^T\mat{I}_b\,\vect{\omega}
+\]
+où $\pd{\vect{\omega}}{\alpha}$ est la jacobienne de $\vect{\omega}$
+par rapport à $\alpha$, à $\dot\alpha$ fixé. On en déduit
+\[
+    \ddt\pd{T_\alpha}{\dot\alpha} - \pd{T_\alpha}{\alpha}
+    = \mat{E}^T\mat{I}_b\,\dot{\vect{\omega}}
+    + \Bigl(\dot{\mat{E}} - \pd{\vect{\omega}}{\alpha}\Bigr)^T
+    \mat{I}_b\,\vect{\omega}
+\]
+
+On note $\vect{e}_j$ la $j$-ième colonne de
+$\mat{E}$, $\partial_k = \partial/\partial\alpha_k$, pour la compacité, on va utiliser la notation d'Einstein. Alors
+$\vect{\omega} = \vect{e}_k\,\dot\alpha_k$, et les $j$-ièmes colonnes
+de $\dot{\mat{E}}$ et de $\pd{\vect{\omega}}{\alpha}$ sont
+\[
+    \dot{\mat{E}}_{\cdot j} = (\partial_k\vect{e}_j)\,\dot\alpha_k,
+    \qquad
+    \Bigl(\pd{\vect{\omega}}{\alpha}\Bigr)_{\!\cdot j}
+    = \partial_j\bigl(\vect{e}_k\,\dot\alpha_k\bigr)
+    = (\partial_j\vect{e}_k)\,\dot\alpha_k
+\]
+d'où
+\[
+    \Bigl(\dot{\mat{E}} - \pd{\vect{\omega}}{\alpha}\Bigr)_{\!\cdot j}
+    = \bigl(\partial_k\vect{e}_j - \partial_j\vect{e}_k\bigr)\,
+    \dot\alpha_k
+\]
+
+\begin{proposition}[Colonnes de $\mat{E}$]
+    Pour tous $j,k$, les colonnes de $\mat{E}$ vérifient
+    \[
+        \partial_k\vect{e}_j - \partial_j\vect{e}_k
+        = \vect{e}_j\wedge\vect{e}_k
+    \]
+\end{proposition}
+
+\begin{demonstration}
+    Par la règle de chaîne, $\dot{\mat{R}} = (\partial_k\mat{R})\,
+    \dot\alpha_k$, et sachant que l'on a : $\vect{\omega} = \vect{e_k} \dot{\alpha}_k$, par linéarité on obtiendras $\hatx{\vect{\omega}} = \hatx{e_k \dot{\alpha}_k}$ d'où $\hatx{\vect{\omega}} = \hatx{\vect{e}_k}\,
+    \dot\alpha_k$. La proposition 2.18 donne
+    $(\mat{R}^T\partial_k\mat{R})\,\dot\alpha_k
+    = \hatx{\vect{e}_k}\,\dot\alpha_k$ pour tout $\dot\alpha$, donc on a : 
+    \[
+        \partial_k\mat{R} = \mat{R}\,\hatx{\vect{e}_k}
+    \]
+    En dérivant par rapport à $\alpha_j$, puis en utilisant la relation que l'on vient d'obtenir on a : 
+    \[
+        \partial_j\partial_k\mat{R}
+        = (\partial_j\mat{R})\,\hatx{\vect{e}_k}
+        + \mat{R}\,\hatx{\partial_j\vect{e}_k}
+        = \mat{R}\bigl(\hatx{\vect{e}_j}\hatx{\vect{e}_k}
+        + \hatx{\partial_j\vect{e}_k}\bigr)
+    \]
+    D'après le théorème de Schwarz, on a
+    $\partial_j\partial_k\mat{R} = \partial_k\partial_j\mat{R}$, donc
+    \[
+        \begin{aligned}
+            &\partial_{jk}\mat{R} - \partial_{kj}\mat{R} = \mat{0}\\
+            \longleftrightarrow\;
+            &\mat{R}\bigl(\hatx{\vect{e}_j}\hatx{\vect{e}_k}
+            + \hatx{\partial_j\vect{e}_k}\bigr)
+            - \mat{R}\bigl(\hatx{\vect{e}_k}\hatx{\vect{e}_j}
+            + \hatx{\partial_k\vect{e}_j}\bigr) = \mat{0}
+        \end{aligned}
+    \]
+
+    Comme les indices $j$ et $k$ sont arbitraires, $\partial_{kj}\mat{R}$
+    s'obtient en échangeant $j$ et $k$ dans l'expression de
+    $\partial_{jk}\mat{R}$. En simplifiant par $\mat{R}$ inversible
+    ($\mat{R}^{-1} = \mat{R}^T$), on obtient alors :
+    \[
+        \hatx{\partial_k\vect{e}_j - \partial_j\vect{e}_k}
+        = \hatx{\vect{e}_j}\hatx{\vect{e}_k}
+        - \hatx{\vect{e}_k}\hatx{\vect{e}_j}
+    \]
+    Enfin, pour tout $\vect{w}$, avec le double produit vectoriel,
+    \[
+        \begin{aligned}
+            \bigl(\hatx{\vect{u}}\hatx{\vect{v}}
+            - \hatx{\vect{v}}\hatx{\vect{u}}\bigr)\vect{w}
+            &= \vect{u}\wedge(\vect{v}\wedge\vect{w})
+            - \vect{v}\wedge(\vect{u}\wedge\vect{w})\\
+            &= \vect{v}\,(\vect{u}\cdot\vect{w})
+            - \vect{w}\,(\vect{u}\cdot\vect{v})
+            - \vect{u}\,(\vect{v}\cdot\vect{w})
+            + \vect{w}\,(\vect{v}\cdot\vect{u})\\
+            &= \vect{v}\,(\vect{u}\cdot\vect{w})
+            - \vect{u}\,(\vect{v}\cdot\vect{w})
+            = (\vect{u}\wedge\vect{v})\wedge\vect{w}
+        \end{aligned}
+    \]
+    donc $\hatx{\vect{u}}\hatx{\vect{v}} - \hatx{\vect{v}}\hatx{\vect{u}}
+    = \hatx{\vect{u}\wedge\vect{v}}$.
+\end{demonstration}
+
+D'après cette proposition, la $j$-ième colonne de
+$\dot{\mat{E}} - \pd{\vect{\omega}}{\alpha}$ vaut
+\[
+    \Bigl(\dot{\mat{E}} - \pd{\vect{\omega}}{\alpha}\Bigr)_{\!\cdot j}
+    = (\vect{e}_j\wedge\vect{e}_k)\,\dot\alpha_k
+    = \vect{e}_j\wedge(\vect{e}_k\,\dot\alpha_k)
+    = \vect{e}_j\wedge\vect{\omega}
+\]
+La $j$-ième composante de
+$\bigl(\dot{\mat{E}} - \pd{\vect{\omega}}{\alpha}\bigr)^T
+\mat{I}_b\,\vect{\omega}$ est donc un produit mixte :
+\[
+    (\vect{e}_j\wedge\vect{\omega})\cdot\mat{I}_b\,\vect{\omega}
+    = \det\bigl(\vect{e}_j,\vect{\omega},\mat{I}_b\,\vect{\omega}\bigr)
+\]
+
+Ici, on fait une permutation paire ($1 \leftrightarrow 3 \longrightarrow 1 \leftrightarrow 2$), ce qui ne change pas le déterminant : 
+\[
+    \det\bigl(\vect{e}_j,\vect{\omega},\mat{I}_b\,\vect{\omega}\bigr)
+    = \det\bigl(\vect{\omega},\mat{I}_b\,\vect{\omega},\vect{e}_j\bigr)
+    = \vect{e}_j\cdot\bigl(\vect{\omega}\wedge(\mat{I}_b\,\vect{\omega})\bigr)
+\]
+Puisque $\vect{e}_j$ est la $j$-ième colonne de $\mat{E}$,
+$\vect{e}_j\cdot\vect{v}$ est la $j$-ième composante de
+$\mat{E}^T\vect{v}$, d'où
+
+\[
+    \Bigl(\dot{\mat{E}} - \pd{\vect{\omega}}{\alpha}\Bigr)^T
+    \mat{I}_b\,\vect{\omega}
+    = \mat{E}^T\bigl(\vect{\omega}\wedge(\mat{I}_b\,\vect{\omega})\bigr)
+\]
+On retrouve ici le terme gyroscopique
+$\vect{\omega}\wedge(\mat{I}_b\,\vect{\omega})$.
+
+On calcule le premier terme. En dérivant $\vect{\omega} = \mat{E}\,\dot\alpha$,
+on a $\dot{\vect{\omega}} = \mat{E}\,\ddot\alpha + \dot{\mat{E}}\,\dot\alpha$,
+donc
+\[
+    \mat{E}^T\mat{I}_b\,\dot{\vect{\omega}}
+    = \mat{E}^T\mat{I}_b\,\mat{E}\,\ddot\alpha
+    + \mat{E}^T\mat{I}_b\,\dot{\mat{E}}\,\dot\alpha
+    = \mat{M}_\alpha\,\ddot\alpha
+    + \mat{E}^T\mat{I}_b\,\dot{\mat{E}}\,\dot\alpha
+\]
+En rassemblant les deux termes, on a
+\[
+    \ddt\pd{T_\alpha}{\dot\alpha} - \pd{T_\alpha}{\alpha}
+    = \mat{M}_\alpha\,\ddot\alpha
+    + \mat{E}^T\bigl(\mat{I}_b\,\dot{\mat{E}}\,\dot\alpha
+    + \vect{\omega}\wedge(\mat{I}_b\,\vect{\omega})\bigr)
+\]
+et, par identification avec $\mat{M}_\alpha\,\ddot\alpha + \vect{h}_\alpha$,
+on déduit : 
+
+\begin{proposition}[Termes quadratiques]
+    Le terme quadratique du modèle de simulation de la sphère de Chaplygin est
+    \[
+        \vect{h} = \begin{pmatrix} \vect{0}\\ \vect{h}_\alpha \end{pmatrix},
+        \qquad
+        \vect{h}_\alpha = \mat{E}^T\bigl(\mat{I}_b\,\dot{\mat{E}}\,\dot\alpha
+        + \vect{\omega}\wedge(\mat{I}_b\,\vect{\omega})\bigr),
+        \qquad
+        \vect{\omega} = \mat{E}\,\dot\alpha
+    \]
+\end{proposition}
+
+\subsubsection{Contrainte}
+
+D'après la forme matricielle de la contrainte que l'on a obtenue en chapitre 3, le bloc
+d'orientation de $\mat{A} = \begin{pmatrix} \Id_2 & \mat{A}_\alpha
+\end{pmatrix}$ est
+\[
+    \mat{A}_\alpha = a\begin{pmatrix}
+        -s_\psi c_\theta & -c_\psi & 0\\
+        c_\psi c_\theta & -s_\psi & 0
+    \end{pmatrix}
+\]
+Le bloc $\Id_2$ est constant, donc
+$\dot{\mat{A}}\,\dot q = \dot{\mat{A}}_\alpha\,\dot\alpha$. Comme
+$\mat{A}_\alpha$ ne dépend que de $\theta$ et $\psi$,
+$\dot{\mat{A}}_\alpha = \partial_\theta\mat{A}_\alpha\,\dot\theta
++ \partial_\psi\mat{A}_\alpha\,\dot\psi$, soit
+\[
+    \dot{\mat{A}}_\alpha = a\begin{pmatrix}
+        -\dot\psi\,c_\psi c_\theta + \dot\theta\,s_\psi s_\theta
+            & \dot\psi\,s_\psi & 0\\
+        -\dot\psi\,s_\psi c_\theta - \dot\theta\,c_\psi s_\theta
+            & -\dot\psi\,c_\psi & 0
+    \end{pmatrix}
+\]
+d'où
+\[
+    \dot{\mat{A}}_\alpha\,\dot\alpha = a\begin{pmatrix}
+        -\dot\varphi\dot\psi\,c_\psi c_\theta
+        + \dot\varphi\dot\theta\,s_\psi s_\theta
+        + \dot\theta\dot\psi\,s_\psi\\
+        -\dot\varphi\dot\psi\,s_\psi c_\theta
+        - \dot\varphi\dot\theta\,c_\psi s_\theta
+        - \dot\theta\dot\psi\,c_\psi
+    \end{pmatrix}
+\]
+
+% ----------------------------------------------------------------------------
+\subsection{Système par blocs de la sphère}
+
+On rassemblent alors les blocs du système, en séparant le mouvement translationnel et l'orientation et contraintes, on a avec $q = (r,\alpha)$ et
+$\mat{A}^T\vect{\lambda} = (\vect{\lambda},\,\mat{A}_\alpha^T\vect{\lambda})$ : 
+
+\begin{theoreme}[Modèle de simulation de la sphère de Chaplygin]
+    Tant que $\cos\theta \neq 0$, l'état $(r,\alpha,\dot r,\dot\alpha)$
+    détermine de manière unique $(\ddot r,\ddot\alpha,\vect{\lambda})$,
+    solution de
+    \[
+        \begin{pmatrix}
+            m\,\Id_2 & \mat{0} & -\,\Id_2\\
+            \mat{0} & \mat{M}_\alpha & -\,\mat{A}_\alpha^T\\
+            \Id_2 & \mat{A}_\alpha & \mat{0}
+        \end{pmatrix}
+        \begin{pmatrix}
+            \ddot r\\ \ddot\alpha\\ \vect{\lambda}
+        \end{pmatrix}
+        = \begin{pmatrix}
+            \vect{0}\\
+            -\,\vect{h}_\alpha\\
+            -\,\dot{\mat{A}}_\alpha\,\dot\alpha
+        \end{pmatrix}
+    \]
+    avec $\mat{M}_\alpha = \mat{E}^T\mat{I}_b\,\mat{E}$,
+    $\vect{h}_\alpha = \mat{E}^T\bigl(\mat{I}_b\,\dot{\mat{E}}\,\dot\alpha
+    + \vect{\omega}\wedge(\mat{I}_b\,\vect{\omega})\bigr)$,
+    $\vect{\omega} = \mat{E}\,\dot\alpha$, et $\mat{A}_\alpha$,
+    $\dot{\mat{A}}_\alpha\,\dot\alpha$ donnés en 4.3.
+\end{theoreme}
+
+% ----------------------------------------------------------------------------
+\subsection{Système réduit}
+
+Apparemment, le système a 7 inconnues, mais on peut voir directement dans le théorème ci-dessus que la troisième ligne donne directement $\ddot{r}$ et la première ligne donne ensuite $\vect{\lambda}$, les deux en fonction de $\alpha$ : 
+\[
+    \ddot r = -\,\bigl(\mat{A}_\alpha\,\ddot\alpha
+    + \dot{\mat{A}}_\alpha\,\dot\alpha\bigr),
+    \qquad
+    \vect{\lambda} = m\,\ddot r
+    = -\,m\,\bigl(\mat{A}_\alpha\,\ddot\alpha
+    + \dot{\mat{A}}_\alpha\,\dot\alpha\bigr)
+\]
+En reportant $\vect{\lambda}$ dans la deuxième ligne,
+$\mat{M}_\alpha\,\ddot\alpha + \vect{h}_\alpha
+= -\,m\,\mat{A}_\alpha^T\bigl(\mat{A}_\alpha\,\ddot\alpha
++ \dot{\mat{A}}_\alpha\,\dot\alpha\bigr)$, d'où le résultat suivant : 
+
+\begin{corollaire}[Système réduit]
+    Tant que $\cos\theta \neq 0$, l'orientation vérifie
+    \[
+        \bigl(\mat{M}_\alpha + m\,\mat{A}_\alpha^T\mat{A}_\alpha\bigr)\,
+        \ddot\alpha
+        = -\,\vect{h}_\alpha
+        - m\,\mat{A}_\alpha^T\dot{\mat{A}}_\alpha\,\dot\alpha
+    \]
+    et la position et les réactions s'en déduisent par
+    \[
+        \dot r = -\,\mat{A}_\alpha\,\dot\alpha,
+        \qquad
+        \ddot r = -\,\bigl(\mat{A}_\alpha\,\ddot\alpha
+        + \dot{\mat{A}}_\alpha\,\dot\alpha\bigr),
+        \qquad
+        \vect{\lambda} = m\,\ddot r
+    \]
+\end{corollaire}
+
+On n'intègre donc que $\alpha$, système $3\times3$ au lieu de $7\times7$,
+et la contrainte $\dot r = -\,\mat{A}_\alpha\,\dot\alpha$ est vérifiée
+par construction. La matrice
+$\mat{M}_\alpha + m\,\mat{A}_\alpha^T\mat{A}_\alpha$ est l'inertie
+autour du point de contact $P$ : avec $\vect{\Omega} = \mat{E}_s\,\dot\alpha$,
+\[
+    \mat{M}_\alpha + m\,\mat{A}_\alpha^T\mat{A}_\alpha
+    = \mat{E}_s^T\,\mat{I}_P\,\mat{E}_s,
+    \qquad
+    \mat{I}_P = \mat{I}_G + m\,a^2\bigl(\Id - \vect{e}_z\vect{e}_z^T\bigr)
+\]
+où $\mat{I}_G = \mat{R}\,\mat{I}_b\,\mat{R}^T$, d'après le théorème de
+Huygens-Steiner avec $\overrightarrow{GP} = -\,a\,\vect{e}_z$.

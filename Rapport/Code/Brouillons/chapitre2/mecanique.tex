@@ -1,0 +1,657 @@
+% ============================================================================
+%  Chapitre 2, partie IV : Mécanique analytique
+%  (manuscrit P2, p. 11 à 24, et P3, p. 1 à 2)
+% ============================================================================
+
+% ----------------------------------------------------------------------------
+\section{Mécanique analytique}
+% ----------------------------------------------------------------------------
+
+% ----------------------------------------------------------------------------
+\subsection{Forces généralisées et travail virtuel}
+
+\subsubsection{Déplacements virtuels et travail virtuel}
+
+\paragraph{Variation de la position d'un point}
+
+Soit un système décrit localement par les coordonnées
+$q = (q_1,\dots,q_n)$. La position d'un point matériel $M_a$ s'écrit
+$\vect{r}_a = \vect{r}_a(q,t)$. Pour une variation de configuration à
+temps fixé, $\delta t = 0$, sa variation de position est
+\[
+    \delta\vect{r}_a = \sum_{i=1}^{n}\pd{\vect{r}_a}{q_i}\,\delta q_i
+\]
+En notant $\mat{J}_a$ la jacobienne de $\vect{r}_a$ par rapport à $q$,
+\[
+    \mat{J}_a(q,t) = \begin{bmatrix}
+        \pd{\vect{r}_a}{q_1} & \cdots & \pd{\vect{r}_a}{q_n}
+    \end{bmatrix},
+    \qquad
+    \delta\vect{r}_a = \mat{J}_a(q,t)\,\delta q
+\]
+
+\paragraph{Travail virtuel}
+
+\begin{definition}[Travail virtuel d'une force]
+    Le \emph{travail virtuel} d'une force $\vect{F}_a$ appliquée au
+    point $M_a$ est
+    \[
+        \delta W_a = \vect{F}_a\cdot\delta\vect{r}_a
+    \]
+    Pour $N$ forces, $\delta W = \sum_{a=1}^{N}\vect{F}_a\cdot
+    \delta\vect{r}_a$.
+\end{definition}
+
+\subsubsection{Forces généralisées}
+
+En remplaçant $\delta\vect{r}_a$ et en échangeant les sommes,
+\[
+    \delta W
+    = \sum_{a=1}^{N}\vect{F}_a\cdot
+    \left(\sum_{i=1}^{n}\pd{\vect{r}_a}{q_i}\,\delta q_i\right)
+    = \sum_{i=1}^{n}\left(\sum_{a=1}^{N}\vect{F}_a\cdot
+    \pd{\vect{r}_a}{q_i}\right)\delta q_i
+\]
+
+\begin{definition}[Force généralisée]
+    La \emph{force généralisée} associée à la coordonnée $q_i$ est le
+    coefficient $Q_i$ de $\delta q_i$ dans le travail virtuel :
+    \[
+        Q_i = \sum_{a=1}^{N}\vect{F}_a\cdot\pd{\vect{r}_a}{q_i},
+        \qquad
+        \vect{Q} = \sum_{a=1}^{N}\mat{J}_a^T\vect{F}_a
+    \]
+    Alors $\delta W = \sum_{i=1}^{n}Q_i\,\delta q_i = \vect{Q}^T\delta q$.
+\end{definition}
+
+\subsubsection{Forces dérivant d'un potentiel}
+
+\begin{definition}[Forces dérivant d'un potentiel]
+    Des forces \emph{dérivent d'une énergie potentielle} $V(q,t)$
+    lorsque leur travail virtuel vérifie, à temps fixé,
+    \[
+        \delta W_{\mathrm{pot}} = -\,\delta V
+    \]
+\end{definition}
+
+Comme $\delta V = \sum_i\pd{V}{q_i}\,\delta q_i$, on identifie
+\[
+    Q_i^{\mathrm{pot}} = -\pd{V}{q_i}
+\]
+Les autres forces appliquées sont dites \emph{non conservatives}, de
+forces généralisées $\vect{Q}^{\mathrm{nc}}$.
+
+\subsubsection{Puissance en coordonnées généralisées}
+
+Si $\vect{r}_a = \vect{r}_a(q)$ ne dépend pas du temps,
+$\dot{\vect{r}}_a = \mat{J}_a\dot q$ et la puissance totale est
+\[
+    \mathcal{P} = \sum_{a=1}^{N}\vect{F}_a\cdot\dot{\vect{r}}_a
+    = \underbrace{\sum_{a=1}^{N}\vect{F}_a^T\mat{J}_a}_{\vect{Q}^T}\,\dot q
+    = \vect{Q}^T\dot q
+\]
+Si $\vect{r}_a = \vect{r}_a(q,t)$, alors $\dot{\vect{r}}_a =
+\mat{J}_a\dot q + \pd{\vect{r}_a}{t}$ et
+\[
+    \mathcal{P} = \vect{Q}^T\dot q
+    + \sum_{a=1}^{N}\vect{F}_a^T\pd{\vect{r}_a}{t}
+\]
+
+% ----------------------------------------------------------------------------
+\subsection{Action et Principe de Hamilton}
+
+On considère un système à contraintes holonomes idéales, décrit par
+les coordonnées généralisées $q$, dont les forces appliquées dérivent
+d'une énergie potentielle $V(q,t)$.
+
+\subsubsection{Le lagrangien}
+
+\begin{definition}[Lagrangien du système]
+    Le \emph{lagrangien} du système est
+    \[
+        L(q,\dot q,t) = T(q,\dot q,t) - V(q,t)
+    \]
+    où $T$ est l'énergie cinétique et $V$ l'énergie potentielle.
+\end{definition}
+
+\subsubsection{L'action}
+
+\begin{definition}[Action]
+    L'\emph{action} associée à une trajectoire $q : [t_0,t_1]\to Q$
+    est
+    \[
+        S[q] = \int_{t_0}^{t_1} L\bigl(q(t),\dot q(t),t\bigr)\,\dd t
+    \]
+\end{definition}
+
+L'action est une fonctionnelle : elle associe un nombre à une
+trajectoire entière. Son unité est le $\mathrm{J\cdot s}$ (joule-seconde). Pour comparer une trajectoire à ses voisines, on introduit
+\[
+    q_\varepsilon(t) = q(t) + \varepsilon\,\eta(t),
+    \qquad \eta(t_0) = \eta(t_1) = 0
+\]
+On fixe les extrêmités donc les perturbations y sont nulles.
+
+\subsubsection{Principe de moindre action}
+
+L'idée de départ est formulée par Maupertuis (Mémoires de l'Académie de Sciences de paris du 15 avril 1744) :
+\begin{quote}
+    \itshape « Lorsqu'il arrive quelque changement dans la Nature, la
+    quantité d'action nécessaire pour ce changement est la plus petite
+    qu'il soit possible. »
+\end{quote}
+Traduisons alors cette idée. Supposons que la trajectoire physique $q^*$
+minimise localement l'action $S$. Pour toute perturbation $\eta$
+s'annulant aux bords, on doit avoir
+\[
+    S[q^* + \varepsilon\eta] \geq S[q^*]
+\]
+pour tout $\varepsilon$ suffisamment petit. La fonction réelle
+$a(\varepsilon) = S[q^* + \varepsilon\eta]$ possède alors un minimum
+en $\varepsilon = 0$, donc $a'(0) = 0$. Une trajectoire qui minimise
+l'action satisfait ainsi
+\[
+    \delta S[q^*;\eta] = 0
+    \qquad \forall\,\eta,\ \eta(t_0) = \eta(t_1) = 0
+\]
+
+\subsubsection{Principe de Hamilton}
+\begin{theoreme}[Principe de Hamilton]
+    La trajectoire physique rend l'action stationnaire parmi les
+    trajectoires voisines ayant les mêmes extrémités :
+    \[
+        \delta S[q;\eta] := \frac{\dd}{\dd\varepsilon}
+        S[q + \varepsilon\eta]\Big|_{\varepsilon=0} = 0
+    \]
+    pour toute variation $\eta$ suffisamment régulière s'annulant aux
+    extrémités.
+\end{theoreme}
+
+\begin{note}
+    Si on déforme légèrement la trajectoire physique en gardant les
+    extrémités fixées, l'action ne change pas au premier ordre. La
+    trajectoire n'est pas forcément un minimum : ce n'est vrai que sur
+    des intervalles de temps assez courts, d'où le terme
+    \emph{stationnaire}.
+\end{note}
+
+% ----------------------------------------------------------------------------
+\subsection{Équations d'Euler-Lagrange}
+
+\subsubsection{Calcul de la première variation}
+
+On effectue ici les mêmes calculs qu'au chapitre 1.
+
+\begin{proposition}[Première variation de l'action]
+    Si $L$ est de classe $C^2$, la trajectoire $q$ de classe $C^2$ et
+    $\eta$ de classe $C^1$ avec $\eta(t_0) = \eta(t_1) = 0$, alors
+    \[
+        \delta S[q;\eta] = \int_{t_0}^{t_1}\sum_{i=1}^{n}
+        \left(\pd{L}{q_i} - \ddt\left(\pd{L}{\dot q_i}\right)\right)
+        \eta_i\,\dd t
+    \]
+\end{proposition}
+
+\begin{demonstration}
+    On a $q_\varepsilon(t) = q(t) + \varepsilon\eta(t)$ avec
+    $\eta(t_0) = \eta(t_1) = 0$, donc $\dot q_\varepsilon(t) =
+    \dot q(t) + \varepsilon\dot\eta(t)$. La fonctionnelle associée à
+    $q_\varepsilon$ est
+    \[
+        S[q_\varepsilon] = \int_{t_0}^{t_1}
+        L(q+\varepsilon\eta,\dot q+\varepsilon\dot\eta,t)\,\dd t
+    \]
+    On calcule alors la première variation en dérivant sous
+    l'intégrale :
+    \[
+        \delta S[q;\eta]
+        = \frac{\dd}{\dd\varepsilon}\left(\int_{t_0}^{t_1}
+        L(q+\varepsilon\eta,\dot q+\varepsilon\dot\eta,t)\,\dd t\right)
+        \bigg|_{\varepsilon=0}
+        = \int_{t_0}^{t_1}\left(\frac{\dd}{\dd\varepsilon}
+        L(q+\varepsilon\eta,\dot q+\varepsilon\dot\eta,t)
+        \Big|_{\varepsilon=0}\right)\dd t
+    \]
+    On considère l'intégrande. Par la règle de chaîne, \textbf{en postulant
+    $q$ et $\dot q$ indépendants},
+    \begin{align*}
+        \frac{\dd}{\dd\varepsilon}
+        L(q+\varepsilon\eta,\dot q+\varepsilon\dot\eta,t)
+        \Big|_{\varepsilon=0}
+        &= \left(\pd{L}{(q+\varepsilon\eta)}\,
+        \pd{(q+\varepsilon\eta)}{\varepsilon}
+        + \pd{L}{(\dot q+\varepsilon\dot\eta)}\,
+        \pd{(\dot q+\varepsilon\dot\eta)}{\varepsilon}\right)
+        \bigg|_{\varepsilon=0}\\
+        &= \pd{L}{q}\,\eta + \pd{L}{\dot q}\,\dot\eta
+    \end{align*}
+    Donc, en écrivant les composantes,
+    \[
+        \delta S[q;\eta] = \int_{t_0}^{t_1}\sum_{i=1}^{n}
+        \left(\pd{L}{q_i}\,\eta_i + \pd{L}{\dot q_i}\,\dot\eta_i\right)
+        \dd t
+    \]
+    On considère ensuite $I := \int_{t_0}^{t_1}\pd{L}{\dot q_i}\,
+    \dot\eta_i\,\dd t$ et on intègre par parties avec
+    \[
+        u = \pd{L}{\dot q_i} \longrightarrow
+        \dd u = \ddt\left(\pd{L}{\dot q_i}\right)\dd t,
+        \qquad
+        \dd v = \dot\eta_i\,\dd t \longrightarrow v = \eta_i
+    \]
+    Comme $\eta_i(t_0) = \eta_i(t_1) = 0$, le terme de bord est nul :
+    \[
+        I = \underbrace{\left[\pd{L}{\dot q_i}\,\eta_i
+        \right]_{t_0}^{t_1}}_{=\,0}
+        - \int_{t_0}^{t_1}\ddt\left(\pd{L}{\dot q_i}\right)\eta_i\,
+        \dd t
+        = -\int_{t_0}^{t_1}\ddt\left(\pd{L}{\dot q_i}\right)\eta_i\,
+        \dd t
+    \]
+    En le réinjectant dans $\delta S$, on obtient le résultat.
+\end{demonstration}
+
+\subsubsection{Équations d'Euler-Lagrange}
+
+Si $\delta S = 0$ pour tout $\eta$, le lemme de Du Bois-Reymond,
+appliqué coordonnée par coordonnée avec $\eta\in C^1$ nulle aux bords,
+donne
+\[
+    \pd{L}{q_i} - \ddt\left(\pd{L}{\dot q_i}\right) = 0
+\]
+
+\begin{theoreme}[Équations d'Euler-Lagrange]
+    Sous les hypothèses de régularité et les conditions aux limites
+    précédentes, $q$ rend l'action stationnaire si et seulement si $q$
+    satisfait les \emph{équations d'Euler-Lagrange} :
+    \[
+        \pd{L}{q_i} - \ddt\left(\pd{L}{\dot q_i}\right) = 0,
+        \qquad i = 1,\dots,n
+    \]
+\end{theoreme}
+
+% ----------------------------------------------------------------------------
+\subsection{Principe de d'Alembert et dynamique non holonome}
+
+On introduit ce principe pour décrire les mouvements sous
+contraintes.
+
+\subsubsection{Principe de d'Alembert}
+
+On considère des points matériels de masses constantes $m_a$ et de
+positions $\vect{r}_a$. On note $\vect{F}_a$ les forces appliquées et
+$\vect{R}_a$ les réactions de liaison. La deuxième loi de Newton donne
+\[
+    m_a\ddot{\vect{r}}_a = \vect{F}_a + \vect{R}_a
+\]
+Pour un déplacement virtuel admissible $\delta\vect{r}_a$, on
+multiplie scalairement puis on somme :
+\[
+    \sum_a(\vect{F}_a - m_a\ddot{\vect{r}}_a)\cdot\delta\vect{r}_a
+    + \sum_a\vect{R}_a\cdot\delta\vect{r}_a = 0
+\]
+
+\begin{hypotheses}[Liaisons idéales]
+    Les réactions ont un travail virtuel total nul pour tous les
+    déplacements virtuels admissibles :
+    \[
+        \sum_a\vect{R}_a\cdot\delta\vect{r}_a = 0
+    \]
+\end{hypotheses}
+
+\begin{theoreme}[Principe de d'Alembert]
+    Pour des liaisons idéales, pour tout déplacement virtuel
+    admissible,
+    \[
+        \sum_a(\vect{F}_a - m_a\ddot{\vect{r}}_a)\cdot
+        \delta\vect{r}_a = 0
+    \]
+\end{theoreme}
+
+\subsubsection{Contraintes cinématiques et déplacements virtuels admissibles}
+
+Les contraintes utilisées sont $\mat{A}(q)\,\dot q = 0$, avec
+$\mat{A}(q)\in\mathcal{M}_{k,n}(\R)$ de rang $k$. Dans le , \textbf{les déplacements virtuels} satisfont
+\[
+    \underbrace{\mat{A}(q)\,\delta q = 0}
+    _{\text{restriction des déplacements virtuels}}
+    \qquad\text{et non}\qquad
+    \underbrace{\mat{A}(q)\,\dot q = 0}
+    _{\text{contrainte sur le mouvement}}
+\]
+
+\subsubsection{De d'Alembert à la formulation lagrangienne}
+
+On considère une variation $\eta(t) = \delta q(t)$ admissible à chaque
+instant et nulle aux extrémités :
+\[
+    \mat{A}\bigl(q(t)\bigr)\,\eta(t) = 0,
+    \qquad \eta(t_0) = \eta(t_1) = 0
+\]
+L'énergie cinétique du système est $T = \frac12\sum_a m_a
+\|\dot{\vect{r}}_a\|^2$, donc à temps fixé
+\[
+    \delta T = \sum_a m_a\dot{\vect{r}}_a\cdot\delta\dot{\vect{r}}_a
+    = \sum_a m_a\dot{\vect{r}}_a\cdot\ddt\delta\vect{r}_a
+\]
+En intégrant par parties, le terme de bord est nul car les variations
+s'annulent aux extrémités :
+\[
+    \int_{t_0}^{t_1}\sum_a m_a\ddot{\vect{r}}_a\cdot\delta\vect{r}_a
+    \,\dd t
+    = \Bigl[\sum_a m_a\dot{\vect{r}}_a\cdot\delta\vect{r}_a
+    \Bigr]_{t_0}^{t_1}
+    - \int_{t_0}^{t_1}\delta T\,\dd t
+    = -\,\delta\int_{t_0}^{t_1}T\,\dd t
+\]
+Par ailleurs, en séparant les forces dérivant d'un potentiel des
+forces non conservatives,
+\[
+    \sum_a\vect{F}_a\cdot\delta\vect{r}_a
+    = -\,\delta V + (\vect{Q}^{\mathrm{nc}})^T\eta
+\]
+Le principe de d'Alembert, intégré entre $t_0$ et $t_1$, devient
+\begin{align*}
+    0 &= \sum_a (\vect{F}_a - m_a \ddot{\vect{r}}_a) \cdot \delta \vect{r}_a \\
+    \leftrightarrow 0 &= \int_{t_0}^{t_1}\Bigl(-\,\delta V
+    + (\vect{Q}^{\mathrm{nc}})^T\eta\Bigr)\dd t
+    - \int_{t_0}^{t_1}\sum_a m_a\ddot{\vect{r}}_a\cdot
+    \delta\vect{r}_a\,\dd t\\
+    &= \int_{t_0}^{t_1}\delta(T - V)\,\dd t
+    + \int_{t_0}^{t_1}(\vect{Q}^{\mathrm{nc}})^T\eta\,\dd t
+    = \delta\int_{t_0}^{t_1}L\,\dd t
+    + \int_{t_0}^{t_1}(\vect{Q}^{\mathrm{nc}})^T\eta\,\dd t
+\end{align*}
+
+\begin{theoreme}[Principe de Lagrange-d'Alembert]
+    Le mouvement vérifie
+    \[
+        \delta S[q;\eta]
+        + \int_{t_0}^{t_1}(\vect{Q}^{\mathrm{nc}})^T\eta\,\dd t = 0
+    \]
+    pour toutes les variations telles que $\mat{A}(q)\,\eta = 0$ et
+    $\eta(t_0) = \eta(t_1) = 0$, et il satisfait
+    $\mat{A}(q)\,\dot q = 0$.
+\end{theoreme}
+
+\subsubsection{Équations d'Euler-Lagrange-d'Alembert}
+
+On introduit
+\[
+    \mathcal{L}(L) = \ddt\pd{L}{\dot q} - \pd{L}{q},
+    \qquad\text{de sorte que}\qquad
+    \delta S[q;\eta] = -\int_{t_0}^{t_1}\mathcal{L}(L)^T\eta\,\dd t
+\]
+Le principe de Lagrange-d'Alembert devient
+\[
+    \int_{t_0}^{t_1}\bigl(\mathcal{L}(L) - \vect{Q}^{\mathrm{nc}}\bigr)^T
+    \eta\,\dd t = 0
+\]
+Le lemme de Du Bois-Reymond, avec les mêmes hypothèses sur $\eta$,
+donne
+\[
+    \bigl(\mathcal{L}(L) - \vect{Q}^{\mathrm{nc}}\bigr)^T\delta q = 0
+    \qquad \forall\,\delta q\in\Ker\mat{A}(q)
+\]
+car $\mat{A}(q)\,\eta = 0 \leftrightarrow \eta\in\Ker\mat{A}(q)$. On
+sait seulement que $\mathcal{L}(L) - \vect{Q}^{\mathrm{nc}}$, la réaction
+généralisée nécessaire pour respecter les contraintes, est orthogonale
+à $\Ker\mat{A}(q)$. Par l'orthogonalité noyau-image,
+\[
+    \mathcal{L}(L) - \vect{Q}^{\mathrm{nc}}\in(\Ker\mat{A})^\perp
+    = \Ima\mat{A}^T
+\]
+Il existe donc $\vect{\lambda}\in\R^k$ tel que
+$\mathcal{L}(L) - \vect{Q}^{\mathrm{nc}} = \mat{A}(q)^T\vect{\lambda}$.
+
+\begin{theoreme}[Équations d'Euler-Lagrange-d'Alembert]
+    Le mouvement est solution de
+    \[
+        \left\{
+        \begin{aligned}
+            &\ddt\pd{L}{\dot q} - \pd{L}{q}
+            = \vect{Q}^{\mathrm{nc}} + \mat{A}(q)^T\vect{\lambda},
+            \qquad \vect{\lambda}\in\R^k\\
+            &\mat{A}(q)\,\dot q = 0
+        \end{aligned}
+        \right.
+    \]
+    où $k$ est le nombre de contraintes et $\mat{A}(q)^T\vect{\lambda}$ les
+    réactions généralisées.
+\end{theoreme}
+
+\subsubsection{Exemple : roue sur ressort et force constante}
+On va faire ici une analyse complète sur l'application de l'équation Euler-Lagrange-d'Alembert sur un modèle proche de ce que l'on va travailler en terme de contraintes.
+
+Une roue (disque) de masse $m$, de rayon $r$ et de moment d'inertie
+$J$ autour de son axe roule sans glisser sur un sol horizontal. Son
+centre est relié à un mur par un ressort de raideur $k$, et on lui
+applique une force horizontale constante $\vect{F} = (F,0)$. On prend
+$q = (x,\varphi)$, où $x$ est la position du centre mesurée depuis la
+longueur à vide du ressort et $\varphi$ l'angle de rotation de la
+roue (\cref{fig-roue-ressort}).
+
+\begin{figure}[H]
+    \centering
+    \input{chapitre2/fig/roue_ressort}
+    \caption{Roue roulant sans glisser, reliée au mur par un ressort
+    et poussée par une force constante $\vect{F}$ ; $\lambda_x$ est le
+    frottement au point de contact $I$.}
+    \label{fig-roue-ressort}
+\end{figure}
+
+\paragraph{Lagrangien, contrainte et force non conservative}
+
+\[
+    L(q,\dot q) = \frac12\,m\,\dot x^2 + \frac12\,J\,\dot\varphi^2
+    - \frac12\,k\,x^2
+\]
+On écrit maintenant la contrainte de roulement sans glissement. On
+munit $\rep{s}$ de la base $(\vect{e}_x,\vect{e}_y,\vect{e}_z)$, avec
+$\vect{e}_x$ horizontal vers la droite, $\vect{e}_y$ vertical vers le
+haut et $\vect{e}_z$ sortant de la figure, et d'origine $O$ au sol
+sous la position $x = 0$. Le centre reste à la hauteur $r$, d'où $\overrightarrow{OC} = x\,\vect{e}_x + r\,\vect{e}_y$
+et
+\[
+    \vect{v}_C = \dot x\,\vect{e}_x
+\]
+Le disque tourne autour de l'axe $\vect{e}_z$, qui est fixe à la fois dans
+$\rep{s}$ et dans $\rep{b}$. Comme $\mat{R}$ est une rotation d'axe
+$\vect{e}_z$, $\mat{R}\,\vect{e}_z = \vect{e}_z$, et avec $+ \varphi$ dans le sens horaire,
+\[
+    \vect{\omega} = -\,\dot\varphi\,\vect{e}_z,
+    \qquad
+    \vect{\Omega} = \mat{R}\,\vect{\omega} = -\,\dot\varphi\,\vect{e}_z
+\]
+Le point de contact $I$ vérifie $\overrightarrow{CI} = -\,r\,\vect{e}_y$.
+Le champ des vitesses du solide donne
+\[
+    \vect{v}_I = \vect{v}_C + \vect{\Omega}\wedge\overrightarrow{CI}
+\]
+avec
+\[
+    \vect{\Omega}\wedge\overrightarrow{CI}
+    = (-\,\dot\varphi\,\vect{e}_z)\wedge(-\,r\,\vect{e}_y)
+    = r\,\dot\varphi\,(\vect{e}_z\wedge\vect{e}_y)
+    = -\,r\,\dot\varphi\,\vect{e}_x
+\]
+d'où
+\[
+    \vect{v}_I = (\dot x - r\,\dot\varphi)\,\vect{e}_x
+\]
+En composantes dans $\rep{s}$, la vitesse du point de contact est
+linéaire en $\dot q$ : on l'écrit avec la \emph{matrice de contrainte
+locale au sol} $\mat{A}_I(q)\in\mathcal{M}_{3,2}(\R)$,
+\[
+    \vect{v}_I
+    = \begin{pmatrix} \dot x - r\,\dot\varphi\\ 0\\ 0 \end{pmatrix}
+    = \underbrace{\begin{pmatrix}
+        1 & -r\\ 0 & 0\\ 0 & 0
+    \end{pmatrix}}_{\mat{A}_I}
+    \begin{pmatrix} \dot x\\ \dot\varphi \end{pmatrix}
+\]
+Le roulement sans glissement impose $\vect{v}_I = \vect{0}$, soit
+$\mat{A}_I\,\dot q = 0$. Les deux dernières lignes de $\mat{A}_I$ sont
+nulles (le centre reste à hauteur $r$ et le mouvement est plan) :
+$\rang\mat{A}_I = 1$ et il ne reste que $k = 1$ contrainte,
+\[
+    \dot x - r\,\dot\varphi = 0
+    \longleftrightarrow
+    \mat{A}(q)\,\dot q = 0,
+    \qquad
+    \mat{A} = \begin{pmatrix} 1 & -r \end{pmatrix}
+\]
+
+\begin{remarque}[Nombre de coordonnées généralisées]
+    Le théorème du rang justifie le choix $q = (x,\varphi)$. On part
+    d'un solide plan libre, décrit par $(x_C,y_C,\varphi)$, soit
+    $3$ degrés de liberté, et on examine la contrainte de non-glissement :
+    \begin{itemize}
+        \item \emph{Contact avec le sol.} Le champ des vitesses donne
+            \[
+                \vect{v}_I
+                = \begin{pmatrix}
+                    \dot x_C - r\,\dot\varphi\\ \dot y_C
+                \end{pmatrix}
+                = \begin{pmatrix}
+                    1 & 0 & -r\\ 0 & 1 & 0
+                \end{pmatrix}
+                \begin{pmatrix}
+                    \dot x_C\\ \dot y_C\\ \dot\varphi
+                \end{pmatrix}
+            \]
+            matrice de rang $2$. La ligne $\dot y_C = 0$ peut s'intégrer en
+            $y_C = r$ : c'est une contrainte holonome de rang $1$, qui
+            retire une coordonnée par définition, d'où $3 - 1 = 2$ coordonnées
+            généralisées, $(x,\varphi)$. La ligne restante est la
+            contrainte de roulement $\mat{A}\,\dot q = 0$, de rang $1$
+            : les vitesses admissibles forment un espace de dimension
+            $2 - 1 = 1$.
+    \end{itemize}
+\end{remarque}
+
+La force $\vect{F}$ est appliquée au centre, donc
+\[
+    \vect{Q}^{\mathrm{nc}} = \begin{pmatrix} F\\ 0 \end{pmatrix}
+\]
+
+\paragraph{Réactions généralisées}
+
+On part de la contrainte locale $\mat{A}_I\,\dot q = 0$ : la liaison
+étant idéale, ses réactions généralisées sont de la forme
+$\mat{A}_I^T\vect{\lambda}$, avec un multiplicateur par ligne,
+$\vect{\lambda} = (\lambda_x,\lambda_y,\lambda_z)\in\R^3$ :
+\[
+    \vect{Q}^r = \mat{A}_I^T\vect{\lambda}
+    = \begin{pmatrix}
+        1 & 0 & 0\\ -r & 0 & 0
+    \end{pmatrix}
+    \begin{pmatrix} \lambda_x\\ \lambda_y\\ \lambda_z \end{pmatrix}
+    = \begin{pmatrix} \lambda_x\\ -\,r\,\lambda_x \end{pmatrix}
+\]
+Ces multiplicateurs ont un sens physique. Comme
+$\vect{v}_I = \mat{A}_I\dot q$, un déplacement virtuel du point
+matériel en $I$ s'écrit $\delta\vect{r}_I = \mat{A}_I\,\delta q$ :
+$\mat{A}_I$ est la jacobienne $\mat{J}_I$ de ce point. Le travail
+virtuel de la force de contact $\vect{N}$ exercée par le sol en $I$ est
+donc
+\[
+    \delta W_r = \vect{N}\cdot\delta\vect{r}_I
+    = \vect{N}^T\mat{A}_I\,\delta q
+    = (\mat{A}_I^T\vect{N})^T\delta q
+\]
+En identifiant avec $\vect{Q}^r = \mat{A}_I^T\vect{\lambda}$, on obtient
+que $\vect{\lambda}$ est la colonne des coordonnées de la force de contact
+$\vect{N}$ dans $\rep{s}$. Ainsi $\lambda_x$ est le frottement
+tangentiel. On garde donc la seule contrainte utile, $\mat{A} = (1\ \ -r)$,
+de multiplicateur $\lambda_x$ :
+\[
+    \vect{Q}^r = \mat{A}^T\lambda_x = \begin{pmatrix} \lambda_x\\ -\,r\,\lambda_x
+    \end{pmatrix}
+\]
+où $-\,r\lambda_x$ est le moment du frottement par rapport à $C$. Enfin,
+pour tout $\delta q\in\Ker\mat{A}$, c'est-à-dire
+$\delta x = r\,\delta\varphi$,
+\[
+    (\vect{Q}^r)^T\delta q = \lambda_x\,(\delta x - r\,\delta\varphi) = 0
+\]
+la liaison est donc bien idéale.
+
+\paragraph{Équations du mouvement}
+
+On calcule les termes du lagrangien, il faut se rappeler que $q$ et $\dot q$
+sont indépendantes :
+\[
+    \pd{L}{\dot x} = m\,\dot x,
+    \qquad
+    \pd{L}{\dot\varphi} = J\,\dot\varphi,
+    \qquad
+    \pd{L}{x} = -\,k\,x,
+    \qquad
+    \pd{L}{\varphi} = 0
+\]
+donc
+\[
+    \mathcal{L}(L) = \ddt\pd{L}{\dot q} - \pd{L}{q}
+    = \begin{pmatrix} m\,\ddot x + k\,x\\ J\,\ddot\varphi \end{pmatrix}
+\]
+Les équations d'Euler-Lagrange-d'Alembert
+$\mathcal{L}(L) = \vect{Q}^{\mathrm{nc}} + \mat{A}^T\lambda_x$ et la
+contrainte donnent
+\[
+    \left\{
+    \begin{aligned}
+        m\,\ddot x + k\,x &= F + \lambda_x\\
+        J\,\ddot\varphi &= -\,r\,\lambda_x\\
+        \dot x &= r\,\dot\varphi
+    \end{aligned}
+    \right.
+\]
+
+\paragraph{Résolution}
+
+La contrainte donne $\ddot\varphi = \ddot x/r$, donc
+$\lambda_x = -J\ddot x/r^2$. En réinjectant dans la première équation,
+\[
+    \Bigl(m + \frac{J}{r^2}\Bigr)\ddot x + k\,x = F
+\]
+C'est un oscillateur harmonique de masse effective
+$m_{\mathrm{eff}} = m + J/r^2$, de pulsation et de position d'équilibre :
+\[
+    \omega_0 = \sqrt{\frac{k}{m_{\mathrm{eff}}}},
+    \qquad
+    x_{\mathrm{eq}} = \frac{F}{k}
+\]
+La solution est $x(t) = x_{\mathrm{eq}} + A\cos(\omega_0 t + \phi)$,
+d'amplitude $A\geq 0$ et de phase $\phi$ fixées par les conditions
+initiales (on ne s'y intéresse pas).
+
+\paragraph{Validité du non-glissement}
+
+Le modèle suppose le roulement sans glissement, mais rien dans les
+équations ne borne $\lambda_x$ pour que le modèle valide la modélisation de non glissement. Il faut donc ainsi vérifier la validité du modèle, avec $\lambda_y = m g$ la réaction normale du sol et $\mu$ le
+coefficient de frottement :
+\[
+    |\lambda_x| \leq \mu\,\lambda_y = \mu\,m\,g
+\]
+Comme $x - x_{\mathrm{eq}} = A\cos(\omega_0 t + \phi)$, on a
+$|x - x_{\mathrm{eq}}|\leq A$, avec égalité aux extrémités de
+l'oscillation. Le frottement y est maximal :
+\[
+    |\lambda_x|_{\max} = \frac{J}{r^2}\,\omega_0^2\,A
+\]
+Pour un disque plein rigide, $J = \tfrac12 m r^2$, donc $J/r^2 = m/2$,
+$m_{\mathrm{eff}} = \tfrac32 m$ et $\omega_0^2 = \frac{2k}{3m}$, d'où
+\[
+    |\lambda_x|_{\max} = \frac{m}{2}\cdot\frac{2k}{3m}\,A = \frac{k A}{3}
+\]
+La roue roule sans glisser tant que $\frac{kA}{3}\leq\mu\,m\,g$,
+c'est-à-dire
+\[
+    A \leq \frac{3\,\mu\,m\,g}{k}
+\]
+Au-delà de cette amplitude, la roue glisse ou la contrainte $\dot x = r\dot\varphi$ ne
+se tient plus et il faut changer de modèle. Tant qu'elle le tient, le point
+de contact a une vitesse nulle et $\lambda_x$ ne travaille pas et la
+liaison est bien idéale.
+\newpage

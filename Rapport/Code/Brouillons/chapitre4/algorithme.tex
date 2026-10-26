@@ -1,0 +1,314 @@
+% ============================================================================
+%  Chapitre 4, partie II : Algorithme de simulation
+% ============================================================================
+
+% ----------------------------------------------------------------------------
+\section{Algorithme de simulation - Orientation en angles d'Euler}
+% ----------------------------------------------------------------------------
+On peut se demander pourquoi on effectue une simulation avec les angles
+d'Euler pour décrire l'orientation, alors que l'on abandonne cette
+piste juste après : la simulation ne tient que tant que
+$|\cos\theta| > \varepsilon$. La raison est simple : c'est la
+traduction directe de tout ce que l'on a développé auparavant. Cette
+simulation montre ce que donne la dynamique : la trajectoire de $G$,
+les angles, les réactions. L'interprétation des quaternions, en
+revanche, n'est pas directe, et intuitive et cette simulation permet donc de fixer
+ce que l'on attend du simulateur en quaternions. C'est pourquoi on ne
+fait pas, dans cette partie, d'analyse de convergence détaillée.
+% ----------------------------------------------------------------------------
+\subsection{Système global}
+
+On note $\mat{K}_\alpha = \mat{M}_\alpha + m\,\mat{A}_\alpha^T\mat{A}_\alpha$.
+D'après le corollaire 4.6, l'état $(r,\alpha,\dot\alpha)$ vérifie le
+système du premier ordre
+\[
+    \ddt\begin{pmatrix} r\\ \alpha\\ \dot\alpha \end{pmatrix}
+    = \begin{pmatrix}
+        -\,\mat{A}_\alpha\,\dot\alpha\\
+        \dot\alpha\\
+        \mat{K}_\alpha^{-1}\bigl(-\,\vect{h}_\alpha
+        - m\,\mat{A}_\alpha^T\dot{\mat{A}}_\alpha\,\dot\alpha\bigr)
+    \end{pmatrix}
+\]
+Les deux dernières lignes ne dépendent pas de $r$. On résout donc
+d'abord $(\alpha,\dot\alpha)$ seul, puis on en déduit $r$ et
+$\vect{\lambda}$.
+
+% ----------------------------------------------------------------------------
+\subsection{Sous-système en orientation}
+
+\begin{proposition}[Sous-système en orientation]
+    On pose $Y = (\alpha,\dot\alpha)$, qui vérifie
+\[
+    \dot Y = f(Y) = \begin{pmatrix} \dot\alpha\\ \ddot\alpha \end{pmatrix},
+    \qquad
+    \mat{K}_\alpha\,\ddot\alpha = -\,\vect{h}_\alpha
+    - m\,\mat{A}_\alpha^T\dot{\mat{A}}_\alpha\,\dot\alpha
+\]
+\end{proposition}
+On peut résoudre numériquement ce système avec les conditions initiales de $\alpha$ et $\dot{\alpha}$, ce qui permet de calculer $\ddot{\alpha}$ par résolution d'un système d'équations. Ensuite, une fois obtenu ces trois informations, on peut calculer la position de centre de masse et les forces de réaction.
+
+% ----------------------------------------------------------------------------
+\subsection{Sous-système en position et réactions}
+
+\begin{proposition}[Sous-système en position et réactions]
+    Une fois $(\alpha,\dot\alpha,\ddot\alpha)$ connu, le reste se calcule facilement : 
+\[
+    \dot r = -\,\mat{A}_\alpha\,\dot\alpha,
+    \qquad
+    \vect{\lambda} = -\,m\,\bigl(\mat{A}_\alpha\,\ddot\alpha
+    + \dot{\mat{A}}_\alpha\,\dot\alpha\bigr)
+\]
+\end{proposition}
+
+
+% ----------------------------------------------------------------------------
+\subsection{Schéma de Runge-Kutta d'ordre 4 (RK4) pour la résolution de la dynamique}
+
+\subsubsection{Schéma RK4}
+
+Pour $\dot Y = f(Y)$, avec un pas $h$ et $Y_k \approx Y(t_k)$,
+$t_k = k\,h$,
+\[
+    \begin{aligned}
+        \vect{p}_1 &= f(Y_k), &
+        \vect{p}_2 &= f\bigl(Y_k + \tfrac{h}{2}\,\vect{p}_1\bigr),\\
+        \vect{p}_3 &= f\bigl(Y_k + \tfrac{h}{2}\,\vect{p}_2\bigr), &
+        \vect{p}_4 &= f\bigl(Y_k + h\,\vect{p}_3\bigr)
+    \end{aligned}
+    \qquad
+    Y_{k+1} = Y_k + \tfrac{h}{6}\,\bigl(\vect{p}_1 + 2\,\vect{p}_2
+    + 2\,\vect{p}_3 + \vect{p}_4\bigr)
+\]
+L'erreur est en $O(h^5)$ sur un pas et en $O(h^4)$ sur un intervalle
+fixé.
+
+\subsubsection{Schéma RK4 pour simuler le système}
+
+On se donne la condition initiale $(r_0,\alpha_0,\dot\alpha_0)$, avec
+$\cos\theta_0 \neq 0$.
+
+\paragraph{Étape 1 : orientation.} Avec $Y_k = (\alpha_k,\dot\alpha_k)$,
+on évalue $f$ en quatre états intermédiaires du pas,
+\[
+    Y^{(1)} = Y_k,
+    \qquad
+    Y^{(2)} = Y_k + \tfrac{h}{2}\,\vect{p}_1,
+    \qquad
+    Y^{(3)} = Y_k + \tfrac{h}{2}\,\vect{p}_2,
+    \qquad
+    Y^{(4)} = Y_k + h\,\vect{p}_3
+\]
+où $Y^{(i)} = (\alpha^{(i)},\dot\alpha^{(i)})$ et
+\[
+    \vect{p}_i = f\bigl(Y^{(i)}\bigr)
+    = \begin{pmatrix} \dot\alpha^{(i)}\\ \ddot\alpha^{(i)} \end{pmatrix},
+    \qquad
+    \mat{K}_\alpha\bigl(\alpha^{(i)}\bigr)\,\ddot\alpha^{(i)}
+    = -\,\vect{h}_\alpha\bigl(\alpha^{(i)},\dot\alpha^{(i)}\bigr)
+    - m\,\mat{A}_\alpha^T\dot{\mat{A}}_\alpha\,\dot\alpha\,\big|^{(i)}
+\]
+On obtient alors le nouvel état $Y_{k+1} = (\alpha_{k+1},\dot\alpha_{k+1})$ :
+\[
+    \alpha_{k+1} = \alpha_k + \tfrac{h}{6}\,\bigl(\dot\alpha^{(1)}
+    + 2\,\dot\alpha^{(2)} + 2\,\dot\alpha^{(3)} + \dot\alpha^{(4)}\bigr),
+    \qquad
+    \dot\alpha_{k+1} = \dot\alpha_k + \tfrac{h}{6}\,\bigl(\ddot\alpha^{(1)}
+    + 2\,\ddot\alpha^{(2)} + 2\,\ddot\alpha^{(3)} + \ddot\alpha^{(4)}\bigr)
+\]
+
+\paragraph{Étape 2 : accélération.} On résout le système réduit au
+nouvel état :
+\[
+    \mat{K}_\alpha(\alpha_{k+1})\,\ddot\alpha_{k+1}
+    = -\,\vect{h}_\alpha(\alpha_{k+1},\dot\alpha_{k+1})
+    - m\,\mat{A}_\alpha^T\dot{\mat{A}}_\alpha\,\dot\alpha\,\big|_{k+1}
+\]
+C'est la seconde moitié de $f(Y_{k+1})$, réutilisée comme $\vect{p}_1$
+au pas suivant.
+
+\paragraph{Étape 3 : position et réactions.} En parallèle avec étape 1, on calcule des poids RK4 pour $r$ avec 
+$\vect{g}_i = -\,\mat{A}_\alpha\bigl(\alpha^{(i)}\bigr)\,
+\dot\alpha^{(i)}$ tels que : 
+\[
+    r_{k+1} = r_k + \tfrac{h}{6}\,\bigl(\vect{g}_1 + 2\,\vect{g}_2
+    + 2\,\vect{g}_3 + \vect{g}_4\bigr),
+    \qquad
+    \vect{\lambda}_{k+1} = -\,m\,\bigl(\mat{A}_\alpha(\alpha_{k+1})\,
+    \ddot\alpha_{k+1}
+    + \dot{\mat{A}}_\alpha\,\dot\alpha\,\big|_{k+1}\bigr)
+\]
+
+
+% ----------------------------------------------------------------------------
+\subsection{Conditions initiales et choix du pas}
+
+\subsubsection{Conditions initiales}
+\begin{proposition}[Conditions initiales]
+    Les conditions initiales de cette dynamique sont $(r_0, \alpha_0, \dot{\alpha}_0)$.
+\end{proposition}
+
+On choisit librement la position $r_0$, l'orientation $\alpha_0$ avec
+$\cos\theta_0 \neq 0$, et les vitesses angulaires $\dot\alpha_0$. En
+pratique, on se donne plutôt la vitesse angulaire $\vect{\Omega}_0$ dans
+$\rep{s}$ et
+\[
+    \dot\alpha_0 = \mat{E}_s(\alpha_0)^{-1}\,\vect{\Omega}_0,
+    \qquad
+    \det\mat{E}_s = \cos\theta_0 \neq 0
+\]
+\begin{remarque}[Sur les vitesses angulaires]
+    On peut aussi se donner la vitesse angulaire $\vect{\omega}_0$
+    dans le repère corps. Cependant, on préfère le repère sol, car ses axes sont fixes et visuels et chaque composante de $\vect{\Omega}_0$ a un sens direct :
+    $\Omega_x$ et $\Omega_y$ fixent le roulement initial,
+    $\dot r_0 = a\,(\Omega_y, -\Omega_x)$, et $\Omega_z$ la rotation
+    autour de la verticale. Les axes du corps, selon nos conventions, sont les axes principaux d'inertie :
+    ils dépendent de la répartition de masse à l'intérieur de la
+    sphère, et il est difficile de les repérer visuellement.
+\end{remarque}
+
+Par contre, la vitesse de $G$ n'est pas libre, le roulement impose
+$\dot r_0 = -\,\mat{A}_\alpha(\alpha_0)\,\dot\alpha_0$. Enfin,
+$\ddot\alpha_0$ et $\vect{\lambda}_0$ s'obtiennent directement en faisant les mêmes calculs que l'étape 2.
+
+\subsubsection{Choix du pas}
+
+\textbf{A discuter !!!!!}
+Il faut noter qu'avec la modélisation en angles d'Euler, les conditionnements de notre système s'explose lorsqu'on a gimbal lock.
+
+% ----------------------------------------------------------------------------
+\subsection{Contrôle de la simulation}
+
+Le schéma ne garantit pas la physique : on contrôle après coup que la
+trajectoire calculée respecte ce que le modèle impose.
+
+\subsubsection{Quantités conservées}
+
+Ni le poids ni la force de réaction travaille, l'énergie cinétique doit rester donc constante.
+\[
+    T = \tfrac12\,m\,\dot r^T\dot r
+    + \tfrac12\,\vect{\omega}^T\mat{I}_b\,\vect{\omega}
+\]
+est conservée. 
+
+De plus, la réaction s'applique en $P$ et le poids passe
+par $P$, leur moment en $P$ est nul, donc le moment cinétique au point
+de contact 
+\[
+    \vect{L}_P = \mat{I}_P\,\vect{\Omega},
+    \qquad
+    \mat{I}_P = \mat{I}_G + m\,a^2\bigl(\Id - \vect{e}_z\vect{e}_z^T\bigr) = \mat{R} \mat{I}_b \mat{R} ^T + m\,a^2\bigl(\Id - \vect{e}_z\vect{e}_z^T\bigr)
+\]
+doit être conservé dans $\rep{s}$.
+
+\begin{remarque}[Racine de l'anomalie de trajectoire de la sphère de Chaplygin]
+    On a ici que $\vect{L}_P = \mat{I}_P \vect{\Omega}$ est conservée donc $\vect{\Omega} = \mat{I}_P ^{-1} \vect{cte}$ ou $\vect{\Omega} = {(\mat{R} \mat{I}_b \mat{R} ^T + m\,a^2\bigl(\Id - \vect{e}_z\vect{e}_z^T\bigr) )}^{-1}\vect{cte}$. Pour une sphère isotrope, $\mat{I}_P$ ne dépend pas de $\mat{R}$, donc $\vect{\Omega}$ reste une constante au long de la trajectoire, alors que si la sphère est anisotrope, $\mat{I}_P$ dépend de $\mat{R}(t)$, donc $\vect{\Omega}$ varie au long de la trajectoire. 
+
+    D'un autre point de vue, si la sphère est isotrope ($\mat{I}_b = i\,\Id$),
+    le terme gyroscopique $\vect{\omega}\wedge(\mat{I}_b\vect{\omega})$ est nul,
+    $\mat{I}_P$ ne dépend pas de l'orientation et $\vect{\Omega}$ reste constant,
+    la sphère roule ainsi en ligne droite. Sinon, le terme gyroscopique est non nul :
+    $\vect{L}_P$ reste fixe dans $\rep{s}$ alors que l'inertie tourne avec le
+    corps, donc $\vect{\omega}$ se réoriente dans $\rep{b}$, et $\vect{\Omega}$,
+    puis la direction de $\dot{r}$.
+\end{remarque}
+On suit les dérives relatives
+\[
+    \frac{|T(t_k) - T(0)|}{T(0)},
+    \qquad
+    \frac{\|\vect{L}_P(t_k) - \vect{L}_P(0)\|}{\|\vect{L}_P(0)\|}
+\]
+qui doivent rester au niveau de l'erreur du schéma, c'est-à-dire l'erreur doit diminuer lorsque l'on raffine le pas de calcule, si elle stagne, cela veut dire qu'il y a une erreur dans le modèle. 
+
+\subsubsection{Non-glissement}
+
+La contrainte $\dot r = -\,\mat{A}_\alpha\,\dot\alpha$ est vérifiée par
+construction. Toutefois, il faut que : 
+\[
+    \|\vect{\lambda}_k\| = \sqrt{\lambda_{1,k}^2 + \lambda_{2,k}^2}
+    \leq \mu_s\,m\,g
+\]
+à chaque pas. Sinon, la sphère glisse et le modèle ne s'applique plus.
+
+\subsubsection{Validité des angles d'Euler}
+
+Le système réduit n'est défini que si $\cos\theta \neq 0$.
+\begin{hypotheses}[Validité de la simulation]
+    La simulation est valide tant que, à chaque pas,
+    \begin{itemize}
+        \item $T$ et $\vect{L}_P$ sont conservés à la précision du
+        schéma.
+        \item $\|\vect{\lambda}_k\| \leq \mu_s\,m\,g$.
+        \item $|\cos\theta| > \varepsilon$.
+    \end{itemize}
+\end{hypotheses}
+% ----------------------------------------------------------------------------
+\subsection{Architecture de la simulation}
+
+Voici l'architecture de la simulation prête à implémenter avec les rotations et l'orientation représentées par les angles d'Euler.
+
+\usetikzlibrary{fit, backgrounds}
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[>=Stealth,
+        bloc/.style={draw, thick, rounded corners=2pt, align=center,
+            fill=coulprop!6, draw=coulprop, inner sep=4pt,
+            font=\small},
+        ctrl/.style={bloc, fill=couldef!8, draw=couldef},
+        stop/.style={bloc, fill=coulthm!8, draw=coulthm},
+        es/.style={bloc, fill=gray!8, draw=gray},
+        fl/.style={->, thick},
+        lab/.style={font=\footnotesize, fill=white, inner sep=1pt}]
+
+        \node[es] (in) at (0,0) {Entrées : $m$, $a$, $\mat{I}_b$,
+            $\mu_s$ ; $r_0$, $\alpha_0$, $\vect{\Omega}_0$ ; $h$, $N$};
+        \node[bloc] (init) at (0,-1.3)
+            {Initialisation : $\dot\alpha_0 = \mat{E}_s(\alpha_0)^{-1}
+            \vect{\Omega}_0$, \quad $Y_0 = (\alpha_0,\dot\alpha_0)$};
+        \node[bloc] (f) at (0,-3.1)
+            {Évaluation de $f$ en $Y^{(i)}$, $i = 1,\dots,4$ :\\[2pt]
+            $\mat{E}$, $\dot{\mat{E}}\,\dot\alpha$, $\vect{\omega}$
+            $\;\to\;$ $\mat{M}_\alpha$, $\vect{h}_\alpha$
+            $\;\to\;$ $\mat{A}_\alpha$, $\dot{\mat{A}}_\alpha\,\dot\alpha$
+            $\;\to\;$ $\mat{K}_\alpha\,\ddot\alpha^{(i)} = \vect{b}$};
+        \node[bloc] (rk) at (-2.9,-4.9)
+            {Étape 1 : $Y_{k+1}$ par RK4\\[2pt]
+            Étape 2 : $\ddot\alpha_{k+1}$};
+        \node[bloc] (rl) at (2.9,-4.9)
+            {Étape 3 : $r_{k+1}$ avec les $\vect{g}_i$,\\[2pt]
+            $\vect{\lambda}_{k+1}$};
+        \node[ctrl] (c) at (0,-6.6)
+            {Contrôles : $T$, $\vect{L}_P$ conservés ;
+            $\|\vect{\lambda}_{k+1}\| \leq \mu_s\,m\,g$ ;
+            $|\cos\theta| > \varepsilon$};
+        \node[stop] (arret) at (-3.6,-8.5)
+            {Arrêt : simulation\\non valide};
+        \node[es] (out) at (3.6,-8.5)
+            {Sorties : $r_k$, $\alpha_k$, $\vect{\lambda}_k$,\\
+            $k = 0,\dots,N$};
+
+        \draw[fl] (in) -- (init);
+        \draw[fl] (init) -- (f);
+        \draw[fl] (f) -- (rk);
+        \draw[fl] (f) -- (rl);
+        \draw[fl] (rk) -- (c);
+        \draw[fl] (rl) -- (c);
+        \draw[fl, coulthm] (c) -- node[lab, pos=0.45, left=2pt]
+            {non} (arret);
+        \draw[fl] (c) -- node[lab, pos=0.45, right=2pt]
+            {oui, $k = N$} (out);
+        \coordinate (droite) at (6.4,0);
+        \draw[fl] (c.east) -- (c.east -| droite) -- (f.east -| droite)
+            node[lab, pos=0.5, left=2pt, align=right]
+            {oui,\\$k \leftarrow k+1$} -- (f.east);
+
+        \begin{scope}[on background layer]
+            \node[draw=gray, dashed, rounded corners, inner sep=7pt,
+                fit=(f) (rk) (rl) (c) (c.east -| droite)] (boucle) {};
+        \end{scope}
+        \node[font=\footnotesize, gray, anchor=south west]
+            at (boucle.north west) {boucle sur $k$};
+    \end{tikzpicture}
+    \caption{Architecture de la simulation de la sphère de Chaplygin}
+\end{figure}
+

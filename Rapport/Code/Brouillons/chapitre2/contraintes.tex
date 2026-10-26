@@ -1,0 +1,201 @@
+% ============================================================================
+%  Chapitre 2, partie III : Contraintes
+%  (manuscrit P2, p. 4 à 10)
+% ============================================================================
+
+% ----------------------------------------------------------------------------
+\section{Contraintes}
+% ----------------------------------------------------------------------------
+
+% ----------------------------------------------------------------------------
+\subsection{Configuration et mouvement admissible}
+
+\begin{definition}[Configuration]
+    Une \emph{configuration} décrit la position géométrique complète du
+    système à un instant donné. L'ensemble des configurations constitue
+    l'\emph{espace de configuration}, noté $Q$.
+\end{definition}
+
+Pour un solide libre dans l'espace,
+\[
+    Q = \underbrace{\R^3}_{\text{position d'un point fixe du solide}}
+    \times
+    \underbrace{\SO}_{\text{orientation}}
+\]
+soit $3 + 3 = 6$ degrés de liberté. On utilise $q$ pour désigner une
+configuration ou ses coordonnées généralisées, à ne pas confondre avec
+le quaternion $\quat{q}$.
+
+\begin{definition}[Coordonnées généralisées]
+    Les \emph{coordonnées généralisées} sont un ensemble de variables
+    indépendantes qui décrivent entièrement la configuration d'un
+    système physique en tenant compte de ses contraintes.
+\end{definition}
+
+Exemple : Pour un pendule double plan, les deux masses ont pour positions
+$\vect{r}_1 = (x_1,y_1)$ et $\vect{r}_2 = (x_2,y_2)$, soit $4$
+coordonnées. Les deux longueurs fixées imposent $2$ contraintes, et il
+suffit de $4 - 2 = 2$ coordonnées généralisées : $(q_1,q_2) =
+(\theta_1,\theta_2)$.
+
+\begin{definition}[Mouvement]
+    Un \emph{mouvement} est une courbe $t\mapsto q(t)\in Q$. Sa vitesse
+    appartient à l'espace tangent à $Q$ :
+    \[
+        \dot q(t)\in T_{q(t)}Q
+    \]
+\end{definition}
+
+Pour un solide, cette vitesse est représentée par $(\vect{v}_O,
+\vect{\Omega})$. Une contrainte restreint les configurations
+possibles, les vitesses possibles, ou les deux. Un mouvement qui
+respecte ces restrictions est dit \emph{cinématiquement admissible}.
+
+% ----------------------------------------------------------------------------
+\subsection{Contraintes holonomes}
+
+\paragraph{Définition}
+
+\begin{definition}[Contrainte holonome]
+    Une contrainte est \emph{holonome} lorsqu'elle s'exprime par une
+    relation entre les coordonnées et éventuellement le temps. Pour
+    $k$ contraintes,
+    \[
+        f(q,t) = \begin{pmatrix}
+            f_1(q,t)\\ \vdots\\ f_k(q,t)
+        \end{pmatrix} = 0,
+        \qquad f : \R^n\times\R \to \R^k
+    \]
+    Elles sont \emph{indépendantes} si $\rang D_q f = k$, avec
+    $D_q f\in\mathcal{M}_{k,n}(\R)$.
+\end{definition}
+
+Avec $q\in\R^n$, soit $n$ degrés de liberté, et $k$ contraintes
+indépendantes $f(q) = 0$, l'ensemble des configurations admissibles
+est
+\[
+    \mathcal{C} = \{q\in\R^n : f(q) = 0\}
+\]
+D'après le théorème du rang appliqué à $D_q f$,
+\[
+    \underbrace{\rang D_q f}_{k\ \text{contraintes}}
+    + \underbrace{\dim\Ker D_q f}_{\text{directions admissibles}}
+    = \underbrace{n}_{\text{degrés de liberté}}
+\]
+Il suffit donc de $n - k$ coordonnées généralisées pour décrire la
+cinématique admissible.
+
+\paragraph{Exemple : pendule plan}
+
+Les coordonnées $(x,y)$ de la masse vérifient $x^2 + y^2 = \ell^2$ ;
+la contrainte est holonome,
+\[
+    f(x,y) = x^2 + y^2 - \ell^2 = 0
+\]
+et l'angle $\theta$ suffit à décrire le système. Si $q(t)$ respecte
+$f(q(t),t) = 0$, en dérivant,
+\[
+    D_q f(q,t)\,\dot q + \pd{f}{t}(q,t) = 0
+\]
+Ici $f$ ne dépend pas du temps, donc
+\[
+    D_q f(q)\,\dot q = 0
+    \longleftrightarrow
+    \begin{pmatrix} 2x & 2y \end{pmatrix}
+    \begin{pmatrix} \dot x\\ \dot y \end{pmatrix} = 0
+    \longleftrightarrow
+    2\,\langle (x,y),(\dot x,\dot y)\rangle = 0
+\]
+La vitesse est perpendiculaire à la corde.
+
+% ----------------------------------------------------------------------------
+\subsection{Contraintes sur les vitesses et non-holonomie}
+
+\paragraph{Forme générale}
+
+De nombreuses liaisons mécaniques s'écrivent sous forme de vitesses :
+\[
+    \mat{A}(q,t)\,\dot q + b(q,t) = 0
+\]
+Comme on n'étudie que la sphère sur un sol fixe, on ne considérera
+que la forme
+\[
+    \mat{A}(q)\,\dot q = 0,
+    \qquad \mat{A}(q)\in\mathcal{M}_{k,n}(\R)
+\]
+
+\paragraph{Non-holonomie}
+
+\begin{definition}[Contrainte non holonome]
+    Une contrainte sur les vitesses est \emph{non holonome} lorsqu'elle
+    ne peut pas être remplacée, même localement, par des contraintes
+    équivalentes portant uniquement sur les configurations.
+\end{definition}
+
+Si $\mat{A}(q)$ est de rang $k$, les vitesses admissibles
+$\Ker\mat{A}(q)$ forment un espace de dimension $n - k$. Pour une
+contrainte non holonome, on ne peut donc pas trouver $k$ fonctions
+indépendantes $f_i$ telles que
+\[
+    \Ker\mat{A}(q) = \Ker D f(q)
+\]
+
+% ----------------------------------------------------------------------------
+\subsection{Déplacements virtuels et réactions idéales}
+
+\paragraph{Déplacement virtuel}
+
+\begin{definition}[Déplacement virtuel]
+    Un \emph{déplacement virtuel} $\delta q$ est une variation
+    infinitésimale de la configuration à temps fixé, $\delta t = 0$.
+\end{definition}
+
+Pour une contrainte holonome $f(q,t) = 0$, les déplacements virtuels
+admissibles vérifient
+\[
+    D_q f(q,t)\,\delta q = 0
+\]
+Pour une contrainte cinématique $\mat{A}(q)\,\dot q = 0$ (roulement,
+glissement), on fige le temps et on impose de même
+\[
+    \mat{A}(q)\,\delta q = 0
+\]
+
+\paragraph{Réaction idéale}
+
+On note $\vect{Q}^r$ les forces généralisées de réaction. Leur travail virtuel
+est
+\[
+    \delta W_r = (\vect{Q}^r)^T\delta q
+\]
+
+\begin{definition}[Liaison idéale]
+    Une liaison est \emph{idéale} lorsque ses réactions ont un travail
+    virtuel nul pour tout déplacement virtuel admissible :
+    \[
+        (\vect{Q}^r)^T\delta q = 0
+        \qquad \forall\,\delta q\in\Ker\mat{A}(q)
+    \]
+\end{definition}
+
+\begin{proposition}[Multiplicateurs de Lagrange]
+    Pour une liaison idéale, il existe $\vect{\lambda}\in\R^k$ tel que
+    \[
+        \vect{Q}^r = \mat{A}(q)^T\vect{\lambda}
+    \]
+\end{proposition}
+
+\begin{demonstration}
+    $\vect{Q}^r\in(\Ker\mat{A}(q))^\perp = \Ima\mat{A}(q)^T$ par
+    l'orthogonalité noyau-image.
+\end{demonstration}
+
+\begin{note}
+    $\mat{A}(q)$ envoie les vitesses généralisées ($\R^n$) sur les
+    vitesses contraintes ($\R^k$). À l'inverse, $\mat{A}(q)^T$ envoie
+    les forces de contrainte $\vect{\lambda}\in\R^k$ sur les forces
+    généralisées ($\R^n$) : à partir des forces de contrainte, on
+    reconstruit les forces généralisées.
+\end{note}
+
+\newpage
