@@ -59,7 +59,7 @@ def main():
     # tolerance du schema : arreter la simulation lorsque le drift des quantites conservees dépasse ce seuil d'erreur 
     eps_schema = 1e-6
     
-    out = Path("results")
+    out = Path("simulation_output")
     out.mkdir(exist_ok = True)
     
     #------------------------------------------------------------------------------------------------------------------#
