@@ -52,3 +52,14 @@ def relative_drift(values):
     q = np.asarray(values, dtype=float)
     q = q.reshape(len(q), -1)            # scalaires -> vecteurs de taille 1
     return np.linalg.norm(q - q[0], axis=1) / np.linalg.norm(q[0])
+
+
+def conserved_quantities_ok(sphere, R, Omega, T0, Lz0, L0, eps):
+    """
+        Conservation de T et de L_G . e_z a eps pres (erreurs relatives) :
+            |T - T0| / T0 <= eps   et   |L_z - L_z0| / |L_G0| <= eps
+    """
+    err_T = abs(sphere.kinetic_energy(R, Omega) - T0) / T0
+    err_L = abs(sphere.angular_momentum_Gz(R, Omega) - Lz0) / L0
+    
+    return err_T <= eps and err_L <= eps

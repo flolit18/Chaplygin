@@ -12,28 +12,33 @@ import numpy as np
 from ..rotations import rotation_matrix, E_space
 from ..rk4 import rk4_step
 from ..result import SimulationResult
-from ..controls import no_slip_ok, euler_ok
+from ..controls import no_slip_ok, euler_ok, conserved_quantities_ok
 from . import dynamics
 
 
-def initial_state(alpha0, Omega0):
+def initial_state(sphere, alpha0, Omega0):
     """
         Y_0 = (alpha0, alpha_dot0) avec alpha_dot0 = E_s(alpha0)^-1 Omega0
     """
     alpha0 = np.asarray(alpha0, dtype=float)
     Omega0 = np.asarray(Omega0, dtype=float)
     alpha_dot0 = np.linalg.solve(E_space(alpha0), Omega0)
-    return np.concatenate([alpha0, alpha_dot0])
+    
+    R0 = rotation_matrix(alpha0)
+    T0 = sphere.kinetic_energy(R0, Omega0)
+    L_G0 = sphere.angular_momentum_G(R0, Omega0)
+    return np.concatenate([alpha0, alpha_dot0]), T0, L_G0[2], np.linalg.norm(L_G0)
 
 
-def simulate(sphere, r0, alpha0, Omega0, h, N, eps=1e-3, check=True):
+
+def simulate(sphere, r0, alpha0, Omega0, h, N, eps=1e-3, eps_schema = 1e-6, check=True):
     """
         Boucle sur k = 0, ..., N-1 : s'arrete si un controle echoue
     """
     f = lambda Y: dynamics.f(sphere, Y)
     g = lambda Y: dynamics.r_dot(sphere, Y[:3], Y[3:])
 
-    Y = initial_state(alpha0, Omega0)
+    Y, T0, Lz0, L0 = initial_state(sphere, alpha0, Omega0)
     r = np.asarray(r0, dtype=float)
 
     # tableaux de sortie, remplis au fur et a mesure
@@ -53,6 +58,11 @@ def simulate(sphere, r0, alpha0, Omega0, h, N, eps=1e-3, check=True):
 
         if check and not no_slip_ok(sphere, lam):
             valid, stop_reason = False, f"glissement au pas k = {k}"
+            break
+        R = rotation_matrix(alpha)
+        if check and not conserved_quantities_ok(sphere, R, E_space(alpha) @ alpha_dot,
+                                                 T0, Lz0, L0, eps_schema):
+            valid, stop_reason = False, f"T ou L_G.e_z non conserve au pas k = {k}"
             break
         if k == N:
             break

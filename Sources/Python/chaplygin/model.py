@@ -49,9 +49,50 @@ class ChaplyginSphere:
             raise ValueError(f"physics doit etre dans {self.PHYSICS}, pas {name!r}")
         self._physics = name
 
+    # ------------------------------------------------------------------
+    # Grandeurs conservees, pour un etat (R, Omega) ou une suite d'etats
+    # faut noter que R : orientation et pas position
+    #       (R de forme (N, 3, 3), Omega de forme (N, 3))
+    # ------------------------------------------------------------------
+
+    def kinetic_energy(self, R, Omega):
+        """
+            T = 1/2 m |v_G|^2 + 1/2 omega^T I_b omega,
+            avec v_G = a (Omega_y, -Omega_x, 0) et omega = R^T Omega
+        """
+        R, Omega = np.asarray(R, dtype=float), np.asarray(Omega, dtype=float)
+        v_G2 = self.a**2 * (Omega[..., 0]**2 + Omega[..., 1]**2)
+        omega = np.einsum("...ji,...j->...i", R, Omega)
+        return (0.5 * self.m * v_G2
+                + 0.5 * np.einsum("...i,ij,...j->...", omega, self.Ib, omega))
+
+    def angular_momentum_G(self, R, Omega):
+        """
+            L_G = R I_b R^T Omega, moment cinetique en G dans le repere sol
+        """
+        R, Omega = np.asarray(R, dtype=float), np.asarray(Omega, dtype=float)
+        omega = np.einsum("...ji,...j->...i", R, Omega)
+        return np.einsum("...ij,jk,...k->...i", R, self.Ib, omega)
+
+    def angular_momentum_P(self, R, Omega):
+        """
+            L_P = I_P Omega = L_G + m a^2 (Omega_x, Omega_y, 0), moment
+            cinetique au point de contact dans le repere sol (conserve)
+        """
+        Omega = np.asarray(Omega, dtype=float)
+        L_P = self.angular_momentum_G(R, Omega).copy()
+        L_P[..., :2] += self.m * self.a**2 * Omega[..., :2]
+        return L_P
+
+    def angular_momentum_Gz(self, R, Omega):
+        """
+            L_G . e_z, moment cinetique vertical (conserve : psi cyclique)
+        """
+        return self.angular_momentum_G(R, Omega)[..., 2]
+
     def simulate(self, r0, alpha0, Omega0, h, N, **options):
         """
-            Simule N pas de RK4 de pas h avec le solveur choisi par physics.
+            Simule N pas de RK4 de pas h avec le solveur choisi par physics
             Renvoie un SimulationResult.
         """
         # import local : euler/ et quaternion/ importent deja ce module
@@ -59,7 +100,7 @@ class ChaplyginSphere:
             from .euler.simulation import simulate
         else:
             from .quaternion.simulation import simulate
-        return simulate(self, r0, alpha0, Omega0, h, N, **options)
+        return simulate(self, r0, alpha0, Omega0, h, N,**options)
 
     def inertia_P(self, R):
         """
