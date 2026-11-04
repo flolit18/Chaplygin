@@ -24,7 +24,7 @@ class Gyrometer:
         self.sigma = sigma
         
         # biais initial 
-        self.biais = self.rng.normal(0, self.biais_std, 3)
+        self.biais = self.rng.normal(0, biais_std, 3)
         
         # frequence du capteur (Hz)
         self.freq = freq
@@ -44,14 +44,18 @@ class Gyrometer:
         """
         h = result.t[1] - result.t[0]
         # tick rate
-        tick = round((1.0 / self.freq) / h)
+        ratio = (1.0 / self.freq) / h
+        tick = round(ratio)
+        # h doit diviser la periode du capteur, sinon la frequence change
+        if tick < 1 or abs(ratio - tick) > 1e-9:
+            raise ValueError(f"h = {h} doit diviser la periode du capteur 1/freq = {1/self.freq}")
 
         R, Omega = result.R[::tick], result.Omega[::tick]
         omega_body = np.einsum("nji,nj->ni", R, Omega)
         
         noise = self.rng.normal(0, self.sigma, omega_body.shape)
         # retour lorsque tickrate est atteint
-        return result.t[::tick], omega_body + self.bias + noise
+        return result.t[::tick], omega_body + self.biais + noise
 
         
 
