@@ -530,14 +530,13 @@ l'écart atteint $50$ cm à $t = 5$ s.
 $\vect{L}_P$ restent de l'ordre de $10^{-12}$
 (figure~\ref{fig-gimbal-controles}). En angles d'Euler, les dérives de
 $T$ et de $\vect{L}_P$ valent déjà quelques $10^{-3}$ dès le premier pas,
-puisqu'on part près de la singularité, puis sautent à $43\ \%$ et
-$33\ \%$ au passage de $t \approx 1{,}84$ s. L'erreur du schéma utilisant les angles d'Euler s'accumule dès les premiers pas près de la singularité, donc, pour la trajectoire, ce n'est pas forcément fiable pour la simulation en angles d'Euler.
+puisqu'on part près de la singularité, puis explosent au passage de $t \approx 1{,}8$ s. L'erreur du schéma utilisant les angles d'Euler s'accumule dès les premiers pas près de la singularité, donc, pour la trajectoire, ce n'est pas forcément fiable pour la simulation en angles d'Euler.
 
 En revanche, les deux autres contrôles passent : on a toujours
 $|\cos\theta| > \varepsilon = 10^{-3}$, et
 $\|(N_x, N_y)\| \leq 0{,}47$ N reste loin de $\mu_s\,m\,g \approx 4{,}9$ N.
 La simulation en angles d'Euler est donc déclarée valide alors qu'elle
-est fausse, on ne peut voir les erreurs qu'à travers les conservations.
+est fausse, on ne peut voir les erreurs qu'à travers les conservations, c'est pour cela qu'il faut toujours utiliser la simulation avec les quaternions.
 
 \begin{figure}[H]
     \centering
@@ -549,3 +548,89 @@ est fausse, on ne peut voir les erreurs qu'à travers les conservations.
 \end{figure}
 
 Près de la singularité, seule la simulation en quaternions reste fiable.
+
+\subsubsection{Validation du schéma}
+\paragraph{Analyse d'erreur du schéma RK4 avec la couverture de maillage}
+On vérifie numériquement le modèle, pour s'assurer que l'on a une simulation assez fiable. On sait que le schéma RK4 possède une erreur globale d'ordre $4$, pour $h$ assez petit
+\[
+    y(T) = y_h (T) + C(T)h ^4 + O(h ^5)
+\]
+où $y(T)$ la solution exacte au temps $T$, $y_h(T)$, la solution obtenue par le schéma RK4 avec le pas $h$. En raffinant le maillage en divisant le pas par deux, on peut avoir
+\[
+y(T) = y_{\frac{h}{2}} (T) + C(T)\frac{h ^4}{16} + O(h ^5)
+\]
+On note $e_h$, l'écart entre deux solutions (on peut calculer cet écart)
+\[
+e_h := y_h (T) - y_{\frac{h}{2}} (T) \approx \frac{15}{16}C(T) h^4
+\]
+En posant $\varepsilon_h :=  y(T) - y_{h} (T)$, supposons que, en raffinant le pas du schéma, l'erreur globale se réduise (Il faut que je retrouve le bouquin qui en parle, sur la borne sup de l'erreur du schéma RK4, --demander au 25 qui voulait piquer mon bouquin d'ana num d'abord) : 
+\[
+||\varepsilon_{h/2} || \le q||\varepsilon_h||,\, \text{avec} \quad  q \in ]0, 1[
+\]
+Par l'inégalité triangulaire
+\[
+||y_h(T) - y(T)|| \le ||y_{\frac{h}{2}}(T) - y(T)|| + ||y_{\frac{h}{2}}(T) - y_h(T)||
+\]
+\[
+\longleftrightarrow ||\varepsilon_h|| \le ||\varepsilon_{h/2} || + || e_h|| \longrightarrow ||\varepsilon_h|| \le q||\varepsilon_h|| + || e_h||
+\]
+\[
+\longleftrightarrow ||\varepsilon_h|| \le \frac{1}{1-q}|| e_h||
+\]
+Ainsi, on obtient
+\[
+||y_h(T) - y(T)|| \le \frac{1}{1-q} ||y_{\frac{h}{2}}(T) - y_h(T)||
+\]
+Il suffit maintenant de trouver le facteur $q$ afin de quantifier l'erreur du schéma que l'on a implémenter. Revenons à la définition de $q$ que l'on vient d'énoncer, on a : 
+\[\frac{||\varepsilon_{h/2} || }{||\varepsilon_h||}\le q  \]
+ou on peut prendre $q = \sup \frac{||\varepsilon_{h/2} || }{||\varepsilon_h||}$. On a donc 
+\[
+q = \sup \frac{||\varepsilon_{h/2} || }{||\varepsilon_h||} = \sup ||\frac{C(T) \frac{h ^4}{ 16} + O(h ^5)}{C(T)h ^4 + O(h ^5) }|| = \frac{1}{16}
+\]
+Cependant, il faut noter qu'ici $q = \frac{1}{16}$ est la borne sup donc ce n'est qu'une valeur asymtotique et non la proportion exacte des deux erreurs globales des deux schémas. Donc, ce que l'on doit faire c'est de mesurer l'écart entre deux schémas afin d'en déduire l'erreur globale du schéma que l'on utilise : 
+\[
+||y_h(T) - y(T)|| \le \frac{16}{15}||y_{\frac{h}{2}}(T) - y_h(T)||
+\]
+puis mesurer le rapport $\frac{||\varepsilon_{h/2} || }{||\varepsilon_h||} \approx \frac{||e_{h/2} || }{||e_h||}$, si celui ci vaut $16$, l'ordre $4$ du RK4 se vérifie.
+
+\paragraph{Validation numérique}
+On reprend la boule de la simulation de référence, lancée avec
+$\vect{\alpha}_0 = (10^\circ, 20^\circ, 10^\circ)$ et
+$\vect{\Omega}_0 = (0.8, 0.1, 5.3)$ rad/s, simulée avec la dynamique quaternionique jusqu'à $T = 5$~s. On prend pour $y$ l'état final
+$(\vect{r}, \mat{R}, \vect{\Omega}) \in \R^{14}$ et on part de
+$h = 0.02$~s, divisé par deux à chaque fois.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{ccccc}
+        \toprule
+        $h$ (s) & $\|e_h\|$ & $\frac{16}{15}\|e_h\|$
+        & $\rho = \|e_h\| / \|e_{h/2}\|$ & $\log_2 \rho$ \\
+        \midrule
+        $0.02$    & $2.53 \cdot 10^{-6}$  & $2.70 \cdot 10^{-6}$  & $15.94$ & $3.99$ \\
+        $0.01$    & $1.59 \cdot 10^{-7}$  & $1.69 \cdot 10^{-7}$  & $15.97$ & $4.00$ \\
+        $0.005$   & $9.94 \cdot 10^{-9}$  & $1.06 \cdot 10^{-8}$  & $15.98$ & $4.00$ \\
+        $0.0025$  & $6.22 \cdot 10^{-10}$ & $6.64 \cdot 10^{-10}$ & $16.04$ & $4.00$ \\
+        $0.00125$ & $3.88 \cdot 10^{-11}$ & $4.14 \cdot 10^{-11}$ & $15.90$ & $3.99$ \\
+        \bottomrule
+    \end{tabular}
+    \caption{Écarts entre les solutions obtenues aux pas $h$ et $h/2$
+    à l’instant $T = 5~\mathrm{s}$. Les valeurs dans le tableau sont arrondies à deux chiffres significatifs (cf. \texttt{Sources/Python/convergence\_rk4.csv}).}
+    \label{tab-ordre-rk4}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{chapitre4/figures/ordre_rk4.png}
+    \caption{L'ordre du schéma RK4 en fonction de $h$ en échelle log}
+    \label{fig-ordre-rk4}
+\end{figure}
+
+On peut voir que l'ordre $4$ du schéma est vérifié, et l'on est dans le régime où le terme en $h^4$ domine, ce qui justifie notre estimation
+$\|\varepsilon_h\| \approx \frac{16}{15}\|e_h\|$. Pour le pas
+$h = 10^{-3}$~s utilisé dans les simulations, on obtient ainsi une erreur
+globale de l'ordre de $10^{-11}$ à $T = 5$~s.
+
+\begin{proposition}[Validation de la simulation]
+    Jusqu'à ce point, on a un bon départ pour travailler, avec une dynamique vérifiée et une simulation fiable avec les quaternions.
+\end{proposition}

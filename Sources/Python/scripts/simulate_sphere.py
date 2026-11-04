@@ -54,7 +54,8 @@ def main():
     #---------------------------------------------------------------------#
     # Params de la simulation 
     #---------------------------------------------------------------------#
-    h, N = 1e-3, 5000 #taille du pas, nombre de pas
+    T = 5.0 #s temps de simulation
+    h, N = 1e-3, (int)(T/h) #taille du pas, nombre de pas
     
     # tolerance du schema : arreter la simulation lorsque le drift des quantites conservees dépasse ce seuil d'erreur 
     eps_schema = 1e-6
