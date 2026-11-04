@@ -1,9 +1,6 @@
 """
     Le but de ce truc c'est de simuler la sphere avec
     un capteur a l'interieur, et on extrait les donnees dans un csv
-    
-    a lancer : 
-    python -m scripts.simulate_sphere_collectdata
 """
 import csv
 from pathlib import Path
@@ -59,7 +56,8 @@ def main():
     # Params de la simulation 
     #---------------------------------------------------------------------#
     T = 5.0 #s temps de simulation
-    h, N = 1e-3, int(round(T / h)) #taille du pas, nombre de pas
+    h= 1e-3 #taille du pas
+    N = (int)(T/h) # nombre de pas
     
     # tolerance du schema : arreter la simulation lorsque le drift des quantites conservees dépasse ce seuil d'erreur 
     eps_schema = 1e-6
