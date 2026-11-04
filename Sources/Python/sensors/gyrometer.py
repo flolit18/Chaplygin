@@ -24,29 +24,35 @@ class Gyrometer:
         self.sigma = sigma
         
         # biais initial 
-        self.biais = self.rng.normal(0, self.biais, 3)
+        self.biais = self.rng.normal(0, self.biais_std, 3)
         
-        # frequence du capteur 
+        # frequence du capteur (Hz)
         self.freq = freq
         
         # tick rate : sachant que on a plusieurs timeline dans une simu 
         #self.tick_rate = round((1.0 / self.freq) / dt)
         
-    def mesure(self, omega_body, dt):
+    def mesure(self, result):
         """
             z_k = omega_{body, k} + b_k + nu_k
         
         ou` omega_{body, k} est la vraie vitesse angulaire de la simulation, 
         on la parse dedans pour simuler
+        
+        aux instants du capteur : on prend un pas de la simulation tous les
+        tick = (1 / freq) / h pas, ou h est le pas de la simulation
         """
-        self.elapsed += dt
-        if self.elapsed < 1.0 / self.freq:
-            return None
-        
-        self.elapsed -= 1.0 / self.freq
-        
-        #self.bias += (self.bias_walk * np.sqrt(1.0 / self.freq)* self.rng.normal(size=3))
-        noise = self.rng.normal(0, self.sigma, 3)
+        h = result.t[1] - result.t[0]
+        # tick rate
+        tick = round((1.0 / self.freq) / h)
 
-        return omega_body + self.bias + noise
+        R, Omega = result.R[::tick], result.Omega[::tick]
+        omega_body = np.einsum("nji,nj->ni", R, Omega)
+        
+        noise = self.rng.normal(0, self.sigma, omega_body.shape)
+        # retour lorsque tickrate est atteint
+        return result.t[::tick], omega_body + self.bias + noise
+
+        
+
         
