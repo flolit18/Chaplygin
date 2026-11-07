@@ -8,16 +8,22 @@
 """
 import numpy as np
 
+from chaplygin.rotations import quat_to_matrix
+
 class Gyrometer:
-    def __init__(self, sigma = 0.005, biais_std = 0.001, freq = 100,  seed = 42):
+    def __init__(self, sigma = 0.005, biais_std = 0.001, freq = 100,  seed = 42, mount = None):
         """
             Mesure : 
                 z_k = omega_{body, k} + b_k + nu_k
                 
             b_k : biais a t = k, on peut avoir un biais fixe ou biais de marche aleatoire
-            nu_k : bruit blanc pour la vitesse angulaire suivant les axes principaux du corps
+            nu_k : bruit blanc pour la vitesse angulaire suivant les axes du gyro
 
                         nu_k ~ N(0, sigma^2 I_3)
+
+            mount : rotation Q du repere du gyro vers le repere corps (axes principaux),
+                    omega_gyro = Q^T omega_corps. Si None, montage quelconque :
+                    Q tiree uniformement sur SO(3)
         """
         self.rng = np.random.default_rng(seed)
         # ecart type du bruit 
@@ -28,6 +34,13 @@ class Gyrometer:
         
         # frequence du capteur (Hz)
         self.freq = freq
+
+        # montage du gyro dans la boule : quaternion unitaire uniforme
+        # (4 gaussiennes normalisees -> loi uniforme sur la sphere S^3)
+        if mount is None:
+            q = self.rng.normal(size = 4)
+            mount = quat_to_matrix(q / np.linalg.norm(q))
+        self.mount = np.asarray(mount, dtype = float)
         
         # tick rate : sachant que on a plusieurs timeline dans une simu 
         #self.tick_rate = round((1.0 / self.freq) / dt)
@@ -52,10 +65,12 @@ class Gyrometer:
 
         R, Omega = result.R[::tick], result.Omega[::tick]
         omega_body = np.einsum("nji,nj->ni", R, Omega)
+        # passage au repere du gyro : omega_gyro = Q^T omega_corps
+        omega_gyro = omega_body @ self.mount
         
         noise = self.rng.normal(0, self.sigma, omega_body.shape)
         # retour lorsque tickrate est atteint
-        return result.t[::tick], omega_body + self.biais + noise
+        return result.t[::tick], omega_gyro + self.biais + noise
 
         
 

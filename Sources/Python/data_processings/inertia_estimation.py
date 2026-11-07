@@ -193,10 +193,9 @@ def main():
     t, omega = load_gyro_csv(Path("synthetic_data") / "gyro.csv")
     print("mesures :", len(t), "de t =", t[0], "a", t[-1], "s")
 
-    # gamma0 : verticale initiale dans le repere du capteur, ici connue par la simulation
-    # (en vrai, on suppose avoir un accelerometre, donc gamma0 est donnee par l'accelerometre si la boule part au repos)
-    R0 = quat_to_matrix(quat_from_euler(alpha0))
-    gamma0 = R0.T @ np.array([0.0, 0.0, 1.0])
+    # gamma0 : verticale initiale dans le repere du gyro
+    # (on suppose avoir un accelerometre, donc gamma0 est donnee par l'accelerometre si la boule part au repos)
+    gamma0 = np.loadtxt(Path("synthetic_data") / "gamma0.csv", delimiter = ",", skiprows = 1)
     gamma = integrate_gamma(t, omega, gamma0)
     # la il faut integrer gamma, c'est pas un truc qu'on connait pdt la sim
     
@@ -224,6 +223,16 @@ def main():
     I_est, axes_est = np.linalg.eigh(J_est)
     print("moments principaux estimes :", I_est)
     print("l'erreur d'estimation :", np.linalg.norm(Ib - I_est))
+
+    # validation : J vraie dans le repere du gyro, J = Q^T I_b Q, et axes principaux = colonnes de Q^T
+    Q = np.loadtxt(Path("synthetic_data") / "mount.csv", delimiter = ",")
+    J_true = Q.T @ np.diag(Ib) @ Q
+    print("J vraie (1e-3) :\n", np.round(J_true * 1e3, 3))
+    print("J estimee (1e-3) :\n", np.round(J_est * 1e3, 3))
+    print("erreur relative sur I :", np.abs(I_est - Ib) / Ib)
+    # angle entre axe estime et axe vrai (au signe pres)
+    cos_axes = np.abs(np.sum(axes_est * Q.T, axis = 0))
+    print("erreur sur les axes (deg) :", np.degrees(np.arccos(np.clip(cos_axes, 0, 1))))
     
 
 if __name__ == "__main__":

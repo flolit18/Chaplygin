@@ -1,0 +1,93 @@
+% ============================================================================
+%  Chapitre 5, partie II : Les mesures
+% ============================================================================
+
+% ----------------------------------------------------------------------------
+\section{Les mesures}
+% ----------------------------------------------------------------------------
+
+\subsection{Le gyromètre}
+
+Le gyromètre que l'on va utiliser est le fameux \textbf{MPU6050} de protocol I2C, 
+avec un bon timing et une bonne programmation, on peut avoir une fréquence de mesure de $ f=100 $ Hz.
+
+Le gyromètre mesure la vitesse angulaire $\vect{\omega}$ de la boule
+dans son propre repère, à la fréquence $f$, donc aux instants
+$t_k = k/f$. Une mesure contient un
+biais $\vect{b}$, que l'on suppose constant sur la durée d'une
+expérience, et un bruit blanc gaussien $\vect{\nu}_k$ :
+\[
+    \vect{z}_k = \vect{\omega}(t_k) + \vect{b} + \vect{\nu}_k,
+    \qquad
+    \vect{\nu}_k \sim \mathcal{N}(0, \sigma^2\Id)
+\]
+
+\subsection{La verticale vue par la boule}
+Les quantités conservées vont intervenir dans l'estimation, et pour $\vect{L} _G \vect{e}_z $, on a besoin de la matrice de changement de repère $\mat{R}$, donc éventuellement un magnétomètre si jamais on a besoin d'orientation de la sphère. Cependant, en supposant que l'on a très peu de bruit sur le gyromètre, une intégration sera suffisante pour réduire l'instalation d'un capteur. En effet, on a 
+\[\vect{L}_G \vect{e}_z = \vect{e}_z ^T (\mat{R} \mat{I}_b \mat{R}^T \vect{\Omega}) = \vect{e}_z ^T \mat{R} \mat{I}_b \mat{R}^T \mat{R} \vect{\omega} = (\vect{e}_z ^T\mat{R})(\mat{I}_b \vect{\omega})
+\]
+Or
+\[
+    \vect{\gamma} = \mat{R}^T\vect{e}_z
+\]
+soit
+\[
+\vect{L}_G \vect{e}_z = \vect{\gamma} ^ T(\mat{I}_b \vect{\omega})
+\]
+\textbf{Évolution de $\vect{\gamma}$ : } on part de
+$\dot{\mat{R}} = \mat{R}\hatx{\vect{\omega}}$. En transposant, et
+comme $\hatx{\vect{\omega}}$ est antisymétrique,
+\[
+    \dot{\mat{R}}^T = \hatx{\vect{\omega}}^T\mat{R}^T
+    = -\hatx{\vect{\omega}}\mat{R}^T
+\]
+Or $\vect{e}_z$ est fixe, donc
+\[
+    \dot{\vect{\gamma}} = \dot{\mat{R}}^T\vect{e}_z
+    = -\hatx{\vect{\omega}}\vect{\gamma}
+    = -\vect{\omega}\wedge\vect{\gamma}
+\]
+soit
+\[
+    \dot{\vect{\gamma}} = \vect{\gamma}\wedge\vect{\omega}
+\]
+\textbf{Intégration : } cette équation ne fait intervenir que
+$\vect{\omega}$, que mesure le gyromètre. On peut donc obtenir
+$\vect{\gamma}$ en l'intégrant à partir d'une valeur initiale
+$\vect{\gamma}_0$. Celle-ci est donnée par l'accéléromètre (aussi sur le MPU6050), la boule
+étant au repos, il mesure alors $g\,\vect{\gamma}_0$. Entre deux
+mesures, on fait la rotation exacte par la vitesse angulaire moyenne
+$\bar{\vect{\omega}}_k = \frac12(\vect{z}_k + \vect{z}_{k+1})$ :
+\[
+    \vect{\gamma}_{k+1}
+    = \exp\bigl(-\Delta t\,\hatx{\bar{\vect{\omega}}_k}\bigr)\,\vect{\gamma}_k,
+    \qquad \Delta t = 1/f
+\]
+où l'exponentielle se calcule par la formule de Rodrigues. Une rotation
+conserve la norme : on garde $\|\vect{\gamma}_k\| = 1$ sans
+renormaliser.
+
+\textbf{Formule de Rodrigues : } pour $\vect{v} \in \R^3$ non nul, on
+note $\phi = \|\vect{v}\|$ et $\vect{n} = \vect{v}/\phi$. Comme
+$\hatx{\vect{n}}^3 = -\hatx{\vect{n}}$, la série de l'exponentielle se
+regroupe en
+\[
+    \exp\bigl(\hatx{\vect{v}}\bigr)
+    = \Id + \sin\phi\,\hatx{\vect{n}} + (1 - \cos\phi)\,\hatx{\vect{n}}^2
+\]
+c'est la rotation d'angle $\phi$ autour de $\vect{n}$. Ici,
+$\vect{v} = -\Delta t\,\bar{\vect{\omega}}_k$ : avec
+$\phi_k = \Delta t\,\|\bar{\vect{\omega}}_k\|$ et
+$\vect{n}_k = \bar{\vect{\omega}}_k/\|\bar{\vect{\omega}}_k\|$, et
+$\hatx{\vect{n}}^2\vect{x} = (\vect{n}\cdot\vect{x})\,\vect{n} - \vect{x}$,
+\[
+    \vect{\gamma}_{k+1} = \cos\phi_k\,\vect{\gamma}_k
+    - \sin\phi_k\,\vect{n}_k\wedge\vect{\gamma}_k
+    + (1 - \cos\phi_k)(\vect{n}_k\cdot\vect{\gamma}_k)\,\vect{n}_k
+\]
+
+\begin{remarque}[Traitement des données hors ligne]
+    $\vect{\gamma}$ est obtenu en intégrant toutes les mesures du
+    gyromètre depuis $t_0$, et son erreur grandit avec le temps. On
+    traite donc les données hors ligne plutôt qu'en ligne.
+\end{remarque}

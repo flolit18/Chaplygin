@@ -9,6 +9,7 @@ import numpy as np
 
 from chaplygin import ChaplyginSphere
 from sensors.gyrometer import Gyrometer
+
 def main():
     #sigma = 0.005, biais_std = 0.001, freq = 100
     # ecart type du bruit blanc du capteur
@@ -90,6 +91,19 @@ def main():
         for t_k, omega_k in zip(t_gyro, omega_gyro):
             writer.writerow([t_k, *omega_k])
     print(f"Donnees sauvegardees dans : {csv_path.resolve()}")
+
+    # gamma0 dans le repere du gyro : ce que mesure l'accelerometre au repos (divise par g)
+    gamma0 = gyro.mount.T @ result.R[0].T @ np.array([0.0, 0.0, 1.0])
+    with (out / "gamma0.csv").open("w", newline = "", encoding = "utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["gamma_x", "gamma_y", "gamma_z"])
+        writer.writerow(gamma0)
+
+    # montage du gyro : verite terrain, sert seulement a valider l'estimation
+    with (out / "mount.csv").open("w", newline = "", encoding = "utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerows(gyro.mount)
+    print("montage du gyro (Q, gyro -> corps) :\n", np.round(gyro.mount, 4))
 
 
 

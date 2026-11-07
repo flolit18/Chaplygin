@@ -1,0 +1,57 @@
+% ============================================================================
+%  Chapitre 5, partie IV : Estimation par moindres carrés
+% ============================================================================
+
+% ----------------------------------------------------------------------------
+\section{Estimation par moindres carrés}
+% ----------------------------------------------------------------------------
+
+\subsection{Modèle}
+
+Pour la mesure $k$, on empile les deux équations de la partie
+précédente :
+\[
+    \mat{\Phi}_k\,\vect{\theta} = \vect{y}_k,
+    \qquad
+    \mat{\Phi}_k = \begin{pmatrix}
+        \vect{\varphi}_1(\vect{\gamma}_k, \vect{\omega}_k)^T\\
+        \vect{\varphi}_2(\vect{\gamma}_k, \vect{\omega}_k)^T
+    \end{pmatrix} \in \R^{2\times 8},
+    \qquad
+    \vect{y}_k = \begin{pmatrix} 0\\ y_2(\vect{\gamma}_k, \vect{\omega}_k)\end{pmatrix}
+\]
+Sur les $n$ mesures, on empile à nouveau les $\mat{\Phi}_k$ et les
+$\vect{y}_k$ en $\mat{\Phi} \in \R^{2n\times 8}$ et
+$\vect{y} \in \R^{2n}$ :
+\[
+    \mat{\Phi}\,\vect{\theta} = \vect{y}
+\]
+
+\subsection{Fonction de perte}
+
+On cherche donc le $\vect{\theta}$ qui minimise l'erreur quadratique
+sur toutes les mesures
+\[
+    \mathcal{L}(\vect{\theta})
+    = \sum_{k=1}^{n}\frac12\|\vect{y}_k - \mat{\Phi}_k\vect{\theta}\|^2
+    = \frac12\|\vect{y} - \mat{\Phi}\vect{\theta}\|^2
+\]
+Son gradient vaut
+\[
+    \nabla\mathcal{L}(\vect{\theta})
+    = -\mat{\Phi}^T(\vect{y} - \mat{\Phi}\vect{\theta})
+\]
+et on obtient l'estimation de nos paramètres par : 
+\[
+    \mat{\Phi}^T\mat{\Phi}\,\vect{\theta} = \mat{\Phi}^T\vect{y}
+    \quad\Longrightarrow\quad
+    \hat{\vect{\theta}} = \bigl(\mat{\Phi}^T\mat{\Phi}\bigr)^{-1}\mat{\Phi}^T\vect{y}
+\]
+
+\subsection{Retour aux moments principaux}
+
+De $\hat{\vect{\theta}}$, on reconstruit $\hat{\mat{J}}$, symétrique,
+puis on la diagonalise comme dans la partie I :
+\[
+    \hat{\mat{J}} = \hat{\mat{P}}\,\mathrm{diag}(\hat{I}_1, \hat{I}_2, \hat{I}_3)\,\hat{\mat{P}}^T
+\]

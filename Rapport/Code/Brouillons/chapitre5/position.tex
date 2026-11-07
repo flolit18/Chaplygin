@@ -1,0 +1,42 @@
+% ============================================================================
+%  Chapitre 5, partie I : Position du problème
+% ============================================================================
+
+% ----------------------------------------------------------------------------
+\section{Position du problème}
+% ----------------------------------------------------------------------------
+
+La simulation suppose connus la masse $m$, le rayon $a$ et la matrice
+d'inertie $\mat{I}_b$ de la boule. Pour une vraie boule, $m$ et $a$ se
+mesurent directement, avec une balance et un pied à coulisse. Ce n'est
+pas le cas de $\mat{I}_b$, qui dépend de la répartition de la masse à
+l'intérieur, ce que l'on ne connaît pas lors de la production. Le but de ce chapitre est de répondre à la question : "Comment peut-on les déterminer à partir de mesures embarquées ?". Dans ce chapitre, on utilise un gyromètre au centre de la boule, et éventuellement un accéléromètre.
+
+\subsection{Le repère du gyromètre}
+
+Dans les chapitres précédents, on a écrit l'inertie dans les axes
+principaux de la boule, où $\mat{I}_b = \mathrm{diag}(I_1, I_2, I_3)$.
+\textbf{Cependat, on ne connaît jamais ces axes}, et on ne peut donc pas y aligner le gyromètre. On doit travailler alors dans le repère du gyromètre, relié aux axes principaux par une rotation $\mat{P}$ inconnue. Dans ce repère, la matrice d'inertie
+\[
+    \mat{J} = \mat{P}\,\mat{I}_b\,\mat{P}^T
+    = \begin{pmatrix}
+        J_{11} & J_{12} & J_{13}\\
+        J_{12} & J_{22} & J_{23}\\
+        J_{13} & J_{23} & J_{33}
+    \end{pmatrix}
+\]
+qui n'est plus diagonale, mais reste symétrique définie positive par définition. Estimer l'inertie revient donc à estimer ses $6$ coefficients, on ne peut pas faire autrement sans connaître $\mat{P}$.
+
+\subsection{Retour aux axes principaux}
+
+Une fois $\mat{J}$ estimée, on la diagonalise. Elle est symétrique,
+donc
+\[
+    \mat{J} = \mat{P}\,\mathrm{diag}(I_1, I_2, I_3)\,\mat{P}^T,
+    \qquad \mat{P} \in \SO
+\]
+Les valeurs propres de $\mat{J}$ sont les moments principaux
+$I_1, I_2, I_3$, et les colonnes de $\mat{P}$ donnent les axes
+principaux exprimés dans le repère du gyromètre. Donc, en plus, en diagonalisant $\mat{P}$, on obtient aussi la position du gyromètre par rapport aux axes principaux de l'inertie.
+
+

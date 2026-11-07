@@ -1,0 +1,96 @@
+% ============================================================================
+%  Chapitre 5, partie III : Mise en équation linéaire
+% ============================================================================
+
+% ----------------------------------------------------------------------------
+\section{La mise en équations linéaires des contrôles}
+% ----------------------------------------------------------------------------
+
+On écrit maintenant les deux contrôles du modèle,
+$\vect{L}_G\cdot\vect{e}_z$ et $T$, avec les seules mesures
+$\vect{\omega}$ et $\vect{\gamma}$. Dans le repère du gyromètre,
+$\mat{I}_b$ est remplacée par $\mat{J}$, et les deux contrôles
+deviennent linéaires en ses coefficients.
+
+\subsection{Moment cinétique vertical}
+
+D'après la partie précédente, avec $\mat{J}$ à la place de
+$\mat{I}_b$, dans le repère gyromètre
+\[
+    \vect{L}_G\cdot\vect{e}_z = \vect{\gamma}^T\mat{J}\,\vect{\omega} = c
+\]
+où $c$ est une constante inconnue. $\mat{J}$ n'est pas diagonale,
+mais elle est symétrique donc 
+\[
+    J_{11}\gamma_1\omega_1 + J_{22}\gamma_2\omega_2 + J_{33}\gamma_3\omega_3
+    + J_{12}(\gamma_1\omega_2 + \gamma_2\omega_1)
+    + J_{23}(\gamma_2\omega_3 + \gamma_3\omega_2)
+    + J_{13}(\gamma_1\omega_3 + \gamma_3\omega_1) - c = 0
+\]
+
+\subsection{Énergie cinétique}
+
+\textbf{Vitesse du centre : } la boule roule sans glisser, donc
+$\vect{v}_P = 0$, et $\overrightarrow{PG} = a\,\vect{e}_z$ donne
+\[
+    \vect{v}_G = \vect{v}_P + \vect{\Omega}\wedge\overrightarrow{PG}
+    = a\,\vect{\Omega}\wedge\vect{e}_z
+\]
+Avec $\vect{\Omega} = \mat{R}\vect{\omega}$ et
+$\vect{e}_z = \mat{R}\vect{\gamma}$, on a 
+\[
+    \vect{v}_G = a\,(\mat{R}\vect{\omega})\wedge(\mat{R}\vect{\gamma})
+    = a\,\mat{R}\,(\vect{\omega}\wedge\vect{\gamma})
+\]
+Or $\mat{R}^T\mat{R} = \Id$, donc
+\[
+    \|\vect{v}_G\|^2 = a^2\|\vect{\omega}\wedge\vect{\gamma}\|^2
+\]
+et la relation
+$\|\vect{u}\wedge\vect{v}\|^2 = \|\vect{u}\|^2\|\vect{v}\|^2 - (\vect{u}\cdot\vect{v})^2$,
+avec $\|\vect{\gamma}\| = 1$, donne
+\[
+    \|\vect{v}_G\|^2 = a^2\bigl(\|\vect{\omega}\|^2 - (\vect{\gamma}^T\vect{\omega})^2\bigr)
+\]
+
+\textbf{Énergie : } l'énergie cinétique, conservée, s'écrit alors
+\[
+    2T = m\|\vect{v}_G\|^2 + \vect{\omega}^T\mat{J}\,\vect{\omega}
+    = m a^2\bigl(\|\vect{\omega}\|^2 - (\vect{\gamma}^T\vect{\omega})^2\bigr)
+    + \vect{\omega}^T\mat{J}\,\vect{\omega}
+\]
+En développant $\vect{\omega}^T\mat{J}\,\vect{\omega}$ et en passant
+le terme connu à droite,
+\[
+    J_{11}\omega_1^2 + J_{22}\omega_2^2 + J_{33}\omega_3^2
+    + 2J_{12}\omega_1\omega_2 + 2J_{23}\omega_2\omega_3
+    + 2J_{13}\omega_1\omega_3 - 2T
+    = -m a^2\bigl(\|\vect{\omega}\|^2 - (\vect{\gamma}^T\vect{\omega})^2\bigr)
+\]
+
+\subsection{Vecteur des paramètres}
+
+Les deux équations sont linéaires en
+\[
+    \vect{\theta} = \begin{pmatrix}
+        J_{11} & J_{22} & J_{33} & J_{12} & J_{23} & J_{13} & c & T
+    \end{pmatrix}^T \in \R^8
+\]
+où les constantes $c$ et $T$, inconnues, sont estimées en même temps
+que $\mat{J}$. Pour chaque mesure, on a donc
+\[
+    \vect{\varphi}_1(\vect{\gamma}, \vect{\omega})^T\vect{\theta} = 0,
+    \qquad
+    \vect{\varphi}_2(\vect{\gamma}, \vect{\omega})^T\vect{\theta} = y_2(\vect{\gamma}, \vect{\omega})
+\]
+avec
+\begin{align*}
+    \vect{\varphi}_1 &= \bigl(\gamma_1\omega_1,\ \gamma_2\omega_2,\
+        \gamma_3\omega_3,\ \gamma_1\omega_2 + \gamma_2\omega_1,\
+        \gamma_2\omega_3 + \gamma_3\omega_2,\
+        \gamma_1\omega_3 + \gamma_3\omega_1,\ -1,\ 0\bigr)^T\\
+    \vect{\varphi}_2 &= \bigl(\omega_1^2,\ \omega_2^2,\ \omega_3^2,\
+        2\omega_1\omega_2,\ 2\omega_2\omega_3,\ 2\omega_1\omega_3,\
+        0,\ -2\bigr)^T\\
+    y_2 &= -m a^2\bigl(\|\vect{\omega}\|^2 - (\vect{\gamma}^T\vect{\omega})^2\bigr)
+\end{align*}

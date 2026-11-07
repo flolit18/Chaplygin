@@ -1,0 +1,83 @@
+% ============================================================================
+%  Chapitre 5, partie V : Validation sur des données synthétiques
+% ============================================================================
+
+% ----------------------------------------------------------------------------
+\section{Validation sur des données synthétiques}
+% ----------------------------------------------------------------------------
+
+\subsection{Génération des données}
+
+On simule la boule de référence ($m = 1$~kg, $a = 0{,}1$~m,
+$\mat{I}_b = \mathrm{diag}(1{,}5;\ 8{,}5;\ 9{,}5)\cdot 10^{-3}$~kg$\cdot$m$^2$)
+en quaternions pendant $5$~s, avec $h = 10^{-3}$~s. On en tire les
+mesures d'un gyromètre à $f = 100$~Hz, soit $n = 501$ mesures, de
+bruit $\sigma = 5\cdot 10^{-3}$~rad/s et de biais tiré selon
+$\mathcal{N}(0, 10^{-6}\Id)$. Le gyromètre est monté dans la boule par
+une rotation $\mat{Q}$ (repère du gyromètre vers axes principaux), et
+mesure $\mat{Q}^T\vect{\omega}$. On note $\mat{J} = \mat{Q}^T\mat{I}_b\mat{Q}$
+la matrice d'inertie vraie dans son repère.
+
+On fait deux essais : un gyromètre aligné sur les axes principaux
+($\mat{Q} = \Id$), puis un montage quelconque, où $\mat{Q}$ est tirée
+uniformément sur $\SO$, à partir d'un quaternion unitaire uniforme.
+Ces deux essais vérifient que la méthode fonctionne, sa précision
+sera validée par une campagne de Monte-Carlo.
+
+\subsection{Gyromètre aligné}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lcc}
+        \toprule
+        Paramètre & Valeur vraie & Estimation \\
+        \midrule
+        $I_1$ ($10^{-3}$~kg$\cdot$m$^2$) & $1{,}500$ & $1{,}483$ \\
+        $I_2$ ($10^{-3}$~kg$\cdot$m$^2$) & $8{,}500$ & $8{,}462$ \\
+        $I_3$ ($10^{-3}$~kg$\cdot$m$^2$) & $9{,}500$ & $9{,}441$ \\
+        $J_{12}, J_{23}, J_{13}$ ($10^{-3}$~kg$\cdot$m$^2$) & $0$ & $\le 0{,}02$ \\
+        $c$ (kg$\cdot$m$^2$/s) & $0{,}0473$ & $0{,}0470$ \\
+        $T$ (J) & $0{,}1349$ & $0{,}1342$ \\
+        \bottomrule
+    \end{tabular}
+    \caption{Estimation avec un gyromètre aligné sur les axes principaux}
+    \label{tab-estimation-aligne}
+\end{table}
+
+Les moments sont retrouvés à mieux que $1{,}2\,\%$, et les termes
+croisés de $\hat{\mat{J}}$ sont bien quasi nuls.
+
+\subsection{Montage quelconque}
+
+Pour le montage tiré, la matrice d'inertie dans le repère du gyromètre
+est pleine :
+\[
+    \mat{J} = \begin{pmatrix}
+        7{,}078 & -2{,}653 & 1{,}281\\
+        -2{,}653 & 4{,}890 & 2{,}886\\
+        1{,}281 & 2{,}886 & 7{,}532
+    \end{pmatrix}\cdot 10^{-3},
+    \qquad
+    \hat{\mat{J}} = \begin{pmatrix}
+        7{,}030 & -2{,}601 & 1{,}256\\
+        -2{,}601 & 4{,}868 & 2{,}854\\
+        1{,}256 & 2{,}854 & 7{,}468
+    \end{pmatrix}\cdot 10^{-3}
+\]
+En diagonalisant $\hat{\mat{J}}$ :
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{lccc}
+        \toprule
+        & $I_1$ & $I_2$ & $I_3$ \\
+        \midrule
+        Valeur vraie ($10^{-3}$~kg$\cdot$m$^2$) & $1{,}500$ & $8{,}500$ & $9{,}500$ \\
+        Estimation ($10^{-3}$~kg$\cdot$m$^2$) & $1{,}533$ & $8{,}417$ & $9{,}416$ \\
+        Erreur relative & $2{,}2\,\%$ & $1{,}0\,\%$ & $0{,}9\,\%$ \\
+        Erreur sur l'axe principal & $0{,}13^\circ$ & $0{,}27^\circ$ & $0{,}23^\circ$ \\
+        \bottomrule
+    \end{tabular}
+    \caption{Estimation avec un montage quelconque du gyromètre}
+    \label{tab-estimation-quelconque}
+\end{table}
