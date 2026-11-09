@@ -21,9 +21,17 @@ expérience, et un bruit blanc gaussien $\vect{\nu}_k$ :
     \qquad
     \vect{\nu}_k \sim \mathcal{N}(0, \sigma^2\Id)
 \]
+\subsection{Le montage du gyromètre}
+Comme on l'a vu dans la partie I, on ne connaît pas a priori les axes principaux de la boule, sur lesquels aligner le gyromètre. Les données
+reçues donnent donc la vitesse angulaire de la boule exprimée dans le repère du capteur, et pas dans le repère corps. Soit
+$\mat{P} = \mat{P}_{\text{corps}\to\text{gyro}}$ la rotation du repère corps vers le repère du gyromètre, on a :
+\[
+    \vect{\omega}_{\text{gyro}} = \mat{P}\vect{\omega}_b
+\]
+Certes, cette matrice n'est pas connue a priori quand on monte le capteur. Cependant, elle reste toujours identifiable et on le verra dans la suite.
 
 \subsection{La verticale vue par la boule}
-Les quantités conservées vont intervenir dans l'estimation, et pour $\vect{L} _G \vect{e}_z $, on a besoin de la matrice de changement de repère $\mat{R}$, donc éventuellement un magnétomètre si jamais on a besoin d'orientation de la sphère. Cependant, en supposant que l'on a très peu de bruit sur le gyromètre, une intégration sera suffisante pour réduire l'instalation d'un capteur. En effet, on a 
+Les quantités conservées vont intervenir dans l'estimation, et pour $\vect{L} _G \vect{e}_z $, on a besoin de la matrice de changement de repère $\mat{R}$, donc éventuellement un magnétomètre si jamais on a besoin d'orientation de la sphère. Cependant, en supposant que l'on a très peu de bruit sur le gyromètre, une intégration sera suffisante pour réduire l'instalation d'un autre capteur. En effet, on a 
 \[\vect{L}_G \vect{e}_z = \vect{e}_z ^T (\mat{R} \mat{I}_b \mat{R}^T \vect{\Omega}) = \vect{e}_z ^T \mat{R} \mat{I}_b \mat{R}^T \mat{R} \vect{\omega} = (\vect{e}_z ^T\mat{R})(\mat{I}_b \vect{\omega})
 \]
 Or
@@ -51,13 +59,33 @@ soit
 \[
     \dot{\vect{\gamma}} = \vect{\gamma}\wedge\vect{\omega}
 \]
-\textbf{Intégration : } cette équation ne fait intervenir que
-$\vect{\omega}$, que mesure le gyromètre. On peut donc obtenir
-$\vect{\gamma}$ en l'intégrant à partir d'une valeur initiale
-$\vect{\gamma}_0$. Celle-ci est donnée par l'accéléromètre (aussi sur le MPU6050), la boule
-étant au repos, il mesure alors $g\,\vect{\gamma}_0$. Entre deux
-mesures, on fait la rotation exacte par la vitesse angulaire moyenne
-$\bar{\vect{\omega}}_k = \frac12(\vect{z}_k + \vect{z}_{k+1})$ :
+Donc, en utilisant le schéma Euler explicite, on a : 
+\[
+    \vect{\gamma}_{k+1} = \vect{\gamma}_k + \Delta t \vect{\gamma}_k \wedge \vect{\omega}_k = \vect{\gamma}_k - \Delta t  \vect{\omega}_k \wedge \vect{\gamma}_k 
+\]
+en utilisant le duel matriciel de $\vect{\omega}$, on obtient alors 
+\[
+    \vect{\gamma}_{k+1} = (\mat{\Id} - \Delta t\,\hatx{\vect{\omega}_k})\vect{\gamma}_k
+\]
+Cependant, il est plus préférable d'utiliser la formule de précession de Rodrigues car cela part plutôt d'une solution exacte. En fait, en partant de
+\[
+    \dot{\vect{\gamma}} = \vect{\gamma}\wedge\vect{\omega}
+\]
+on a
+\[
+\dot{\vect{\gamma}} = -\,\hatx{\vect{\omega}}\vect{\gamma}
+\]
+On considère ensuite l'intervalle $[t_k, t_{k+1}]$ sur laquelle on suppose le maintien de la valeur de $\vect{\omega}$, c'est-à-dire, sur $[t_k, t_{k+1}]$, $\vect{\omega}(t) = \vect{\omega}_k$. On a donc sur cette intervalle l'EDO : 
+\[
+\dot{\vect{\gamma}} = -\,\hatx{\vect{\omega}_k } \vect{\gamma} = \mat{A} \vect{\gamma}
+\]
+dont la solution exacte sur cette intervalle est
+\[
+\vect{ \gamma}_{k+1} = \exp(\mat{A}\Delta t) \vect{\gamma}_k = \exp\bigl(-\Delta t\,\hatx{\vect{\omega}_k}\bigr)\,\vect{\gamma}_k
+\]
+\textbf{Intégration : } cette équation ne fait intervenir que $\vect{\omega}$, que mesure le gyromètre. On peut donc obtenir
+$\vect{\gamma}$ en l'intégrant à partir d'une valeur initiale $\vect{\gamma}_0$. Celle-ci est donnée par l'accéléromètre (aussi sur le MPU6050), la boule étant au repos, il mesure alors $g\,\vect{\gamma}_0$. Entre deux
+mesures, on fait la rotation exacte par la vitesse angulaire moyenne $\bar{\vect{\omega}}_k = \frac12(\vect{z}_k + \vect{z}_{k+1})$ donc, on a : 
 \[
     \vect{\gamma}_{k+1}
     = \exp\bigl(-\Delta t\,\hatx{\bar{\vect{\omega}}_k}\bigr)\,\vect{\gamma}_k,
@@ -65,9 +93,10 @@ $\bar{\vect{\omega}}_k = \frac12(\vect{z}_k + \vect{z}_{k+1})$ :
 \]
 où l'exponentielle se calcule par la formule de Rodrigues. Une rotation
 conserve la norme : on garde $\|\vect{\gamma}_k\| = 1$ sans
-renormaliser.
+renormaliser, contrairement au schéma d'Euler où $\vect{\gamma}$ n'est pas conservée.
 
-\textbf{Formule de Rodrigues : } pour $\vect{v} \in \R^3$ non nul, on
+\begin{proposition}[Formule de Rodrigues]
+Pour $\vect{v} \in \R^3$ non nul, on
 note $\phi = \|\vect{v}\|$ et $\vect{n} = \vect{v}/\phi$. Comme
 $\hatx{\vect{n}}^3 = -\hatx{\vect{n}}$, la série de l'exponentielle se
 regroupe en
@@ -85,6 +114,7 @@ $\hatx{\vect{n}}^2\vect{x} = (\vect{n}\cdot\vect{x})\,\vect{n} - \vect{x}$,
     - \sin\phi_k\,\vect{n}_k\wedge\vect{\gamma}_k
     + (1 - \cos\phi_k)(\vect{n}_k\cdot\vect{\gamma}_k)\,\vect{n}_k
 \]
+\end{proposition} 
 
 \begin{remarque}[Traitement des données hors ligne]
     $\vect{\gamma}$ est obtenu en intégrant toutes les mesures du

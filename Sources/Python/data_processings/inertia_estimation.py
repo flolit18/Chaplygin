@@ -52,7 +52,8 @@ def load_gyro_csv(path):
 #----------------------------------------------------------------------------------------------------------------------#
 def rodrigues(v):
     """
-        exp([v]x) : rotation d'angle |v| autour de v / |v|
+        exp([v]x) : rotation d'angle |v| autour de v / |v|, cette matrice est asym 
+        formule page 16
     """
     angle = np.linalg.norm(v)
     if angle < 1e-12:
