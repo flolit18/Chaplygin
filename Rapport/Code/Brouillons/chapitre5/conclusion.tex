@@ -1,0 +1,8 @@
+\section{Conclusion - Le cas quasi-idéal}
+
+Dans le cas quasi-idéal, la méthode proposée fonctionne, à partir d'un gyromètre seul, sans connaître son montage, les moindres carrés retrouvent bien les moments principaux et les axes principaux de la boule, avec une erreur médiane acceptable vue sur la campagne Monte-Carlo.
+
+Cependant, elle repose sur un biais constant. gyromètre dérive : $\vect{\gamma}$ obtenu par intégration, dérive avec lui, et les régresseurs $\vect{\varphi}_1$, $\vect{\varphi}_2$ sont faussés. Un gyromètre seul ne suffit donc plus, il faut recaler
+$\vect{\gamma}$ sur une mesure de la verticale, ce qui donne une idée pour une utilisation d'un filtre de Kalman pour la suite.
+
+L'essentiel reste pourtant utilisable, la mise en équations linéaires, les méthodes d'estimation, la dynamique de $\vect{\gamma}$. On peut alors les rassembler pour construire le filtre de Kalman pour le chapitre suivant.

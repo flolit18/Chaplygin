@@ -1,0 +1,19 @@
+% ============================================================================
+%  Chapitre 6, partie I : Limites du cas quasi idéal
+% ============================================================================
+
+% ----------------------------------------------------------------------------
+\section{Limites du cas quasi idéal}
+% ----------------------------------------------------------------------------
+
+Le chapitre précédent repose sur des hypothèses qui ne tiennent pas sur
+une vraie boule :
+\begin{itemize}
+    \item \textbf{le biais du gyromètre est constant} : en réalité, il
+    dérive. $\vect{\gamma}$, intégré avec le gyromètre seul, dérive alors
+    sans que rien ne puisse le corriger, et les régresseurs sont faussés.
+    \item \textbf{l'accéléromètre ne sert qu'au repos} : pour recaler
+    $\vect{\gamma}$ pendant le mouvement, il faut savoir ce qu'il mesure
+    quand la boule roule, et ce n'est plus seulement $g\,\vect{\gamma}$.
+\end{itemize}
+On garde en revanche l'hypothèse de Chaplygin $G = C$ : sur une boule réelle, elle n'est vérifiée qu'approximativement, et l'effet d'un décalage de $G$ n'est pas étudié ici.

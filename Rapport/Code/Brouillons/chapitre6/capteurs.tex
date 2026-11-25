@@ -1,0 +1,121 @@
+% ============================================================================
+%  Chapitre 6, partie II : Modèle des capteurs
+% ============================================================================
+
+% ----------------------------------------------------------------------------
+\section{Modèle des capteurs}
+% ----------------------------------------------------------------------------
+
+\subsection{Gyromètre à biais dérivant}
+
+Au chapitre précédent, le biais $\vect{b}$ est supposé constant. En
+réalité, le biais d'un gyromètre MEMS varie au cours du temps, souvent avec la
+température et de façon aléatoire. On écrit
+\[
+    \vect{b}(t) = \vect{b}_0 + \delta\vect{b}(t)
+\]
+Même si on estime $\vect{b}_0$ au repos, il reste $\delta\vect{b}$ dans
+la vitesse angulaire corrigée, et $\vect{\gamma}$ est intégré avec
+$\vect{\omega} + \delta\vect{b}$ au lieu de $\vect{\omega}$ :
+\[
+    \dot{\hat{\vect{\gamma}}} = \hat{\vect{\gamma}}\wedge(\vect{\omega} + \delta\vect{b})
+\]
+\textbf{Erreur sur $\vect{\gamma}$ : } $\hat{\vect{\gamma}}$ tourne en
+plus autour de $\delta\vect{b}$, à la vitesse $\|\delta\vect{b}\|$. Pour
+un $\delta\vect{b}$ constant, l'angle entre $\hat{\vect{\gamma}}$ et
+$\vect{\gamma}$ croît donc au plus comme
+\[
+    \theta(t) \le \|\delta\vect{b}\|\,t
+\]
+Par exemple, $\|\delta\vect{b}\| = 10^{-3}$~rad/s donne jusqu'à
+$3{,}4^\circ$ au bout d'une minute. Rien dans le gyromètre seul ne
+permet de corriger cette erreur, elle ne fait que s'accumuler.
+
+\textbf{Conséquence sur l'estimation : } les régresseurs
+$\vect{\varphi}_1(\vect{\gamma}, \vect{\omega})$ et
+$y_2(\vect{\gamma}, \vect{\omega})$ sont calculés avec
+$\hat{\vect{\gamma}}$, et sont donc faussés d'autant plus que
+l'expérience est longue. Pour garder $\vect{\gamma}$, il faut le
+recaler sur une mesure absolue de la verticale, que donne
+l'accéléromètre.
+
+
+\textbf{Modèle du gyromètre : } on note désormais $\vect{b}_g$ le biais
+du gyromètre, et on modélise sa dérive par une marche aléatoire,
+\[
+    \vect{b}_{g,k+1} = \vect{b}_{g,k} + \vect{w}_{g,k},
+    \qquad
+    \vect{w}_{g,k} \sim \mathcal{N}(0, \sigma_{bg}^2\,\Delta t\,\Id)
+\]
+La mesure devient
+\[
+    \vect{z}_k = \vect{\omega}_k + \vect{b}_{g,k} + \vect{\nu}_{g,k},
+    \qquad
+    \vect{\nu}_{g,k} \sim \mathcal{N}(0, \sigma_g^2\Id)
+\]
+où $\sigma_g$ est le $\sigma$ du chapitre précédent, et $\sigma_{bg}$
+règle la vitesse de dérive : au bout d'un temps $t$, le biais s'est
+écarté de sa valeur initiale d'environ $\sigma_{bg}\sqrt{t}$ par axe.
+
+\subsection{Accéléromètre}
+
+Un accéléromètre placé en un point $A$ ne mesure pas la verticale, mais
+l'accélération spécifique, dans son repère :
+\[
+    \vect{f} = \mat{R}^T(\vect{a}_A - \vect{g}),
+    \qquad \vect{g} = -g\,\vect{e}_z
+\]
+soit, avec $\vect{\gamma} = \mat{R}^T\vect{e}_z$,
+\[
+    \vect{f} = g\,\vect{\gamma} + \mat{R}^T\vect{a}_A
+\]
+
+\textbf{En roulement : } on place le capteur au centre, $A = C = G$.
+Comme $\vect{v}_G = a\,\vect{\Omega}\wedge\vect{e}_z$ et $\vect{e}_z$
+est fixe,
+\[
+    \vect{a}_G = a\,\dot{\vect{\Omega}}\wedge\vect{e}_z
+\]
+Or $\vect{\Omega} = \mat{R}\vect{\omega}$ donne
+$\dot{\vect{\Omega}} = \dot{\mat{R}}\vect{\omega} + \mat{R}\dot{\vect{\omega}}
+= \mat{R}(\vect{\omega}\wedge\vect{\omega}) + \mat{R}\dot{\vect{\omega}}
+= \mat{R}\dot{\vect{\omega}}$, et une rotation conserve le produit
+vectoriel, donc
+\[
+    \mat{R}^T\vect{a}_G = a\,(\mat{R}^T\dot{\vect{\Omega}})\wedge(\mat{R}^T\vect{e}_z)
+    = a\,\dot{\vect{\omega}}\wedge\vect{\gamma}
+\]
+L'accéléromètre mesure alors
+\[
+    \vect{f} = g\,\vect{\gamma} + a\,\dot{\vect{\omega}}\wedge\vect{\gamma}
+\]
+
+\textbf{Modèle de l'accéléromètre : } comme le gyromètre, l'accéléromètre a un biais
+$\vect{b}_a$ qui dérive, modélisé de la même façon, et un bruit blanc :
+\[
+    \vect{b}_{a,k+1} = \vect{b}_{a,k} + \vect{w}_{a,k},
+    \qquad
+    \vect{w}_{a,k} \sim \mathcal{N}(0, \sigma_{ba}^2\,\Delta t\,\Id)
+\]
+\[
+    \vect{f}_k = g\,\vect{\gamma}_k + a\,\dot{\vect{\omega}}_k\wedge\vect{\gamma}_k
+    + \vect{b}_{a,k} + \vect{\nu}_{a,k},
+    \qquad
+    \vect{\nu}_{a,k} \sim \mathcal{N}(0, \sigma_a^2\Id)
+\]
+
+\subsection{Système de mesures}
+
+À chaque instant $t_k$, les deux capteurs donnent
+\[
+    \left\{
+    \begin{aligned}
+        \vect{z}_{g,k} &= \vect{\omega}_k + \vect{b}_{g,k} + \vect{\nu}_{g,k}\\
+        \vect{z}_{a,k} &= g\,\vect{\gamma}_k + a\,\dot{\vect{\omega}}_k\wedge\vect{\gamma}_k
+        + \vect{b}_{a,k} + \vect{\nu}_{a,k}
+    \end{aligned}
+    \right.
+\]
+où $\vect{z}_{g,k}$ est la mesure du gyromètre et $\vect{z}_{a,k}$ celle
+de l'accéléromètre, et où les deux biais $\vect{b}_{g,k}$ et
+$\vect{b}_{a,k}$ dérivent selon leur marche aléatoire.

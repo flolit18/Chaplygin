@@ -563,7 +563,7 @@ On note $e_h$, l'écart entre deux solutions (on peut calculer cet écart)
 \[
 e_h := y_h (T) - y_{\frac{h}{2}} (T) \approx \frac{15}{16}C(T) h^4
 \]
-En posant $\varepsilon_h :=  y(T) - y_{h} (T)$, supposons que, en raffinant le pas du schéma, l'erreur globale se réduise (Il faut que je retrouve le bouquin qui en parle, sur la borne sup de l'erreur du schéma RK4, --demander au 25 qui voulait piquer mon bouquin d'ana num d'abord) : 
+En posant $\varepsilon_h :=  y(T) - y_{h} (T)$, supposons que, en raffinant le pas du schéma, l'erreur globale se réduise : 
 \[
 ||\varepsilon_{h/2} || \le q||\varepsilon_h||,\, \text{avec} \quad  q \in ]0, 1[
 \]
@@ -591,7 +591,7 @@ Cependant, il faut noter qu'ici $q = \frac{1}{16}$ est la borne sup donc ce n'es
 \[
 ||y_h(T) - y(T)|| \le \frac{16}{15}||y_{\frac{h}{2}}(T) - y_h(T)||
 \]
-puis mesurer le rapport $\frac{||\varepsilon_{h/2} || }{||\varepsilon_h||} \approx \frac{||e_{h/2} || }{||e_h||}$, si celui ci vaut $16$, l'ordre $4$ du RK4 se vérifie.
+puis mesurer le rapport $\frac{||\varepsilon_{h/2} || }{||\varepsilon_h||} \approx \frac{||e_{h/2} || }{||e_h||}$, si celui ci vaut $\frac{1}{16}$, l'ordre $4$ du RK4 se vérifie.
 
 \paragraph{Validation numérique}
 On reprend la boule de la simulation de référence, lancée avec
