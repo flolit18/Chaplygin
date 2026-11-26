@@ -71,7 +71,7 @@ def main():
         print(name, ": simulation valide :", result.valid, result.stop_reason)
 
         # meme graine pour tous les cas : meme bruit et meme biais
-        gyro = Gyrometer(sigma = sigma, biais_std = biais_std, freq = freq, mount = mount)
+        gyro = Gyrometer(sigma_g = sigma, biais_std = biais_std, freq = freq, mount = mount)
         t_gyro, omega_gyro = gyro.mesure(result)
 
         # gamma0 dans le repere du gyro : ce que mesure l'accelerometre au repos (divise par g)

@@ -18,7 +18,7 @@ def main():
     biais_std = 0.001
     # frequence du capteur : MPU6050 --> 100Hz
     freq = 100 #Hz
-    gyro = Gyrometer(sigma = sigma,
+    gyro = Gyrometer(sigma_g = sigma,
                      biais_std = biais_std,
                      freq = freq)
     # Initialiser l'engine physics

@@ -11,7 +11,7 @@ import numpy as np
 from chaplygin.rotations import quat_to_matrix
 
 class Gyrometer:
-    def __init__(self, sigma = 0.005, biais_std = 0.001, freq = 100,  seed = 42, mount = None):
+    def __init__(self, sigma_g = 0.005, sigma_bg = 1e-4, biais_std = 0.001, freq = 100, mode = "ideal", seed = 42, mount = None):
         """
             Mesure : 
                 z_k = omega_{body, k} + b_k + nu_k
@@ -19,19 +19,22 @@ class Gyrometer:
             b_k : biais a t = k, on peut avoir un biais fixe ou biais de marche aleatoire
             nu_k : bruit blanc pour la vitesse angulaire suivant les axes du gyro
 
-                        nu_k ~ N(0, sigma^2 I_3)
+                        nu_k ~ N(0, sigma_g^2 I_3)
 
             mount : rotation Q du repere du gyro vers le repere corps (axes principaux),
                     omega_gyro = Q^T omega_corps. Si None, montage quelconque :
                     Q tiree uniformement sur SO(3)
         """
         self.rng = np.random.default_rng(seed)
-        # ecart type du bruit 
-        self.sigma = sigma
         
+        self.mode = mode # "realist" pour biais qui dérive, et "ideal" pour biais normale
+        # ecart type du bruit blanc (rad/s)
+        self.sigma_g = sigma_g
+        # ecart type de la derive du biais (rad/s/sqrt(s))
+        self.sigma_bg = sigma_bg
         # biais initial 
         self.biais = self.rng.normal(0, biais_std, 3)
-        
+
         # frequence du capteur (Hz)
         self.freq = freq
 
@@ -67,11 +70,20 @@ class Gyrometer:
         omega_body = np.einsum("nji,nj->ni", R, Omega)
         # passage au repere du gyro : omega_gyro = Q^T omega_corps
         omega_gyro = omega_body @ self.mount
+        noise = self.rng.normal(0, self.sigma_g, omega_body.shape)
         
-        noise = self.rng.normal(0, self.sigma, omega_body.shape)
-        # retour lorsque tickrate est atteint
-        return result.t[::tick], omega_gyro + self.biais + noise
+        if self.mode == "realist":
+            # marche aleatoire : b_k = b_0 + sum_j w_j,  w_j ~ N(0, sigma_bg^2 dt)
+            dt = 1.0 / self.freq
+            w = self.rng.normal(0, self.sigma_bg * np.sqrt(dt), omega_body.shape)
+            w[0] = 0.0
+            biais = self.biais + np.cumsum(w, axis = 0)
+        else:
+            biais = np.broadcast_to(self.biais, omega_body.shape)
 
+        # vrai biais, garde pour comparer avec l'estimation
+        self.biais_traj = biais
+        return result.t[::tick], omega_gyro + biais + noise
         
 
         

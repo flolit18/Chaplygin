@@ -123,7 +123,7 @@ def main():
             continue
 
         # un gyro par scenario : nouveau montage, nouveau biais, nouveau bruit
-        gyro = Gyrometer(sigma = sigma,
+        gyro = Gyrometer(sigma_g = sigma,
                          biais_std = biais_std,
                          freq = freq,
                          seed = int(rng.integers(2**32)),

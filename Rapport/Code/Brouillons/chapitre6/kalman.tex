@@ -252,3 +252,34 @@ De plus, on n'est pas sûr que la mise-à-jour avec le gain de Kalman conserve l
     \end{align*}
 \end{theoreme}
 
+\subsection{Performance du filtre de Kalman conçu}
+\textbf{Protocole : } On simule la sphère pendant $T = 20$ s avec les conditions initiales du chapitre précédent, puis on génère les mesures des deux capteurs, montés sur la même IMU, avec des biais qui dérivent :
+\begin{center}
+\begin{tabular}{lcc}
+    & gyromètre & accéléromètre \\
+    \hline
+    bruit blanc & $\sigma_g = 0{,}05$ rad/s & $\sigma_a = 0{,}5$ m/s$^2$ \\
+    biais initial (écart-type) & $0{,}05$ rad/s & $0{,}3$ m/s$^2$ \\
+    dérive du biais & $\sigma_{bg} = 5\cdot10^{-3}$ rad/s/$\sqrt{\text{s}}$ & $\sigma_{ba} = 7\cdot10^{-3}$ m/s$^2$/$\sqrt{\text{s}}$ \\
+    fréquence & \multicolumn{2}{c}{100 Hz}
+\end{tabular}
+\end{center}
+Le filtre est initialisé avec $\hat{\vect{\gamma}}_0 = \vect{z}_{a,0}/\|\vect{z}_{a,0}\|$ et des biais nuls. On compare l'estimation du filtre, la verticale « mesurée » $\vect{z}_a/\|\vect{z}_a\|$ et la vraie verticale.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{chapitre6/figures/gamma.png}
+    \caption{Verticale : capteur (gris), EKF (bleu), vraie (rouge)}
+    \label{fig:ekf_gamma}
+\end{figure}
+
+\textbf{Verticale : } L'erreur angulaire entre $\hat{\vect{\gamma}}$ et $\vect{\gamma}$ vaut $1{,}05^\circ$ en moyenne quadratique, contre $4{,}51^\circ$ pour l'accéléromètre seul, soit un gain d'un facteur 4. Le filtre suit la vraie verticale dès le début, sans transitoire visible.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.49\textwidth]{chapitre6/figures/bg.png}
+    \includegraphics[width=0.49\textwidth]{chapitre6/figures/ba.png}
+    \caption{Biais du gyromètre (gauche) et de l'accéléromètre (droite) : EKF (bleu), vrai (rouge)}
+    \label{fig:ekf_biais}
+\end{figure}
+\textbf{Biais : } En revanche, les biais ne convergent pas sur 20 s.
