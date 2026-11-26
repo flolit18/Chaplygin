@@ -142,7 +142,7 @@ class EKF:
         return xs, Ps, nis
 
 
-def initial_state(z_a0, sigma_gam0 = 0.1, sigma_bg0 = 0.01, sigma_ba0 = 0.1):
+def initial_state(z_a0, sigma_gam0 = 0.3, sigma_bg0 = 0.05, sigma_ba0 = 0.2):
     """
         gamma_0 = z_a0 / |z_a0| (accelero ~ g gamma au debut), biais nuls
     """
