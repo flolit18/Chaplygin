@@ -30,8 +30,8 @@ def main():
 
     # gyrometre : bruit blanc (rad/s), biais initial (rad/s), derive (rad/s/sqrt(s))
     sigma_g = 0.05
-    biais_std_g = 0.03
-    sigma_bg = 2e-3
+    biais_std_g = 0.05
+    sigma_bg = 5e-3
     gyro = Gyrometer(sigma_g = sigma_g,
                      sigma_bg = sigma_bg,
                      biais_std = biais_std_g,
@@ -40,9 +40,9 @@ def main():
 
     # accelerometre : bruit blanc (m/s^2), biais initial (m/s^2), derive (m/s^2/sqrt(s))
     # meme montage que le gyro (meme IMU)
-    sigma_a = 0.2
-    biais_std_a = 0.1
-    sigma_ba = 3e-3
+    sigma_a = 0.5
+    biais_std_a = 0.3
+    sigma_ba = 7e-3
     acc = Accelerometer(sigma_a = sigma_a,
                         biais_std = biais_std_a,
                         sigma_ba = sigma_ba,
