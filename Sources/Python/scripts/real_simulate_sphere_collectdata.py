@@ -29,9 +29,9 @@ def main():
     freq = 100 #Hz
 
     # gyrometre : bruit blanc (rad/s), biais initial (rad/s), derive (rad/s/sqrt(s))
-    sigma_g = 0.05
+    sigma_g = 0.1
     biais_std_g = 0.03
-    sigma_bg = 2e-3
+    sigma_bg = 5e-3
     gyro = Gyrometer(sigma_g = sigma_g,
                      sigma_bg = sigma_bg,
                      biais_std = biais_std_g,
@@ -40,9 +40,9 @@ def main():
 
     # accelerometre : bruit blanc (m/s^2), biais initial (m/s^2), derive (m/s^2/sqrt(s))
     # meme montage que le gyro (meme IMU)
-    sigma_a = 0.2
+    sigma_a = 0.3
     biais_std_a = 0.1
-    sigma_ba = 3e-3
+    sigma_ba = 5e-3
     acc = Accelerometer(sigma_a = sigma_a,
                         biais_std = biais_std_a,
                         sigma_ba = sigma_ba,
@@ -78,7 +78,7 @@ def main():
     #---------------------------------------------------------------------#
     # Params de la simulation
     #---------------------------------------------------------------------#
-    T = 50.0 #s, plus long pour voir les biais deriver
+    T = 100.0 #s, plus long pour voir les biais deriver
     h = 1e-3
     N = (int)(T/h)
     eps_schema = 1e-6
