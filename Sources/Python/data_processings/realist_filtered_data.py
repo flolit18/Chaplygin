@@ -99,13 +99,17 @@ def main():
     #------------------------------------------------------------------#
     # EKF
     #------------------------------------------------------------------#
-    x0, P0 = initial_state(z_a[0])
+    k_q, k_r, k_p0 = 10, 1, 1
+    # biais initiaux de real_simulate_sphere_collectdata.py (pas dans params.csv)
+    biais_std_g, biais_std_a = 0.05, 0.3
+
+    x0, P0 = initial_state(z_a[0], sigma_gam0 = 0.1,
+                           sigma_bg0 = k_p0 * biais_std_g, sigma_ba0 = k_p0 * biais_std_a)
     ekf = EKF(a = p["a"], g = p["g"], dt = 1.0 / p["freq"],
-              sigma_g = p["sigma_g"], sigma_bg = p["sigma_bg"],
-              sigma_a = p["sigma_a"], sigma_ba = p["sigma_ba"],
+              sigma_g = p["sigma_g"], sigma_bg = k_q * p["sigma_bg"],
+              sigma_a = k_r * p["sigma_a"], sigma_ba = k_q * p["sigma_ba"],
               x0 = x0, P0 = P0)
     xs, Ps, nis = ekf.run(z_g, z_a)
-
     with (out / "filtered.csv").open("w", newline = "", encoding = "utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["t", "gamma_x", "gamma_y", "gamma_z",
